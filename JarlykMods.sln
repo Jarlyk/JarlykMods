@@ -1,0 +1,37 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.28307.572
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JarlykMods.Raincoat", "Raincoat\JarlykMods.Raincoat.csproj", "{509F1678-C815-4879-9A0C-771842DC9DDD}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JarlykMods.Umbrella", "Umbrella\JarlykMods.Umbrella.csproj", "{0CA914B5-9908-4856-B882-6F100A04D2CD}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JarlykMods.Utils", "Utils\JarlykMods.Utils.csproj", "{853E611C-FA21-4631-9147-80315BA3B71A}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{509F1678-C815-4879-9A0C-771842DC9DDD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{509F1678-C815-4879-9A0C-771842DC9DDD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{509F1678-C815-4879-9A0C-771842DC9DDD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{509F1678-C815-4879-9A0C-771842DC9DDD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0CA914B5-9908-4856-B882-6F100A04D2CD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0CA914B5-9908-4856-B882-6F100A04D2CD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0CA914B5-9908-4856-B882-6F100A04D2CD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0CA914B5-9908-4856-B882-6F100A04D2CD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{853E611C-FA21-4631-9147-80315BA3B71A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{853E611C-FA21-4631-9147-80315BA3B71A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{853E611C-FA21-4631-9147-80315BA3B71A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{853E611C-FA21-4631-9147-80315BA3B71A}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {23F92714-D994-428F-98F6-2F23419A317F}
+	EndGlobalSection
+EndGlobal
