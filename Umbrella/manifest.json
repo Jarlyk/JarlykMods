@@ -1,7 +1,7 @@
 {
   "name": "Umbrella",
   "version_number": "0.1.0",
-  "website_url": "",
+  "website_url": "https://github.com/Jarlyk/JarlykMods",
   "description": "Collection of items and equipment to help brave the storm",
   "dependencies": [
     "bbepis-BepInExPack-1.3.1",
