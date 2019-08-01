@@ -32,7 +32,6 @@ namespace TestModJarlyk
         public const string PluginGuid = "com.jarlyk.umbrella";
 
         private readonly EquipmentIndex _idxBulletTimer;
-        private CharacterMaster _bulletTimerMaster;
         private float _bulletTimerStartTime;
 
         public UmbrellaPlugin()
@@ -41,7 +40,6 @@ namespace TestModJarlyk
 
             _idxBulletTimer = (EquipmentIndex)ItemLib.ItemLib.GetEquipmentId(EquipNames.BulletTimer);
             On.RoR2.EquipmentSlot.PerformEquipmentAction += EquipmentSlotOnPerformEquipmentAction;
-            //On.RoR2.Projectile.ProjectileManager.InitializeProjectile += ProjectileManagerOnInitializeProjectile;
             IL.RoR2.Projectile.ProjectileManager.FireProjectileServer += ProjectileManagerOnFireProjectileServer;
             _bulletTimerStartTime = float.NaN;
         }
@@ -60,7 +58,6 @@ namespace TestModJarlyk
             if (index == _idxBulletTimer)
             {
                 _bulletTimerStartTime = Time.time;
-                _bulletTimerMaster = self.characterBody.master;
                 return true;
             }
 
@@ -74,9 +71,8 @@ namespace TestModJarlyk
             var stream = Assembly.GetExecutingAssembly().GetManifestResourceStream("JarlykMods.Umbrella.umbrellaassets");
             var bundle = AssetBundle.LoadFromStream(stream);
 
-            //TODO: Load asset bundle to get prefab and icon
-            GameObject prefab = bundle.LoadAsset<GameObject>("Assets/Import/bullet_timer/bullet_timer.prefab");
-            UnityEngine.Object icon = bundle.LoadAsset<UnityEngine.Object>("Assets/Import/bullet_timer/bullet_timer_icon.png");
+            var prefab = bundle.LoadAsset<GameObject>("Assets/Import/bullet_timer/bullet_timer.prefab");
+            var icon = bundle.LoadAsset<UnityEngine.Object>("Assets/Import/bullet_timer/bullet_timer_icon.png");
 
             var equipDef = new EquipmentDef
             {

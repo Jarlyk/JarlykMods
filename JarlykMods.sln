@@ -7,8 +7,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JarlykMods.Raincoat", "Rain
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JarlykMods.Umbrella", "Umbrella\JarlykMods.Umbrella.csproj", "{0CA914B5-9908-4856-B882-6F100A04D2CD}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JarlykMods.Utils", "Utils\JarlykMods.Utils.csproj", "{853E611C-FA21-4631-9147-80315BA3B71A}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -23,10 +21,6 @@ Global
 		{0CA914B5-9908-4856-B882-6F100A04D2CD}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0CA914B5-9908-4856-B882-6F100A04D2CD}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0CA914B5-9908-4856-B882-6F100A04D2CD}.Release|Any CPU.Build.0 = Release|Any CPU
-		{853E611C-FA21-4631-9147-80315BA3B71A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{853E611C-FA21-4631-9147-80315BA3B71A}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{853E611C-FA21-4631-9147-80315BA3B71A}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{853E611C-FA21-4631-9147-80315BA3B71A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
