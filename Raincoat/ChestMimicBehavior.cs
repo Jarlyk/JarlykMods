@@ -84,7 +84,7 @@ namespace JarlykMods.Raincoat
                         placementMode = DirectorPlacementRule.PlacementMode.Approximate,
                         preventOverhead = chosenDirectorCard.preventOverhead,
                         minDistance = 0,
-                        maxDistance = 20,
+                        maxDistance = 50,
                         spawnOnTarget = transform
                     };
                     var spawnRequest = new DirectorSpawnRequest(chosenDirectorCard.spawnCard, placement, _rng)
@@ -96,6 +96,9 @@ namespace JarlykMods.Raincoat
                     if (spawned == null)
                     {
                         Debug.LogWarning("Failed to spawn monster for Mimic!");
+
+                        //This ideally shouldn't happen, but for now we'll at least drop the item
+                        PickupDropletController.CreatePickupDroplet(new PickupIndex(chestDrop.itemIndex), position, 10f*Vector3.up);
                         return;
                     }
 
@@ -145,7 +148,7 @@ namespace JarlykMods.Raincoat
         {
             var result = owner.AddComponent<ChestMimicBehavior>();
             var collider = result.gameObject.AddComponent<SphereCollider>();
-            collider.radius = 12;
+            collider.radius = 15;
             collider.isTrigger = true;
             return result;
         }
