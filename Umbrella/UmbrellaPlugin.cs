@@ -71,8 +71,8 @@ namespace TestModJarlyk
             var stream = Assembly.GetExecutingAssembly().GetManifestResourceStream("JarlykMods.Umbrella.umbrellaassets");
             var bundle = AssetBundle.LoadFromStream(stream);
 
-            var prefab = bundle.LoadAsset<GameObject>("Assets/Import/bullet_timer/bullet_timer.prefab");
-            var icon = bundle.LoadAsset<UnityEngine.Object>("Assets/Import/bullet_timer/bullet_timer_icon.png");
+            var prefab = bundle.LoadAsset<GameObject>("Assets/Import/bullet_timer/bullet_timer.prefab.blend");
+            var icon = bundle.LoadAsset<UnityEngine.Object>("Assets/Import/bullet_timer/BulletTimer.png");
 
             var equipDef = new EquipmentDef
             {
@@ -85,7 +85,17 @@ namespace TestModJarlyk
                 enigmaCompatible = true
             };
 
-            return new CustomEquipment(equipDef, prefab, icon);
+            var rule = new ItemDisplayRule
+            {
+                ruleType = ItemDisplayRuleType.ParentedPrefab,
+                followerPrefab = prefab,
+                childName = "Chest",
+                localScale = new Vector3(0.15f, 0.15f, 0.15f),
+                localAngles = new Vector3(0f, 180f, 0f),
+                localPos = new Vector3(-0.35f, -0.1f, 0f)
+            };
+
+            return new CustomEquipment(equipDef, prefab, icon, new[] {rule});
         }
 
         public void Update()

@@ -1,0 +1,10 @@
+{
+  "name": "Hailstorm",
+  "version_number": "0.1.0",
+  "website_url": "https://github.com/Jarlyk/JarlykMods",
+  "description": "Collection of new features to intensify the storm",
+  "dependencies": [
+    "bbepis-BepInExPack-1.3.1",
+    "tristanmcpherson-R2API-2.1.0"
+  ]
+}

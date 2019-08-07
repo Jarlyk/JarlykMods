@@ -102,26 +102,17 @@ namespace JarlykMods.Raincoat
                         return;
                     }
 
-                    //The monster we'll spawn will always be an elite, but no Malachites until after first loop
-                    var eliteTypes = new List<EliteIndex> {EliteIndex.Fire, EliteIndex.Ice, EliteIndex.Lightning};
-                    if (Run.instance.loopClearCount > 0)
-                        eliteTypes.Add(EliteIndex.Poison);
-
                     //Elites are boosted based on hard-coded parameters in CombatDirector
-                    var eliteType = _rng.NextElementUniform(eliteTypes);
-                    double healthBoost;
-                    double damageBoost;
                     var tiers = (CombatDirector.EliteTierDef[])typeof(CombatDirector).GetField("eliteTiers", BindingFlags.NonPublic | BindingFlags.Static).GetValue(null);
-                    if (eliteType == EliteIndex.Poison)
-                    {
-                        healthBoost = tiers[2].healthBoostCoefficient;
-                        damageBoost = tiers[2].damageBoostCoefficient;
-                    }
-                    else
-                    {
-                        healthBoost = tiers[1].healthBoostCoefficient;
-                        damageBoost = tiers[1].damageBoostCoefficient;
-                    }
+
+                    var eliteTypes = tiers.Where(t => t.isAvailable())
+                                      .SelectMany(t => t.eliteTypes)
+                                      .Where(e => e != EliteIndex.None && e != EliteIndex.Gold)
+                                      .ToList();
+                    var eliteType = _rng.NextElementUniform(eliteTypes);
+                    var tier = tiers.First(t => t.eliteTypes.Contains(eliteType));
+                    var healthBoost = tier.healthBoostCoefficient;
+                    var damageBoost = tier.damageBoostCoefficient;
 
                     //Configure as the chosen elite
                     var spawnedMaster = spawned.GetComponent<CharacterMaster>();
