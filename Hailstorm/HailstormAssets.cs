@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Reflection;
 using System.Text;
+using SoundPlus;
 using UnityEngine;
 
 namespace JarlykMods.Hailstorm
@@ -14,7 +16,8 @@ namespace JarlykMods.Hailstorm
                 return;
 
             Loaded = true;
-            var stream = Assembly.GetExecutingAssembly().GetManifestResourceStream("JarlykMods.Hailstorm.hailstorm");
+            var execAssembly = Assembly.GetExecutingAssembly();
+            var stream = execAssembly.GetManifestResourceStream("JarlykMods.Hailstorm.hailstorm");
             var bundle = AssetBundle.LoadFromStream(stream);
             DarknessShader = bundle.LoadAsset<Shader>("Assets/Effects/darkness.shader");
 
@@ -23,6 +26,13 @@ namespace JarlykMods.Hailstorm
             BlackRim.SetFloat("_RimPower", 6);
             BlackRim.SetColor("_RimColor", new Color32(0, 0, 0, 255));
             //PureBlack = bundle.LoadAsset<Material>("Assets/Materials/PureBlack.mat");
+
+            using (var bankStream = execAssembly.GetManifestResourceStream("JarlykMods.Hailstorm.Hailstorm.bnk"))
+            {
+                var bytes = new byte[bankStream.Length];
+                bankStream.Read(bytes, 0, bytes.Length);
+                SoundBanks.Add(bytes);
+            }
         }
 
         public static bool Loaded { get; private set; }
@@ -30,5 +40,9 @@ namespace JarlykMods.Hailstorm
         public static Shader DarknessShader { get; private set; }
 
         public static Material BlackRim { get; private set; }
+
+        public static uint CreepyLoopPlay = 1256202815;
+
+        public static uint CreepyLoopStop = 788884573;
     }
 }

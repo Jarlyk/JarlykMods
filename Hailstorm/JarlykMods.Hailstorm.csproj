@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
@@ -13,7 +13,9 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Credits.txt" />
     <None Remove="hailstorm" />
+    <None Remove="Hailstorm.bnk" />
     <None Remove="License.txt" />
     <None Remove="manifest.json" />
     <None Remove="README.md" />
@@ -33,6 +35,7 @@
 
   <ItemGroup>
     <EmbeddedResource Include="hailstorm" />
+    <EmbeddedResource Include="Hailstorm.bnk" />
   </ItemGroup>
 
   <ItemGroup>
@@ -72,6 +75,10 @@
       <HintPath>..\Dependencies\R2API.dll</HintPath>
       <Private>false</Private>
     </Reference>
+    <Reference Include="SoundPlus">
+      <HintPath>..\Dependencies\SoundPlus.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
     <Reference Include="Unity.TextMeshPro">
       <HintPath>..\Dependencies\Unity.TextMeshPro.dll</HintPath>
       <Private>false</Private>
@@ -100,6 +107,16 @@
       <HintPath>..\Dependencies\UnityEngine.PhysicsModule.dll</HintPath>
       <Private>false</Private>
     </Reference>
+    <Reference Include="Wwise">
+      <HintPath>..\Dependencies\Wwise.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="Credits.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
 
 </Project>

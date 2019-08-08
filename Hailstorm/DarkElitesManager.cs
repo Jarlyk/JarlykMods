@@ -25,6 +25,7 @@ namespace JarlykMods.Hailstorm
         private BuffIndex _buffIndex;
         private EquipmentIndex _equipIndex;
         private float _lastCheckTime;
+        private bool _darknessSeen;
 
         public DarkElitesManager()
         {
@@ -115,7 +116,7 @@ namespace JarlykMods.Hailstorm
             int darkEliteCount = 0;
             foreach (var body in CharacterBody.readOnlyInstancesList)
             {
-                if (!body.HasBuff(_buffIndex))
+                if (body.isPlayerControlled || !body.HasBuff(_buffIndex) || body.teamComponent?.teamIndex != TeamIndex.Monster)
                     continue;
 
                 darkEliteCount++;
@@ -123,6 +124,11 @@ namespace JarlykMods.Hailstorm
                 if (posView.x > 0 && posView.x < 1 && posView.y > 0 && posView.y < 1 && posView.z > 0)
                 {
                     canSeeDarkElite = true;
+                    if (!_darknessSeen)
+                    {
+                        AkSoundEngine.PostEvent(HailstormAssets.CreepyLoopPlay, body.gameObject);
+                        _darknessSeen = true;
+                    }
                     break;
                 }
             }
@@ -137,7 +143,11 @@ namespace JarlykMods.Hailstorm
             }
 
             if (darkEliteCount == 0)
+            {
                 _darknessEffect.Banish();
+                _darknessSeen = false;
+                AkSoundEngine.PostEvent(HailstormAssets.CreepyLoopStop, null);
+            }
         }
 
         private void CameraRigControllerOnStart(On.RoR2.CameraRigController.orig_Start orig, CameraRigController self)

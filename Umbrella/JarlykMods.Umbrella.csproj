@@ -18,6 +18,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Credits.txt" />
     <None Remove="License.txt" />
     <None Remove="manifest.json" />
     <None Remove="README.md" />
@@ -25,6 +26,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Content Include="Credits.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="License.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
