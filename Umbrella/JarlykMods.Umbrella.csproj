@@ -22,7 +22,7 @@
     <None Remove="License.txt" />
     <None Remove="manifest.json" />
     <None Remove="README.md" />
-    <None Remove="umbrellaassets" />
+    <None Remove="umbrella" />
   </ItemGroup>
 
   <ItemGroup>
@@ -41,7 +41,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <EmbeddedResource Include="umbrellaassets" />
+    <EmbeddedResource Include="umbrella" />
   </ItemGroup>
 
   <ItemGroup>

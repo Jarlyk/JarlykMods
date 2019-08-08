@@ -8,7 +8,7 @@ using UnityEngine;
 
 namespace JarlykMods.Hailstorm
 {
-    [BepInPlugin(PluginGuid, "Umbrella", "0.1.0")]
+    [BepInPlugin(PluginGuid, "Hailstorm", "0.1.0")]
     [BepInDependency(R2API.R2API.PluginGUID)]
     [BepInDependency(ItemLibPlugin.ModGuid)]
     public sealed class HailstormPlugin : BaseUnityPlugin

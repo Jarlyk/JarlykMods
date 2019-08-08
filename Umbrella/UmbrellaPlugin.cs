@@ -67,11 +67,10 @@ namespace TestModJarlyk
         [Item(ItemAttribute.ItemType.Equipment)]
         public static CustomEquipment EquipmentBulletTimer()
         {
-            //var bundle = AssetBundle.LoadFromFile(System.IO.Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) + "/umbrellaassets");
-            var stream = Assembly.GetExecutingAssembly().GetManifestResourceStream("JarlykMods.Umbrella.umbrellaassets");
+            var stream = Assembly.GetExecutingAssembly().GetManifestResourceStream("JarlykMods.Umbrella.umbrella");
             var bundle = AssetBundle.LoadFromStream(stream);
 
-            var prefab = bundle.LoadAsset<GameObject>("Assets/Import/bullet_timer/bullet_timer.prefab.blend");
+            var prefab = bundle.LoadAsset<GameObject>("Assets/Import/bullet_timer/BulletTimer.prefab");
             var icon = bundle.LoadAsset<UnityEngine.Object>("Assets/Import/bullet_timer/BulletTimer.png");
 
             var equipDef = new EquipmentDef
