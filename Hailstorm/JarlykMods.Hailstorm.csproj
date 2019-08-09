@@ -47,6 +47,9 @@
       <HintPath>..\Dependencies\Assembly-CSharp.dll</HintPath>
       <Private>false</Private>
     </Reference>
+    <Reference Include="AssetPlus">
+      <HintPath>..\Dependencies\AssetPlus.dll</HintPath>
+    </Reference>
     <Reference Include="BepInEx">
       <HintPath>..\Dependencies\BepInEx.dll</HintPath>
       <Private>false</Private>
@@ -73,10 +76,6 @@
     </Reference>
     <Reference Include="R2API">
       <HintPath>..\Dependencies\R2API.dll</HintPath>
-      <Private>false</Private>
-    </Reference>
-    <Reference Include="SoundPlus">
-      <HintPath>..\Dependencies\SoundPlus.dll</HintPath>
       <Private>false</Private>
     </Reference>
     <Reference Include="Unity.TextMeshPro">
