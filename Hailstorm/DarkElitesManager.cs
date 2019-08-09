@@ -48,7 +48,8 @@ namespace JarlykMods.Hailstorm
                 spawnWeight = 0.02f,
                 costMultiplier = 8.0f,
                 damageBoostCoeff = 2.0f,
-                healthBoostCoeff = 6.0f
+                healthBoostCoeff = 6.0f,
+                eliteType = _eliteIndex
             };
             
             //When it does spawn, there's a fairly strong bias for it to show up on ground enemies
