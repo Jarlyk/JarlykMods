@@ -1,0 +1,54 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>ItemLib</name>
+    </assembly>
+    <members>
+        <member name="F:ItemLib.EliteAffixCard.spawnWeight">
+            <summary>
+            Base spawn weight for this elite type; a value of 1.0f makes it equally likely as 'vanilla' elites
+            </summary>
+        </member>
+        <member name="F:ItemLib.EliteAffixCard.costMultiplier">
+            <summary>
+            Cost multiplier that this elite type applies to the base spawn card; a value of 6.0f is typical for tier 1 elites
+            </summary>
+        </member>
+        <member name="F:ItemLib.EliteAffixCard.damageBoostCoeff">
+            <summary>
+            Damage boost effect for this elite type; a value of 2.0f is typical for tier 1 elites
+            </summary>
+        </member>
+        <member name="F:ItemLib.EliteAffixCard.healthBoostCoeff">
+            <summary>
+            Health boost effect for this elite type; a value of 4.7f is typical for tier 1 elites
+            </summary>
+        </member>
+        <member name="F:ItemLib.EliteAffixCard.isAvailable">
+            <summary>
+            Delegate that evaluates whether this elite type can be spawned currently; for example, checking Run.instance.loopClearCount
+            </summary>
+        </member>
+        <member name="F:ItemLib.EliteAffixCard.spawnCardMultipliers">
+            <summary>
+            Map of multipliers to spawn weight by spawn card name
+            </summary>
+        </member>
+        <member name="F:ItemLib.EliteAffixCard.onSpawned">
+            <summary>
+            Delegate that will be called after this elite affix is spawned; you can use this to do any extra setup, like granting it items
+            </summary>
+        </member>
+        <member name="M:ItemLib.EliteAffixCard.GetSpawnWeight(RoR2.DirectorCard)">
+            <summary>
+            Get the adjusted spawn weight for this card, taking into account
+            both the base weight for this elite and any card-specific multiplier.
+            </summary>
+            <param name="monsterCard">Card to be spawned</param>
+            <returns>Adjusted spawn weight</returns>
+        </member>
+        <member name="M:ItemLib.ItemAttribute.#ctor(ItemLib.ItemAttribute.ItemType)">
+            <param name="type"> Type.Item or Type.Equipment.</param>
+        </member>
+    </members>
+</doc>

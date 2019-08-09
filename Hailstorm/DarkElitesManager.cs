@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Reflection;
 using System.Text;
+using ItemLib;
 using Mono.Cecil;
 using Mono.Cecil.Cil;
 using MonoMod.Cil;
@@ -40,6 +41,26 @@ namespace JarlykMods.Hailstorm
             //Update elite materials
             On.RoR2.CharacterModel.InstanceUpdate += CharacterModelOnInstanceUpdate;
             IL.RoR2.CharacterModel.UpdateOverlays += CharacterModelOnUpdateOverlays;
+
+            //Dark elites spawn much less frequently, but are only slightly stronger/costlier than tier 1s
+            var card = new EliteAffixCard
+            {
+                spawnWeight = 0.02f,
+                costMultiplier = 8.0f,
+                damageBoostCoeff = 2.0f,
+                healthBoostCoeff = 6.0f
+            };
+            
+            //When it does spawn, there's a fairly strong bias for it to show up on ground enemies
+            card.spawnCardMultipliers.Add("cscbeetle", 5);
+            card.spawnCardMultipliers.Add("cscbeetleguard", 5);
+            card.spawnCardMultipliers.Add("cschermitcrab", 5);
+            card.spawnCardMultipliers.Add("csclemurian", 5);
+            card.spawnCardMultipliers.Add("cscbison", 2);
+            card.spawnCardMultipliers.Add("cscgolem", 2);
+
+            //Register the card for spawning if ESO is enabled
+            EliteSpawningOverhaul.Cards.Add(card);
         }
 
         private void CharacterModelOnUpdateOverlays(ILContext il)
