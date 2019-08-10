@@ -11,17 +11,11 @@ namespace JarlykMods.Hailstorm
 
         public AnimatedFloat Distance { get; private set; }
 
-        public void Darken()
+        public void SetDarkTarget(float target)
         {
             enabled = true;
-            _darkStartBase = 3.5f;
-            Distance.MaxSpeed = 50;
-        }
-
-        public void Undarken()
-        {
-            _darkStartBase = 80;
-            Distance.MaxSpeed = 5;
+            _darkStartBase = target;
+            Distance.MaxSpeed = target > Distance.Position ? 20 : 50;
         }
 
         public void Banish()
@@ -61,8 +55,8 @@ namespace JarlykMods.Hailstorm
             Distance.Setpoint = _darkStartBase + 0.7f*x;
             Distance.Update(Time.deltaTime);
 
-            _material.SetFloat("_DarkStart", 0.5f*Distance.Position);
-            _material.SetFloat("_DarkEnd", 4*Distance.Position);
+            _material.SetFloat("_DarkStart", Distance.Position);
+            _material.SetFloat("_DarkEnd", Distance.Position+20);
 
             //If the darkness has been banished, stop the effect
             if (Distance.Position > 119 && Distance.Setpoint > 119)

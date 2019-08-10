@@ -10,9 +10,9 @@ using MonoMod.Cil;
 using R2API.Utils;
 using RoR2;
 using UnityEngine;
+using UnityEngine.Rendering.PostProcessing;
 using UnityEngine.SceneManagement;
 using Object = UnityEngine.Object;
-using Refl = R2API.Utils.Reflection;
 
 namespace JarlykMods.Hailstorm
 {
@@ -80,7 +80,7 @@ namespace JarlykMods.Hailstorm
         private void CharacterModelOnInstanceUpdate(On.RoR2.CharacterModel.orig_InstanceUpdate orig, CharacterModel self)
         {
             orig(self);
-            if (Refl.GetFieldValue<EliteIndex>(self, "myEliteIndex") == _eliteIndex)
+            if (self.GetFieldValue<EliteIndex>("myEliteIndex") == _eliteIndex)
             {
                 int replaced = 0;
                 for (var i=0; i < self.baseRendererInfos.Length; i++)
@@ -99,7 +99,7 @@ namespace JarlykMods.Hailstorm
                             var cloudTex = darkMat.GetTexture(remapTexName) as Texture2D;
                             if (cloudTex != null)
                             {
-                                //Make clouds dark indigo scaling
+                                //Make clouds purple
                                 var darkCloudTex = ReplaceWithRamp(cloudTex, new Vector3(0.3f, 0, 0.51f), 0.5f);
                                 darkMat.SetTexture(remapTexName, darkCloudTex);
                             }
@@ -231,6 +231,7 @@ namespace JarlykMods.Hailstorm
 
             bool canSeeDarkElite = false;
             int darkEliteCount = 0;
+            var minX = 0.5f;
             foreach (var body in CharacterBody.readOnlyInstancesList)
             {
                 if (body.isPlayerControlled || !body.HasBuff(_buffIndex) || body.teamComponent?.teamIndex != TeamIndex.Monster)
@@ -241,6 +242,7 @@ namespace JarlykMods.Hailstorm
                 if (posView.x > 0 && posView.x < 1 && posView.y > 0 && posView.y < 1 && posView.z > 0)
                 {
                     canSeeDarkElite = true;
+                    minX = Math.Min(minX, Math.Abs(posView.x - 0.5f));
                     if (!_darknessSeen)
                     {
                         AkSoundEngine.PostEvent(SoundEvents.PlayLargeBreathing, camera.gameObject);
@@ -255,14 +257,13 @@ namespace JarlykMods.Hailstorm
 
             if (canSeeDarkElite)
             {
-                _darknessEffect.Darken();
+                _darknessEffect.SetDarkTarget(5.0f + 20f*minX);
+            }
+            else if (darkEliteCount > 0)
+            {
+                _darknessEffect.SetDarkTarget(80f);
             }
             else
-            {
-                _darknessEffect.Undarken();
-            }
-
-            if (darkEliteCount == 0)
             {
                 _darknessEffect.Banish();
                 _darknessSeen = false;

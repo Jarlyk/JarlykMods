@@ -3,7 +3,6 @@ using System.Reflection;
 using RoR2;
 using UnityEngine;
 using UnityEngine.Networking;
-using Refl = R2API.Utils.Reflection;
 
 namespace JarlykMods.Hailstorm
 {
@@ -44,7 +43,7 @@ namespace JarlykMods.Hailstorm
                     return;
 
                 //Check what item was supposed to drop from this chest
-                var chestDrop = Refl.GetFieldValue<PickupIndex>(chest, "dropPickup");
+                var chestDrop = chest.GetFieldValue<PickupIndex>("dropPickup");
                 if (chestDrop.itemIndex == ItemIndex.None)
                     return;
 
