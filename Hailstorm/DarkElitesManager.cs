@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using System.Text;
 using ItemLib;
@@ -9,6 +10,8 @@ using MonoMod.Cil;
 using R2API.Utils;
 using RoR2;
 using UnityEngine;
+using UnityEngine.SceneManagement;
+using Object = UnityEngine.Object;
 using Refl = R2API.Utils.Reflection;
 
 namespace JarlykMods.Hailstorm
@@ -19,7 +22,7 @@ namespace JarlykMods.Hailstorm
         public const string BuffName = "Affix_Dark";
         public const string EquipName = "Darkness";
 
-        private readonly Dictionary<Material, Material> _particleMats = new Dictionary<Material, Material>();
+        private readonly Dictionary<string, Material> _darkMats = new Dictionary<string, Material>();
 
         private readonly EliteAffixCard _card;
         private readonly EliteIndex _eliteIndex;
@@ -41,7 +44,7 @@ namespace JarlykMods.Hailstorm
 
             //Update elite materials
             On.RoR2.CharacterModel.InstanceUpdate += CharacterModelOnInstanceUpdate;
-            IL.RoR2.CharacterModel.UpdateOverlays += CharacterModelOnUpdateOverlays;
+            //IL.RoR2.CharacterModel.UpdateOverlays += CharacterModelOnUpdateOverlays;
 
             //Dark elites spawn much less frequently, but are only slightly stronger/costlier than tier 1s
             var card = new EliteAffixCard
@@ -79,18 +82,118 @@ namespace JarlykMods.Hailstorm
             orig(self);
             if (Refl.GetFieldValue<EliteIndex>(self, "myEliteIndex") == _eliteIndex)
             {
-                var poisonMat = Refl.GetFieldValue<Material>(self, "elitePoisonParticleReplacementMaterial");
-                if (poisonMat != null)
+                int replaced = 0;
+                for (var i=0; i < self.baseRendererInfos.Length; i++)
                 {
-                    if (!_particleMats.TryGetValue(poisonMat, out var newMat))
+                    var mat = self.baseRendererInfos[i].defaultMaterial;
+                    if (!_darkMats.TryGetValue(mat.name, out var darkMat))
                     {
-                        newMat = new Material(poisonMat);
-                        newMat.color = Color.black;
-                        _particleMats.Add(poisonMat, newMat);
+                        //We have a special case for Wisp-related textures
+                        //This will also impact any other cloud-based textures, which should be okay
+                        const string remapTexName = "_RemapTex";
+                        if (mat.GetTexturePropertyNames().Contains(remapTexName))
+                        {
+                            darkMat = new Material(mat);
+                            darkMat.SetColor("_TintColor", new Color(6f, 0.1f, 7f, 1.3f));
+                            darkMat.SetColor("_EmissionColor", new Color(0.12f, 0f, 0.1f, 0.1f));
+                            var cloudTex = darkMat.GetTexture(remapTexName) as Texture2D;
+                            if (cloudTex != null)
+                            {
+                                //Make clouds dark indigo scaling
+                                var darkCloudTex = ReplaceWithRamp(cloudTex, new Vector3(0.3f, 0, 0.51f), 0.5f);
+                                darkMat.SetTexture(remapTexName, darkCloudTex);
+                            }
+                        }
+                        else
+                        {
+                            ////darkMat.color = new Color(0.1f, 0.1f, 0.1f);
+                            //var texture = darkMat.mainTexture as Texture2D;
+                            //if (texture != null)
+                            //{
+                            //    //Make base textures just darker overall
+                            //    var darkTex = DarkifyTexture(texture, 0.05f, 0.05f, 0.05f);
+                            //    darkMat.mainTexture = darkTex;
+                            //}
+                            darkMat = HailstormAssets.PureBlack;
+                        }
+                        _darkMats[mat.name] = darkMat;
+                        replaced++;
                     }
-                    Refl.SetFieldValue(self, "particleMaterialOverride", newMat);
+                    self.baseRendererInfos[i].defaultMaterial = darkMat;
+                }
+
+                if (replaced > 0)
+                    Debug.Log($"Dark Elite: {replaced} materials replaced");
+            }
+        }
+
+        private static Texture2D DarkifyTexture(Texture2D texture, float sr, float sg, float sb)
+        {
+            Texture2D darkTex;
+            var tmp = RenderTexture.GetTemporary(texture.width, texture.height, 0,
+                                                 RenderTextureFormat.ARGB32,
+                                                 RenderTextureReadWrite.Linear);
+            try
+            {
+                Graphics.Blit(texture, tmp);
+                var previous = RenderTexture.active;
+                RenderTexture.active = tmp;
+                darkTex = new Texture2D(texture.width, texture.height, TextureFormat.RGBA32, false);
+                darkTex.ReadPixels(new Rect(0, 0, tmp.width, tmp.height), 0, 0);
+
+                var pixels = darkTex.GetPixels();
+                for (var k = 0; k < pixels.Length; k++)
+                {
+                    pixels[k].r *= sr;
+                    pixels[k].g *= sg;
+                    pixels[k].b *= sb;
+                }
+
+                darkTex.SetPixels(pixels);
+                darkTex.Apply();
+                RenderTexture.active = previous;
+            }
+            finally
+            {
+                RenderTexture.ReleaseTemporary(tmp);
+            }
+
+            return darkTex;
+        }
+
+        private static Texture2D ReplaceWithRamp(Texture2D origTex, Vector3 vec, float startGrad)
+        {
+            Texture2D tex = new Texture2D(origTex.width, origTex.height, TextureFormat.RGBA32, false);
+
+            int start = Mathf.CeilToInt(startGrad * 255);
+            int gradLength = tex.width - start;
+            Color32 back = new Color32(0, 0, 0, 0);
+            Color32 temp = new Color32(0, 0, 0, 0);
+            for (int x = 0; x < tex.width; x++)
+            {
+                if (x > start)
+                {
+                    float frac = ((float)x - (float)start) / (float)gradLength;
+                    temp.r = (byte)Mathf.RoundToInt(255 * frac * vec.x);
+                    temp.g = (byte)Mathf.RoundToInt(255 * frac * vec.y);
+                    temp.b = (byte)Mathf.RoundToInt(255 * frac * vec.z);
+                    temp.a = (byte) Mathf.RoundToInt(128*frac);
+                }
+                else
+                {
+                    temp = back;
+                }
+
+                for (int y = 0; y < tex.height; y++)
+                {
+                    tex.SetPixel(x, y, temp);
                 }
             }
+
+            tex.wrapMode = TextureWrapMode.Clamp;
+            tex.Apply();
+
+            return tex;
         }
 
         public void Awake()
@@ -123,7 +226,7 @@ namespace JarlykMods.Hailstorm
         private void CheckUpdate()
         {
             var camera = CameraRigController.readOnlyInstancesList[0]?.sceneCam;
-            if (camera == null)
+            if (camera == null || _darknessEffect == null)
                 return;
 
             bool canSeeDarkElite = false;
@@ -173,12 +276,23 @@ namespace JarlykMods.Hailstorm
             var camera = self.sceneCam;
             if (camera != null)
             {
-                _darknessEffect = camera.gameObject.AddComponent<DarknessEffect>();
-                _darknessEffect.enabled = false;
-                if (camera.depthTextureMode == DepthTextureMode.None)
+                if (_darknessEffect != null)
                 {
-                    camera.depthTextureMode = DepthTextureMode.Depth;
-                    Debug.Log("Camera did not have depth texture enabled; enabling for use with darkness");
+                    Object.Destroy(_darknessEffect);
+                    _darknessEffect = null;
+                }
+
+                //Only create the darkness on actual stages
+                //This should help alleviate an issue that some players encounter with the shader causing problems on bazaar
+                if (SceneInfo.instance?.countsAsStage == true)
+                {
+                    _darknessEffect = camera.gameObject.AddComponent<DarknessEffect>();
+                    _darknessEffect.enabled = false;
+                    if (camera.depthTextureMode == DepthTextureMode.None)
+                    {
+                        camera.depthTextureMode = DepthTextureMode.Depth;
+                        Debug.Log("Camera did not have depth texture enabled; enabling for use with darkness");
+                    }
                 }
             }
         }
