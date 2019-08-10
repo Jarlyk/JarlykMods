@@ -1,14 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Linq;
 using System.Reflection;
-using System.Text;
 using RoR2;
 using UnityEngine;
 using UnityEngine.Networking;
-using Object = UnityEngine.Object;
+using Refl = R2API.Utils.Reflection;
 
-namespace JarlykMods.Raincoat
+namespace JarlykMods.Hailstorm
 {
     public sealed class ChestMimicBehavior : MonoBehaviour
     {
@@ -47,7 +44,7 @@ namespace JarlykMods.Raincoat
                     return;
 
                 //Check what item was supposed to drop from this chest
-                var chestDrop = chest.GetFieldValue<PickupIndex>("dropPickup");
+                var chestDrop = Refl.GetFieldValue<PickupIndex>(chest, "dropPickup");
                 if (chestDrop.itemIndex == ItemIndex.None)
                     return;
 

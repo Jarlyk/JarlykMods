@@ -49,6 +49,7 @@
     </Reference>
     <Reference Include="AssetPlus">
       <HintPath>..\Dependencies\AssetPlus.dll</HintPath>
+      <Private>false</Private>
     </Reference>
     <Reference Include="BepInEx">
       <HintPath>..\Dependencies\BepInEx.dll</HintPath>

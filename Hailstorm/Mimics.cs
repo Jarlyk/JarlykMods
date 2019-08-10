@@ -1,13 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using Mono.Cecil.Cil;
 using MonoMod.Cil;
 using RoR2;
 using UnityEngine;
 
-namespace JarlykMods.Raincoat
+namespace JarlykMods.Hailstorm
 {
     public sealed class Mimics
     {
@@ -44,7 +43,7 @@ namespace JarlykMods.Raincoat
                     _rng = new Xoroshiro128Plus(Run.instance.treasureRng.nextUlong);
                 }
 
-                if (_rng.nextNormalizedFloat < RaincoatConfig.MimicChance.Value)
+                if (_rng.nextNormalizedFloat < HailstormConfig.MimicChance.Value)
                 {
                     Debug.Log("Mimic added");
                     var mimic = ChestMimicBehavior.Build(gameObj);

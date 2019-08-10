@@ -14,7 +14,7 @@ using UnityEngine.Networking;
 
 namespace JarlykMods.Raincoat
 {
-    [BepInPlugin(PluginGuid, "Raincoat", "0.2.0")]
+    [BepInPlugin(PluginGuid, "Raincoat", "0.1.2")]
     [BepInDependency(R2API.R2API.PluginGUID)]
     public class RaincoatPlugin : BaseUnityPlugin
     {
@@ -27,7 +27,6 @@ namespace JarlykMods.Raincoat
         private readonly TeamImprovements _teamImprovements;
         private readonly AllyCardImprovements _allyCardImprovements;
         private readonly BossShopDropper _bossShopDropper;
-        private readonly Mimics _mimics;
         private readonly KeyCode? _dropItemKey;
         private readonly KeyCode? _starterPackKey;
 
@@ -50,9 +49,6 @@ namespace JarlykMods.Raincoat
 
             if (RaincoatConfig.EnableBossShopDropping.Value)
                 _bossShopDropper = new BossShopDropper();
-
-            if (RaincoatConfig.EnableMimics.Value)
-                _mimics = new Mimics();
 
             _dropItemKey = GetKey(RaincoatConfig.DropItemKey);
             if (_dropItemKey == null)

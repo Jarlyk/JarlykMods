@@ -16,9 +16,11 @@ namespace JarlykMods.Hailstorm
         public const string PluginGuid = "com.jarlyk.hailstorm";
 
         private readonly DarkElitesManager _darkElites;
+        private readonly Mimics _mimics;
 
         public HailstormPlugin()
         {
+            HailstormConfig.Init(Config);
             HailstormAssets.Init();
 
             const bool darkElitesEnabled = true;
@@ -26,6 +28,9 @@ namespace JarlykMods.Hailstorm
             {
                 _darkElites = new DarkElitesManager();
             }
+
+            if (HailstormConfig.EnableMimics.Value)
+                _mimics = new Mimics();
         }
 
         private void Awake()

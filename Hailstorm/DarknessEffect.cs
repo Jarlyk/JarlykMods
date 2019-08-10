@@ -7,6 +7,7 @@ namespace JarlykMods.Hailstorm
     {
         private Material _material;
         private float _darkStartBase;
+        private float _breathTimeRef;
 
         public AnimatedFloat Distance { get; private set; }
 
@@ -29,6 +30,11 @@ namespace JarlykMods.Hailstorm
             Distance.MaxSpeed = 50;
         }
 
+        public void SyncBreathingStart()
+        {
+            _breathTimeRef = Time.time;
+        }
+
         private void Awake()
         {
             _material = new Material(HailstormAssets.DarknessShader);
@@ -37,8 +43,9 @@ namespace JarlykMods.Hailstorm
             Distance.MaxSpeed = 50;
             Distance.Setpoint = 80;
             Distance.Position = 80;
+            _breathTimeRef = Time.time;
         }
-
+        
         private void OnRenderImage(RenderTexture source, RenderTexture dest)
         {
             Graphics.Blit(source, dest, _material);
@@ -48,8 +55,8 @@ namespace JarlykMods.Hailstorm
         {
             if (!enabled) return;
 
-            const double period = 2.5;
-            var t = (2*Math.PI)*(Time.time%period)/period;
+            const double period = 5.0;
+            var t = (2*Math.PI)*((Time.time-_breathTimeRef)%period)/period;
             var x = (float)Math.Cos(t);
             Distance.Setpoint = _darkStartBase + 0.7f*x;
             Distance.Update(Time.deltaTime);

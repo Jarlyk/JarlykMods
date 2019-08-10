@@ -41,11 +41,6 @@ namespace JarlykMods.Raincoat
                 "EnableStarterPack",
                 "Whether to enable optional granting of a 'starter pack' of items, to speed up the early game",
                 true);
-            EnableMimics = config.Wrap(
-                "Settings",
-                "EnableMimics",
-                "Whether to enable replacement of chests with Mimics",
-                true);
 
             DropItemKey = config.Wrap(
                 "RecentItemDropper",
@@ -58,12 +53,6 @@ namespace JarlykMods.Raincoat
                 "StarterPackKey",
                 "Key code for granting starter pack to all players in the game",
                 KeyCode.F1.ToString());
-
-            MimicChance = config.Wrap(
-                "Mimics",
-                "MimicChance",
-                "Ratio of chests that will be replaced by Mimics, from 0 to 1",
-                0.1f);
         }
 
         public static ConfigWrapper<bool> EnableRecentItemDropper;
@@ -78,12 +67,8 @@ namespace JarlykMods.Raincoat
 
         public static ConfigWrapper<bool> EnableStarterPack;
 
-        public static ConfigWrapper<bool> EnableMimics;
-
         public static ConfigWrapper<string> DropItemKey;
 
         public static ConfigWrapper<string> StarterPackKey;
-
-        public static ConfigWrapper<float> MimicChance;
     }
 }

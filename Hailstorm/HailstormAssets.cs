@@ -40,9 +40,5 @@ namespace JarlykMods.Hailstorm
         public static Shader DarknessShader { get; private set; }
 
         public static Material BlackRim { get; private set; }
-
-        public static uint CreepyLoopPlay = 1256202815;
-
-        public static uint CreepyLoopStop = 788884573;
     }
 }

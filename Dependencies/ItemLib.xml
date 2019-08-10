@@ -4,6 +4,79 @@
         <name>ItemLib</name>
     </assembly>
     <members>
+        <member name="T:ItemLib.CustomBuff">
+            <summary>
+            Class that defines a custom buff type for use in the game;
+            you may omit the index in the BuffDef, as that will
+            be assigned by ItemLib.
+            </summary>
+        </member>
+        <member name="F:ItemLib.CustomBuff.Name">
+            <summary>
+            Name of the Buff for the purposes of looking up its index
+            </summary>
+        </member>
+        <member name="F:ItemLib.CustomBuff.BuffDef">
+            <summary>
+            Definition of the Buff
+            </summary>
+        </member>
+        <member name="F:ItemLib.CustomBuff.Icon">
+            <summary>
+            Icon that will be displayed when this Buff is active
+            </summary>
+        </member>
+        <member name="T:ItemLib.CustomElite">
+            <summary>
+            Class that defines a custom Elite type for use in the game.
+            All Elites consistent of an Elite definition, a <see cref="T:ItemLib.CustomEquipment"/>
+            and a <see cref="T:ItemLib.CustomBuff"/>.  The equipment is automatically provided to
+            the Elite when it spawns and is configured to passively apply the buff.
+            Note that if Elite Spawning Overhaul is enabled, you'll also want to create a <see cref="T:ItemLib.EliteAffixCard"/>
+            to allow the combat director to spawn your elite type.
+            </summary>
+        </member>
+        <member name="F:ItemLib.CustomElite.Name">
+            <summary>
+            Name of the Elite, for purposes of looking up its index
+            </summary>
+        </member>
+        <member name="F:ItemLib.CustomElite.EliteDef">
+            <summary>
+            Elite definition (you can omit the index references, as those will be filled in automatically by ItemLib)
+            </summary>
+        </member>
+        <member name="F:ItemLib.CustomElite.Equipment">
+            <summary>
+            Custom equipment that the Elite will carry; do note that this is something that may (rarely) drop from the Elite when killed,
+            so players can also end up with this equipment
+            </summary>
+        </member>
+        <member name="F:ItemLib.CustomElite.Buff">
+            <summary>
+            Custom buff that is applied passively by the equipment; note that this can be active on the player
+            if they're using Wake of Vultures or pick up the equipment, so you'll need to decide what impact
+            the elite buff should have on players.
+            </summary>
+        </member>
+        <member name="F:ItemLib.CustomElite.Tier">
+            <summary>
+            Tier for the elite, where 1 is standard elites (Fire, Ice, Lightning) and 2 is currently just Poison (Malachite).
+            If Elite Spawning Overhaul is disabled, it will use this tier to set cost/hp/dmg scaling.  Even if your mod is
+            only intended to work with ESO enabled, this should still be set to a valid number 1-2 for compatibility with
+            the underlying game code.
+            </summary>
+        </member>
+        <member name="T:ItemLib.EliteAffixCard">
+            <summary>
+            Card specifying the spawn probability, cost and power level of a particular elite type.  Costlier elites
+            will tend to only show up later in the game, but may still spawn quite often once the difficulty gets high
+            enough that the CombatDirector has a lot of budget to work with.  You can use <see cref="F:ItemLib.EliteAffixCard.spawnWeight"/> to
+            adjust how frequently the elite type spawns when it can afford it and can individually tweak each elite
+            type's cost/dmg/hp boosts.  For extra fun, consider hooking the onSpawned delegate to add extra power, such
+            as by granting items.  You can also create multiple cards for the same elite type, with different costs/weights.
+            </summary>
+        </member>
         <member name="F:ItemLib.EliteAffixCard.spawnWeight">
             <summary>
             Base spawn weight for this elite type; a value of 1.0f makes it equally likely as 'vanilla' elites
@@ -46,6 +119,24 @@
             </summary>
             <param name="monsterCard">Card to be spawned</param>
             <returns>Adjusted spawn weight</returns>
+        </member>
+        <member name="T:ItemLib.EliteSpawningOverhaul">
+            <summary>
+            Provides a toolset for customizing elite spawning on a per-elite basis; this may be disabled in the ItemLib configuration,
+            so consumers of this class may look at the <see cref="P:ItemLib.EliteSpawningOverhaul.Enabled"/> property to check this.  Cards are automatically created
+            for the vanilla elite types with parameters matching those from the vanilla game.
+            </summary>
+        </member>
+        <member name="P:ItemLib.EliteSpawningOverhaul.Enabled">
+            <summary>
+            Whether ESO is enabled; if false, any Cards will be ignored
+            </summary>
+        </member>
+        <member name="P:ItemLib.EliteSpawningOverhaul.Cards">
+            <summary>
+            The cards used for assigning Elite affixes to spawned enemies; note that you may register multiple cards with the same EliteIndex,
+            which can be useful for creating different 'tiers' of the same elite type, with stat boosts or other customization using the onSpawned delegate.
+            </summary>
         </member>
         <member name="M:ItemLib.ItemAttribute.#ctor(ItemLib.ItemAttribute.ItemType)">
             <param name="type"> Type.Item or Type.Equipment.</param>

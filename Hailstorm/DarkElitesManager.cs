@@ -21,9 +21,10 @@ namespace JarlykMods.Hailstorm
 
         private readonly Dictionary<Material, Material> _particleMats = new Dictionary<Material, Material>();
 
+        private readonly EliteAffixCard _card;
+        private readonly EliteIndex _eliteIndex;
+        private readonly BuffIndex _buffIndex;
         private DarknessEffect _darknessEffect;
-        private EliteIndex _eliteIndex;
-        private BuffIndex _buffIndex;
         private EquipmentIndex _equipIndex;
         private float _lastCheckTime;
         private bool _darknessSeen;
@@ -45,23 +46,16 @@ namespace JarlykMods.Hailstorm
             //Dark elites spawn much less frequently, but are only slightly stronger/costlier than tier 1s
             var card = new EliteAffixCard
             {
-                spawnWeight = 0.02f,
+                spawnWeight = 0.2f,
                 costMultiplier = 8.0f,
                 damageBoostCoeff = 2.0f,
                 healthBoostCoeff = 6.0f,
                 eliteType = _eliteIndex
             };
             
-            //When it does spawn, there's a fairly strong bias for it to show up on ground enemies
-            card.spawnCardMultipliers.Add("cscbeetle", 5);
-            card.spawnCardMultipliers.Add("cscbeetleguard", 5);
-            card.spawnCardMultipliers.Add("cschermitcrab", 5);
-            card.spawnCardMultipliers.Add("csclemurian", 5);
-            card.spawnCardMultipliers.Add("cscbison", 2);
-            card.spawnCardMultipliers.Add("cscgolem", 2);
-
             //Register the card for spawning if ESO is enabled
             EliteSpawningOverhaul.Cards.Add(card);
+            _card = card;
         }
 
         private void CharacterModelOnUpdateOverlays(ILContext il)
@@ -108,17 +102,15 @@ namespace JarlykMods.Hailstorm
         {
             if (Input.GetKeyDown(KeyCode.F4))
             {
-                _darknessEffect.enabled = !_darknessEffect.enabled;
-            }
-
-            if (Input.GetKeyDown(KeyCode.F5))
-            {
-                _darknessEffect.Darken();
-            }
-
-            if (Input.GetKeyDown(KeyCode.F6))
-            {
-                _darknessEffect.Undarken();
+                if (_card.spawnWeight > 10)
+                {
+                    _card.spawnWeight = 0.02f;
+                }
+                else
+                {
+                    _card.spawnWeight = 100.0f;
+                    Debug.Log("Darkness is amplified!");
+                }
             }
 
             if (Time.time - _lastCheckTime > 0.5f)
@@ -148,9 +140,12 @@ namespace JarlykMods.Hailstorm
                     canSeeDarkElite = true;
                     if (!_darknessSeen)
                     {
-                        AkSoundEngine.PostEvent(HailstormAssets.CreepyLoopPlay, body.gameObject);
+                        AkSoundEngine.PostEvent(SoundEvents.PlayLargeBreathing, camera.gameObject);
+                        _darknessEffect.SyncBreathingStart();
                         _darknessSeen = true;
                     }
+
+                    AkSoundEngine.PostEvent(SoundEvents.PlayHorrorAmbiance, body.gameObject);
                     break;
                 }
             }
@@ -168,7 +163,7 @@ namespace JarlykMods.Hailstorm
             {
                 _darknessEffect.Banish();
                 _darknessSeen = false;
-                AkSoundEngine.PostEvent(HailstormAssets.CreepyLoopStop, null);
+                AkSoundEngine.PostEvent(SoundEvents.StopLargeBreathing, null);
             }
         }
 

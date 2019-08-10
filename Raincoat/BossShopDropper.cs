@@ -36,7 +36,6 @@ namespace JarlykMods.Raincoat
                 //Create spawn card for a free green-item shop
                 var spawnCard = Resources.Load<InteractableSpawnCard>("SpawnCards/InteractableSpawnCard/iscTripleShopLarge");
                 var controller = spawnCard.prefab.GetComponent<MultiShopController>();
-                controller.baseCost = 0;
 
                 //Slowly increasing chance of red items, capping at 20%
                 var redChance = Math.Min(0.20f, 0.02f * Run.instance.stageClearCount - 0.10f);
@@ -50,9 +49,12 @@ namespace JarlykMods.Raincoat
                 placementRule.position = teleporterInteraction.transform.position;
                 placementRule.spawnOnTarget = teleporterInteraction.transform;
 
-                //Try to spawn shop
                 var spawnRequest = new DirectorSpawnRequest(spawnCard, placementRule, rng);
+
+                var oldBaseCost = controller.baseCost;
+                controller.baseCost = 0;
                 var spawnedObj = DirectorCore.instance.TrySpawnObject(spawnRequest);
+                controller.baseCost = oldBaseCost;
                 if (spawnedObj != null)
                 {
                     //Replace first terminal with special boss item, if applicable
