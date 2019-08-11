@@ -26,6 +26,7 @@ namespace JarlykMods.Hailstorm
             BlackRim.SetFloat("_RimPower", 6);
             BlackRim.SetColor("_RimColor", new Color32(0, 0, 0, 255));
             PureBlack = bundle.LoadAsset<Material>("Assets/Materials/PureBlack.mat");
+            PurpleCracks = bundle.LoadAsset<Material>("Assets/Materials/PurpleCracks.mat");
 
             using (var bankStream = execAssembly.GetManifestResourceStream("JarlykMods.Hailstorm.Hailstorm.bnk"))
             {
@@ -42,5 +43,7 @@ namespace JarlykMods.Hailstorm
         public static Material BlackRim { get; private set; }
 
         public static Material PureBlack { get; private set; }
+
+        public static Material PurpleCracks { get; private set; }
     }
 }

@@ -114,7 +114,14 @@ namespace JarlykMods.Hailstorm
                             //    var darkTex = DarkifyTexture(texture, 0.05f, 0.05f, 0.05f);
                             //    darkMat.mainTexture = darkTex;
                             //}
-                            darkMat = HailstormAssets.PureBlack;
+                            if (self.name.ToLower().Contains("wisp"))
+                            {
+                                darkMat = HailstormAssets.PureBlack;
+                            }
+                            else
+                            {
+                                darkMat = HailstormAssets.PurpleCracks;
+                            }
                         }
                         _darkMats[mat.name] = darkMat;
                         replaced++;
