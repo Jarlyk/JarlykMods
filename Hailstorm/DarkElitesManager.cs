@@ -24,16 +24,21 @@ namespace JarlykMods.Hailstorm
 
         private readonly Dictionary<string, Material> _darkMats = new Dictionary<string, Material>();
 
+        private readonly Xoroshiro128Plus _rng;
         private readonly EliteAffixCard _card;
         private readonly EliteIndex _eliteIndex;
         private readonly BuffIndex _buffIndex;
+        private readonly EquipmentIndex _equipIndex;
+        private readonly AnimatedFloat _walkerU;
+        private readonly AnimatedFloat _walkerV;
         private DarknessEffect _darknessEffect;
-        private EquipmentIndex _equipIndex;
         private float _lastCheckTime;
         private bool _darknessSeen;
 
         public DarkElitesManager()
         {
+            _rng = new Xoroshiro128Plus((ulong) DateTime.Now.Ticks);
+
             //Custom items should be registered now, so grab their indices
             _eliteIndex = (EliteIndex)ItemLib.ItemLib.GetEliteId(EliteName);
             _buffIndex = (BuffIndex)ItemLib.ItemLib.GetBuffId(BuffName);
@@ -49,8 +54,8 @@ namespace JarlykMods.Hailstorm
             //Dark elites spawn much less frequently, but are only slightly stronger/costlier than tier 1s
             var card = new EliteAffixCard
             {
-                spawnWeight = 0.2f,
-                costMultiplier = 8.0f,
+                spawnWeight = 0.1f,
+                costMultiplier = 10.0f,
                 damageBoostCoeff = 2.0f,
                 healthBoostCoeff = 6.0f,
                 eliteType = _eliteIndex
@@ -59,6 +64,18 @@ namespace JarlykMods.Hailstorm
             //Register the card for spawning if ESO is enabled
             EliteSpawningOverhaul.Cards.Add(card);
             _card = card;
+
+            //Create random walk trackers for dark elite material texture animation
+            _walkerU = new AnimatedFloat
+            {
+                Accel = 0.15f,
+                MaxSpeed = 0.3f
+            };
+            _walkerV = new AnimatedFloat
+            {
+                Accel = 0.15f,
+                MaxSpeed = 0.3f
+            };
         }
 
         private void CharacterModelOnUpdateOverlays(ILContext il)
@@ -223,8 +240,14 @@ namespace JarlykMods.Hailstorm
                 }
             }
 
+            _walkerU.Update(Time.deltaTime);
+            _walkerV.Update(Time.deltaTime);
+            HailstormAssets.PurpleCracks.SetTextureOffset("_MainTex", new Vector2(_walkerU.Position, _walkerV.Position));
+
             if (Time.time - _lastCheckTime > 0.5f)
             {
+                _walkerU.Setpoint = _rng.nextNormalizedFloat - 0.5f;
+                _walkerV.Setpoint = _rng.nextNormalizedFloat - 0.5f;
                 CheckUpdate();
                 _lastCheckTime = Time.time;
             }

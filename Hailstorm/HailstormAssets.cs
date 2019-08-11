@@ -27,6 +27,8 @@ namespace JarlykMods.Hailstorm
             BlackRim.SetColor("_RimColor", new Color32(0, 0, 0, 255));
             PureBlack = bundle.LoadAsset<Material>("Assets/Materials/PureBlack.mat");
             PurpleCracks = bundle.LoadAsset<Material>("Assets/Materials/PurpleCracks.mat");
+            IconBarrierElite = bundle.LoadAsset<Sprite>("Assets/Icons/BarrierEliteIcon.png");
+            IconDarkElite = bundle.LoadAsset<Sprite>("Assets/Icons/DarkEliteIcon.png");
 
             using (var bankStream = execAssembly.GetManifestResourceStream("JarlykMods.Hailstorm.Hailstorm.bnk"))
             {
@@ -45,5 +47,9 @@ namespace JarlykMods.Hailstorm
         public static Material PureBlack { get; private set; }
 
         public static Material PurpleCracks { get; private set; }
+
+        public static Sprite IconBarrierElite { get; private set; }
+
+        public static Sprite IconDarkElite { get; private set; }
     }
 }

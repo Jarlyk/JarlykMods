@@ -17,6 +17,18 @@ namespace JarlykMods.Hailstorm
                 "Whether to enable replacement of chests with Mimics",
                 true);
 
+            EnableDarkElites = config.Wrap(
+                "Settings",
+                "EnableDarkElites",
+                "Whether to enable Dark elites; if you stare into them, your world will go dark",
+                true);
+
+            EnableBarrierElites = config.Wrap(
+                "Settings",
+                "EnableBarrierElites",
+                "Whether to enable Barrier elites; it will be much harder to kill their friends while they're still alive",
+                true);
+
             MimicChance = config.Wrap(
                 "Mimics",
                 "MimicChance",
@@ -25,6 +37,10 @@ namespace JarlykMods.Hailstorm
         }
 
         public static ConfigWrapper<bool> EnableMimics;
+
+        public static ConfigWrapper<bool> EnableDarkElites;
+
+        public static ConfigWrapper<bool> EnableBarrierElites;
 
         public static ConfigWrapper<float> MimicChance;
     }

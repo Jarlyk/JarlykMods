@@ -16,6 +16,7 @@ namespace JarlykMods.Hailstorm
         public const string PluginGuid = "com.jarlyk.hailstorm";
 
         private readonly DarkElitesManager _darkElites;
+        private readonly BarrierElitesManager _barrierElites;
         private readonly Mimics _mimics;
 
         public HailstormPlugin()
@@ -23,11 +24,11 @@ namespace JarlykMods.Hailstorm
             HailstormConfig.Init(Config);
             HailstormAssets.Init();
 
-            const bool darkElitesEnabled = true;
-            if (darkElitesEnabled)
-            {
+            if (HailstormConfig.EnableDarkElites.Value)
                 _darkElites = new DarkElitesManager();
-            }
+
+            if (HailstormConfig.EnableBarrierElites.Value)
+                _barrierElites = new BarrierElitesManager();
 
             if (HailstormConfig.EnableMimics.Value)
                 _mimics = new Mimics();
@@ -36,11 +37,13 @@ namespace JarlykMods.Hailstorm
         private void Awake()
         {
             _darkElites?.Awake();
+            _barrierElites?.Awake();
         }
 
         private void Update()
         {
             _darkElites?.Update();
+            _barrierElites?.Update();
         }
 
         [Item(ItemAttribute.ItemType.Elite)]
@@ -60,7 +63,40 @@ namespace JarlykMods.Hailstorm
                 pickupIconPath = "",
                 nameToken = DarkElitesManager.EquipName,
                 pickupToken = "Darkness",
-                descriptionToken = "",
+                descriptionToken = "Night-bringer",
+                canDrop = false,
+                enigmaCompatible = false
+            };
+            var buffDef = new BuffDef
+            {
+                buffColor = new Color32(255, 255, 255, 255),
+                canStack = false
+            };
+
+            var equip = new CustomEquipment(equipDef, null, null, new ItemDisplayRule[0]);
+            var buff = new CustomBuff(DarkElitesManager.BuffName, buffDef, HailstormAssets.IconDarkElite);
+            var elite = new CustomElite(DarkElitesManager.EliteName, eliteDef, equip, buff, 1);
+            return elite;
+        }
+
+        [Item(ItemAttribute.ItemType.Elite)]
+        public static CustomElite BuildBarrierElite()
+        {
+            HailstormAssets.Init();
+
+            var eliteDef = new EliteDef
+            {
+                modifierToken = BarrierElitesManager.EliteName,
+                color = new Color32(162, 179, 241, 255)
+            };
+            var equipDef = new EquipmentDef
+            {
+                cooldown = 10f,
+                pickupModelPath = "",
+                pickupIconPath = "",
+                nameToken = BarrierElitesManager.EquipName,
+                pickupToken = "Shield-Bearer",
+                descriptionToken = "Shield-Bearer",
                 canDrop = false,
                 enigmaCompatible = false
             };
@@ -71,8 +107,8 @@ namespace JarlykMods.Hailstorm
             };
 
             var equip = new CustomEquipment(equipDef, null, null, new ItemDisplayRule[0]);
-            var buff = new CustomBuff(DarkElitesManager.BuffName, buffDef, null);
-            var elite = new CustomElite(DarkElitesManager.EliteName, eliteDef, equip, buff, 1);
+            var buff = new CustomBuff(BarrierElitesManager.BuffName, buffDef, HailstormAssets.IconBarrierElite);
+            var elite = new CustomElite(BarrierElitesManager.EliteName, eliteDef, equip, buff, 1);
             return elite;
         }
     }
