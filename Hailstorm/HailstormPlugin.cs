@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 using BepInEx;
+using EliteSpawningOverhaul;
 using ItemLib;
 using RoR2;
 using UnityEngine;
@@ -10,6 +11,7 @@ namespace JarlykMods.Hailstorm
 {
     [BepInPlugin(PluginGuid, "Hailstorm", "0.1.0")]
     [BepInDependency(R2API.R2API.PluginGUID)]
+    [BepInDependency(EsoPlugin.PluginGuid)]
     [BepInDependency(ItemLibPlugin.ModGuid)]
     public sealed class HailstormPlugin : BaseUnityPlugin
     {

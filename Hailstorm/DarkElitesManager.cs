@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Text;
+using EliteSpawningOverhaul;
 using ItemLib;
 using Mono.Cecil;
 using Mono.Cecil.Cil;
@@ -62,19 +63,19 @@ namespace JarlykMods.Hailstorm
             };
             
             //Register the card for spawning if ESO is enabled
-            EliteSpawningOverhaul.Cards.Add(card);
+            EsoLib.Cards.Add(card);
             _card = card;
 
             //Create random walk trackers for dark elite material texture animation
             _walkerU = new AnimatedFloat
             {
-                Accel = 0.15f,
-                MaxSpeed = 0.3f
+                Accel = 0.3f,
+                MaxSpeed = 0.6f
             };
             _walkerV = new AnimatedFloat
             {
-                Accel = 0.15f,
-                MaxSpeed = 0.3f
+                Accel = 0.3f,
+                MaxSpeed = 0.6f
             };
         }
 

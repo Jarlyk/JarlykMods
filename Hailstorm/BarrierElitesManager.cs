@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using EliteSpawningOverhaul;
 using ItemLib;
 using RoR2;
 using UnityEngine;
@@ -39,7 +40,7 @@ namespace JarlykMods.Hailstorm
             };
 
             //Register the card for spawning if ESO is enabled
-            EliteSpawningOverhaul.Cards.Add(card);
+            EsoLib.Cards.Add(card);
             _card = card;
         }
 

@@ -40,7 +40,7 @@ This mod is released under the standard MIT license, which is a permissive licen
 
 ### Changelog
 
-0.1.1 | 2019-08-09
+0.1.2 | 2019-08-09
 - Fixed issue where green shops would be permanently free when boss shop dropping was enabled
 
 0.1.1 | 2019-07-31
