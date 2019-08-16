@@ -1,7 +1,7 @@
 [//]: # ( Elite Spawning Overhaul )
 
 # EliteSpawningOverhaul
-The current system for spawning elites in Risk of Rain 2 is fairly limiting for modders, as you can only specify hp/dmg boosts on a per-tier basis and have no way to adjust spawning probabilities.  This mod overhauls the elite spawning logic to provide finer-grained control.  This mod doesn't do anything by itself, but may be used as a dependency by mods that work with elites.
+The current system for spawning elites in Risk of Rain 2 is fairly limiting for modders, as you can only specify hp/dmg boosts on a per-tier basis and have no way to adjust spawning probabilities.  This mod overhauls the elite spawning logic to provide finer-grained control.  This mod doesn't do much by itself, but may be used as a dependency by mods that work with elites.
 
 ### Elite Affix Cards
 Elites are made eligible for spawning by creating an EliteAffixCard and adding it to the Eso.Cards list.  This list is pre-populated with cards for the vanilla elites.
