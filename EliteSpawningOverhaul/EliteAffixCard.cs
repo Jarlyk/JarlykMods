@@ -42,11 +42,6 @@ namespace EliteSpawningOverhaul
         public Func<bool> isAvailable = () => true;
 
         /// <summary>
-        /// Map of multipliers to spawn weight by spawn card name
-        /// </summary>
-        public Dictionary<string, float> spawnCardMultipliers = new Dictionary<string, float>();
-
-        /// <summary>
         /// Delegate that will be called after this elite affix is spawned; you can use this to do any extra setup, like granting it items
         /// </summary>
         public Action<CharacterMaster> onSpawned = null;
@@ -59,13 +54,12 @@ namespace EliteSpawningOverhaul
         /// <returns>Adjusted spawn weight</returns>
         public float GetSpawnWeight(DirectorCard monsterCard)
         {
-            if (!spawnCardMultipliers.TryGetValue(monsterCard.spawnCard.name, out var multiplier))
-                multiplier = 1;
+            //TODO: Integrate with Rein's DirectorCard lib once it's released
 
             //Note here that we scale by cost (to favor more expensive elites, when affordable)
             //We also square this, to better approximate the vanilla game's strong favoring of greater cost via tiers
-            var s = multiplier*costMultiplier;
-            return s*s*spawnWeight;
+            var s = spawnWeight*costMultiplier;
+            return s*s;
         }
     }
 }

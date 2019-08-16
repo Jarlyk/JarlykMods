@@ -13,12 +13,16 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="icon.png" />
     <None Remove="License.txt" />
     <None Remove="manifest.json" />
     <None Remove="README.md" />
   </ItemGroup>
 
   <ItemGroup>
+    <Content Include="icon.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="License.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
