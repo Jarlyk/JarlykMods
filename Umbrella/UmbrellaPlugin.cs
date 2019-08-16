@@ -1,28 +1,12 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
-using System.Xml.Schema;
-using BepInEx;
-using BepInEx.Configuration;
-using EntityStates;
+﻿using BepInEx;
 using ItemLib;
 using RoR2;
 using UnityEngine;
-using MiniRpcLib;
-using MiniRpcLib.Action;
-using Mono.Cecil.Cil;
-using MonoMod.Cil;
-using RoR2.CharacterAI;
-using RoR2.Projectile;
 using UnityEngine.Networking;
-using UnityEngine.Playables;
-using UnityEngine.SceneManagement;
 
 // ReSharper disable UnusedMember.Local
 
-namespace TestModJarlyk
+namespace JarlykMods.Umbrella
 {
     [BepInPlugin(PluginGuid, "Umbrella", "0.1.0")]
     [BepInDependency(R2API.R2API.PluginGUID)]
@@ -31,33 +15,20 @@ namespace TestModJarlyk
     {
         public const string PluginGuid = "com.jarlyk.umbrella";
 
-        private readonly EquipmentIndex _idxBulletTimer;
-        private float _bulletTimerStartTime;
+        private readonly BulletTimer _bulletTimer;
 
         public UmbrellaPlugin()
         {
-            //TODO: Filter out allied projectiles
+            _bulletTimer = new BulletTimer();
 
-            _idxBulletTimer = (EquipmentIndex)ItemLib.ItemLib.GetEquipmentId(EquipNames.BulletTimer);
             On.RoR2.EquipmentSlot.PerformEquipmentAction += EquipmentSlotOnPerformEquipmentAction;
-            IL.RoR2.Projectile.ProjectileManager.FireProjectileServer += ProjectileManagerOnFireProjectileServer;
-            _bulletTimerStartTime = float.NaN;
-        }
-
-        private void ProjectileManagerOnFireProjectileServer(ILContext il)
-        {
-            var cursor = new ILCursor(il);
-            cursor.GotoNext(MoveType.After, x => x.MatchCall("RoR2.Projectile.ProjectileManager","InitializeProjectile"));
-            cursor.Emit(OpCodes.Ldloc_0);
-            cursor.Emit(OpCodes.Ldarg_1);
-            cursor.EmitDelegate<Action<GameObject, FireProjectileInfo>>(AfterInitializeProjectile);
         }
 
         private bool EquipmentSlotOnPerformEquipmentAction(On.RoR2.EquipmentSlot.orig_PerformEquipmentAction orig, EquipmentSlot self, EquipmentIndex index)
         {
-            if (index == _idxBulletTimer)
+            if (index == _bulletTimer.EquipIndex)
             {
-                _bulletTimerStartTime = Time.time;
+                _bulletTimer.PerformAction();
                 return true;
             }
 
@@ -67,34 +38,7 @@ namespace TestModJarlyk
         [Item(ItemAttribute.ItemType.Equipment)]
         public static CustomEquipment EquipmentBulletTimer()
         {
-            var stream = Assembly.GetExecutingAssembly().GetManifestResourceStream("JarlykMods.Umbrella.umbrella");
-            var bundle = AssetBundle.LoadFromStream(stream);
-
-            var prefab = bundle.LoadAsset<GameObject>("Assets/Import/bullet_timer/BulletTimer.prefab");
-            var icon = bundle.LoadAsset<UnityEngine.Object>("Assets/Import/bullet_timer/BulletTimer.png");
-
-            var equipDef = new EquipmentDef
-            {
-                cooldown = 40f,
-                pickupModelPath = "",
-                pickupIconPath = "",
-                nameToken = EquipNames.BulletTimer,
-                descriptionToken = "Bullet Timer",
-                canDrop = true,
-                enigmaCompatible = true
-            };
-
-            var rule = new ItemDisplayRule
-            {
-                ruleType = ItemDisplayRuleType.ParentedPrefab,
-                followerPrefab = prefab,
-                childName = "Chest",
-                localScale = new Vector3(0.15f, 0.15f, 0.15f),
-                localAngles = new Vector3(0f, 180f, 0f),
-                localPos = new Vector3(-0.35f, -0.1f, 0f)
-            };
-
-            return new CustomEquipment(equipDef, prefab, icon, new[] {rule});
+            return BulletTimer.Build();
         }
 
         public void Update()
@@ -110,33 +54,10 @@ namespace TestModJarlyk
                 }
 
                 var charTransform = body.transform;
-                var pickupIndex = new PickupIndex(_idxBulletTimer);
+                var pickupIndex = new PickupIndex(_bulletTimer.EquipIndex);
                 PickupDropletController.CreatePickupDroplet(pickupIndex,
                                                             charTransform.position, Vector3.up * 20f + charTransform.forward * 10f);
             }
-        }
-
-        private void AfterInitializeProjectile(GameObject controllerObj, FireProjectileInfo info)
-        {
-            if (float.IsNaN(_bulletTimerStartTime) || (Time.time - _bulletTimerStartTime) > 8f)
-                return;
-
-            //Allied projectiles are not slowed
-            var teamFilter = controllerObj.GetComponent<TeamFilter>();
-            if (teamFilter?.teamIndex == TeamIndex.Player)
-                return;
-
-            var simple = controllerObj.GetComponent<ProjectileSimple>();
-            if (simple != null)
-            {
-                simple.velocity *= 0.1f;
-                simple.lifetime *= 10f;
-            }
-        }
-
-        public static class EquipNames
-        {
-            public const string BulletTimer = "BulletTimer";
         }
     }
 }
