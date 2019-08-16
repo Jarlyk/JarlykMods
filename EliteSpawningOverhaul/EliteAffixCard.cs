@@ -17,7 +17,7 @@ namespace EliteSpawningOverhaul
         public EliteIndex eliteType;
 
         /// <summary>
-        /// Base spawn weight for this elite type; a value of 1.0f makes it equally likely as 'vanilla' elites
+        /// Base spawn weight for this elite type; a value of 1.0f makes it equally likely as 'vanilla' elites at this cost
         /// </summary>
         public float spawnWeight = 1.0f;
 
@@ -53,7 +53,7 @@ namespace EliteSpawningOverhaul
 
         /// <summary>
         /// Get the adjusted spawn weight for this card, taking into account
-        /// both the base weight for this elite and any card-specific multiplier.
+        /// both the base weight and cost for this elite, as well as any card-specific multiplier.
         /// </summary>
         /// <param name="monsterCard">Card to be spawned</param>
         /// <returns>Adjusted spawn weight</returns>
@@ -62,7 +62,10 @@ namespace EliteSpawningOverhaul
             if (!spawnCardMultipliers.TryGetValue(monsterCard.spawnCard.name, out var multiplier))
                 multiplier = 1;
 
-            return multiplier*spawnWeight;
+            //Note here that we scale by cost (to favor more expensive elites, when affordable)
+            //We also square this, to better approximate the vanilla game's strong favoring of greater cost via tiers
+            var s = multiplier*costMultiplier;
+            return s*s*spawnWeight;
         }
     }
 }

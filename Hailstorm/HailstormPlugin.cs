@@ -20,6 +20,7 @@ namespace JarlykMods.Hailstorm
         private readonly DarkElitesManager _darkElites;
         private readonly BarrierElitesManager _barrierElites;
         private readonly Mimics _mimics;
+        private readonly Xoroshiro128Plus _rng;
 
         public HailstormPlugin()
         {
@@ -34,6 +35,8 @@ namespace JarlykMods.Hailstorm
 
             if (HailstormConfig.EnableMimics.Value)
                 _mimics = new Mimics();
+
+            _rng = new Xoroshiro128Plus((ulong) DateTime.Now.Ticks);
         }
 
         private void Awake()
@@ -42,76 +45,51 @@ namespace JarlykMods.Hailstorm
             _barrierElites?.Awake();
         }
 
+        public void Start()
+        {
+            _barrierElites?.Start();
+        }
+
         private void Update()
         {
             _darkElites?.Update();
             _barrierElites?.Update();
+
+            if (Input.GetKeyDown(KeyCode.F5) && _barrierElites != null)
+            {
+                var user = LocalUserManager.GetFirstLocalUser();
+                var body = user.cachedBody;
+                if (body?.master == null)
+                {
+                    Debug.LogError("Cannot find local user body!");
+                    return;
+                }
+
+                var beetle = Resources.Load<CharacterSpawnCard>("SpawnCards/CharacterSpawnCards/cscBeetle");
+                var placement = new DirectorPlacementRule
+                {
+                    spawnOnTarget = body.transform,
+                    maxDistance = 40,
+                    placementMode = DirectorPlacementRule.PlacementMode.Approximate,
+                    preventOverhead = false
+                };
+
+                EsoLib.SpawnElite(beetle, _barrierElites.Card, placement, _rng);
+            }
         }
 
         [Item(ItemAttribute.ItemType.Elite)]
         public static CustomElite BuildDarkElite()
         {
-            HailstormAssets.Init();
-
-            var eliteDef = new EliteDef
-            {
-                modifierToken = DarkElitesManager.EliteName,
-                color = new Color32(0, 0, 0, 255),
-            };
-            var equipDef = new EquipmentDef
-            {
-                cooldown = 10f,
-                pickupModelPath = "",
-                pickupIconPath = "",
-                nameToken = DarkElitesManager.EquipName,
-                pickupToken = "Darkness",
-                descriptionToken = "Night-bringer",
-                canDrop = false,
-                enigmaCompatible = false
-            };
-            var buffDef = new BuffDef
-            {
-                buffColor = new Color32(255, 255, 255, 255),
-                canStack = false
-            };
-
-            var equip = new CustomEquipment(equipDef, null, null, new ItemDisplayRule[0]);
-            var buff = new CustomBuff(DarkElitesManager.BuffName, buffDef, HailstormAssets.IconDarkElite);
-            var elite = new CustomElite(DarkElitesManager.EliteName, eliteDef, equip, buff, 1);
-            return elite;
+            //NOTE: We always need to build it, as we can't actually load the Config yet
+            //This will reserve the slot, but it will still effectively be disabled if we never make it eligible for spawning with ESO
+            return DarkElitesManager.Build();
         }
 
         [Item(ItemAttribute.ItemType.Elite)]
         public static CustomElite BuildBarrierElite()
         {
-            HailstormAssets.Init();
-
-            var eliteDef = new EliteDef
-            {
-                modifierToken = BarrierElitesManager.EliteName,
-                color = new Color32(162, 179, 241, 255)
-            };
-            var equipDef = new EquipmentDef
-            {
-                cooldown = 10f,
-                pickupModelPath = "",
-                pickupIconPath = "",
-                nameToken = BarrierElitesManager.EquipName,
-                pickupToken = "Shield-Bearer",
-                descriptionToken = "Shield-Bearer",
-                canDrop = false,
-                enigmaCompatible = false
-            };
-            var buffDef = new BuffDef
-            {
-                buffColor = eliteDef.color,
-                canStack = false
-            };
-
-            var equip = new CustomEquipment(equipDef, null, null, new ItemDisplayRule[0]);
-            var buff = new CustomBuff(BarrierElitesManager.BuffName, buffDef, HailstormAssets.IconBarrierElite);
-            var elite = new CustomElite(BarrierElitesManager.EliteName, eliteDef, equip, buff, 1);
-            return elite;
+            return BarrierElitesManager.Build();
         }
     }
 }

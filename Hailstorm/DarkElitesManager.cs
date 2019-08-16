@@ -79,13 +79,45 @@ namespace JarlykMods.Hailstorm
             };
         }
 
+        public static CustomElite Build()
+        {
+            HailstormAssets.Init();
+
+            var eliteDef = new EliteDef
+            {
+                modifierToken = EliteName,
+                color = new Color32(0, 0, 0, 255),
+            };
+            var equipDef = new EquipmentDef
+            {
+                cooldown = 10f,
+                pickupModelPath = "",
+                pickupIconPath = "",
+                nameToken = EquipName,
+                pickupToken = "Darkness",
+                descriptionToken = "Night-bringer",
+                canDrop = false,
+                enigmaCompatible = false
+            };
+            var buffDef = new BuffDef
+            {
+                buffColor = new Color32(255, 255, 255, 255),
+                canStack = false
+            };
+
+            var equip = new CustomEquipment(equipDef, null, null, new ItemDisplayRule[0]);
+            var buff = new CustomBuff(BuffName, buffDef, HailstormAssets.IconDarkElite);
+            var elite = new CustomElite(EliteName, eliteDef, equip, buff, 1);
+            return elite;
+        }
+
         private void CharacterModelOnUpdateOverlays(ILContext il)
         {
             var c = new ILCursor(il);
             c.GotoNext(i => i.MatchLdarg(0),
                        i => i.MatchLdfld("RoR2.CharacterModel", "wasPreviouslyClayGooed"));
             c.Emit(OpCodes.Ldarg_0);
-            c.EmitDelegate<Func<Material>>(() => HailstormAssets.BlackRim);
+            c.EmitDelegate<Func<Material>>(() => HailstormAssets.PureBlack);
             c.Emit(OpCodes.Ldarg_0);
             c.Emit(OpCodes.Ldfld, typeof(CharacterModel).GetField("myEliteIndex", BindingFlags.Instance | BindingFlags.NonPublic));
             c.Emit(OpCodes.Ldc_I4, (int)_eliteIndex);

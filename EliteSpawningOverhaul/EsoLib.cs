@@ -5,6 +5,7 @@ using Mono.Cecil.Cil;
 using MonoMod.Cil;
 using R2API.Utils;
 using RoR2;
+using UnityEngine;
 
 namespace EliteSpawningOverhaul
 {
@@ -66,6 +67,45 @@ namespace EliteSpawningOverhaul
         /// which can be useful for creating different 'tiers' of the same elite type, with stat boosts or other customization using the onSpawned delegate.
         /// </summary>
         public static List<EliteAffixCard> Cards { get; } = new List<EliteAffixCard>();
+
+        /// <summary>
+        /// Spawn a particular elite type with the specified monster type at the specified location.  This will
+        /// apply appropriate HP and Dmg scaling per the specifications on the affix card, as well as calling the affix onSpawned.
+        /// This is primarily intended for testing, but could also be used to easily spawn elites for other purposes.
+        /// Note that this does not set XP and Gold rewards, as it does not have access to the cost function; you will need to
+        /// add those yourself if you want these.
+        /// </summary>
+        /// <param name="spawnCard">Card describing the type of monster to spawn</param>
+        /// <param name="affixCard">Card describing the type of elite to spawn</param>
+        /// <param name="placement">How to place the elite in the scene</param>
+        /// <param name="rng">Random number generator to use for placement</param>
+        /// <returns></returns>
+        public static CharacterMaster SpawnElite(CharacterSpawnCard spawnCard, EliteAffixCard affixCard, DirectorPlacementRule placement, Xoroshiro128Plus rng)
+        {
+            var spawnRequest = new DirectorSpawnRequest(spawnCard, placement, rng)
+            {
+                teamIndexOverride = TeamIndex.Monster,
+                ignoreTeamMemberLimit = true
+            };
+            var spawned = DirectorCore.instance.TrySpawnObject(spawnRequest);
+            if (spawned == null)
+                return null;
+
+            //Elites are boosted
+            var healthBoost = affixCard.healthBoostCoeff;
+            var damageBoost = affixCard.damageBoostCoeff;
+
+            //Configure as the chosen elite
+            var spawnedMaster = spawned.GetComponent<CharacterMaster>();
+            spawnedMaster.inventory.GiveItem(ItemIndex.BoostHp, Mathf.RoundToInt((float)((healthBoost - 1.0) * 10.0)));
+            spawnedMaster.inventory.GiveItem(ItemIndex.BoostDamage, Mathf.RoundToInt((float)((damageBoost - 1.0) * 10.0)));
+            var eliteDef = EliteCatalog.GetEliteDef(affixCard.eliteType);
+            if (eliteDef != null)
+                spawnedMaster.inventory.SetEquipmentIndex(eliteDef.eliteEquipmentIndex);
+
+            affixCard.onSpawned?.Invoke(spawnedMaster);
+            return spawnedMaster;
+        }
 
         private static readonly Dictionary<CombatDirector, EliteAffixCard> _chosenAffix = new Dictionary<CombatDirector, EliteAffixCard>();
 
