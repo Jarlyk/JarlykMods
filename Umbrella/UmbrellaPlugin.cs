@@ -16,12 +16,19 @@ namespace JarlykMods.Umbrella
         public const string PluginGuid = "com.jarlyk.umbrella";
 
         private readonly BulletTimer _bulletTimer;
+        private readonly JestersDice _jestersDice;
 
         public UmbrellaPlugin()
         {
             _bulletTimer = new BulletTimer();
+            _jestersDice = new JestersDice();
 
             On.RoR2.EquipmentSlot.PerformEquipmentAction += EquipmentSlotOnPerformEquipmentAction;
+        }
+
+        private void Awake()
+        {
+            _jestersDice?.Awake();
         }
 
         private bool EquipmentSlotOnPerformEquipmentAction(On.RoR2.EquipmentSlot.orig_PerformEquipmentAction orig, EquipmentSlot self, EquipmentIndex index)
@@ -41,6 +48,12 @@ namespace JarlykMods.Umbrella
             return BulletTimer.Build();
         }
 
+        [Item(ItemAttribute.ItemType.Equipment)]
+        public static CustomEquipment EquipmentJestersDice()
+        {
+            return JestersDice.Build();
+        }
+
         public void Update()
         {
             if (Input.GetKeyDown(KeyCode.F3) && NetworkServer.active)
@@ -54,7 +67,7 @@ namespace JarlykMods.Umbrella
                 }
 
                 var charTransform = body.transform;
-                var pickupIndex = new PickupIndex(_bulletTimer.EquipIndex);
+                var pickupIndex = new PickupIndex(_jestersDice.EquipIndex);
                 PickupDropletController.CreatePickupDroplet(pickupIndex,
                                                             charTransform.position, Vector3.up * 20f + charTransform.forward * 10f);
             }
