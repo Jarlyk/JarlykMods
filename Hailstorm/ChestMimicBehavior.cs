@@ -1,5 +1,6 @@
 ﻿using System.Linq;
 using System.Reflection;
+using EliteSpawningOverhaul;
 using RoR2;
 using UnityEngine;
 using UnityEngine.Networking;
@@ -67,14 +68,18 @@ namespace JarlykMods.Hailstorm
                 for (int index = 0; index < monsterSelection.Count; ++index)
                 {
                     DirectorCard directorCard = monsterSelection.choices[index].value;
-                    float num = (float)((double)directorCard.cost * (double)CombatDirector.maximumNumberToSpawnBeforeSkipping * ((directorCard.spawnCard as CharacterSpawnCard).noElites ? 1.0 : (double)eliteCostMultiplier));
-                    if (directorCard.CardIsValid() && (double)directorCard.cost <= (double)this.monsterCredit && (double)num / 2.0 > (double)this.monsterCredit)
+                    var noElites = ((CharacterSpawnCard) directorCard.spawnCard).noElites;
+                    float highestCost = (float) (directorCard.cost*(noElites ? 1.0 : eliteCostMultiplier));
+                    if (directorCard.CardIsValid() && directorCard.cost <= monsterCredit && highestCost/2.0 > monsterCredit)
                         weightedSelection.AddChoice(directorCard, monsterSelection.choices[index].weight);
                 }
 
                 if (weightedSelection.Count != 0)
                 {
                     var chosenDirectorCard = weightedSelection.Evaluate(_rng.nextNormalizedFloat);
+
+                    var eliteAffix = EsoLib.ChooseEliteAffix(chosenDirectorCard, monsterCredit, _rng);
+
                     var placement = new DirectorPlacementRule
                     {
                         placementMode = DirectorPlacementRule.PlacementMode.Approximate,
@@ -83,12 +88,8 @@ namespace JarlykMods.Hailstorm
                         maxDistance = 50,
                         spawnOnTarget = transform
                     };
-                    var spawnRequest = new DirectorSpawnRequest(chosenDirectorCard.spawnCard, placement, _rng)
-                    {
-                        teamIndexOverride = TeamIndex.Monster,
-                        ignoreTeamMemberLimit = true
-                    };
-                    var spawned = DirectorCore.instance.TrySpawnObject(spawnRequest);
+
+                    var spawned = EsoLib.TrySpawnElite((CharacterSpawnCard)chosenDirectorCard.spawnCard, eliteAffix, placement, _rng);
                     if (spawned == null)
                     {
                         Debug.LogWarning("Failed to spawn monster for Mimic!");
@@ -98,35 +99,12 @@ namespace JarlykMods.Hailstorm
                         return;
                     }
 
-                    //Elites are boosted based on hard-coded parameters in CombatDirector
-                    var tiers = (CombatDirector.EliteTierDef[])typeof(CombatDirector).GetField("eliteTiers", BindingFlags.NonPublic | BindingFlags.Static).GetValue(null);
-
-                    var eliteTypes = tiers.Where(t => t.isAvailable())
-                                      .SelectMany(t => t.eliteTypes)
-                                      .Where(e => e != EliteIndex.None && e != EliteIndex.Gold)
-                                      .ToList();
-                    var eliteType = _rng.NextElementUniform(eliteTypes);
-                    var tier = tiers.First(t => t.eliteTypes.Contains(eliteType));
-                    var healthBoost = tier.healthBoostCoefficient;
-                    var damageBoost = tier.damageBoostCoefficient;
-
-                    //Configure as the chosen elite
-                    var spawnedMaster = spawned.GetComponent<CharacterMaster>();
-                    spawnedMaster.inventory.GiveItem(ItemIndex.BoostHp, Mathf.RoundToInt((float)((healthBoost - 1.0) * 10.0)));
-                    spawnedMaster.inventory.GiveItem(ItemIndex.BoostDamage, Mathf.RoundToInt((float)((damageBoost - 1.0) * 10.0)));
-                    var eliteDef = EliteCatalog.GetEliteDef(eliteType);
-                    if (eliteDef != null)
-                        spawnedMaster.inventory.SetEquipmentIndex(eliteDef.eliteEquipmentIndex);
-
                     //This monster carries the item that would've been in the chest and only gives xp, no gold
+                    var spawnedMaster = spawned.GetComponent<CharacterMaster>();
                     spawnedMaster.inventory.GiveItem(chestDrop.itemIndex);
                     BoundReward = spawnedMaster.GetBody().GetComponent<DeathRewards>();
                     BoundReward.expReward = (uint)(chosenDirectorCard.cost*0.2*Run.instance.compensatedDifficultyCoefficient);
                     BoundItem = chestDrop.itemIndex;
-
-                    //Bypass spawning animation by skipping out of the spawning state
-                    foreach (var stateMachine in body.GetComponents<EntityStateMachine>())
-                        stateMachine.initialStateType = stateMachine.mainStateType;
                 }
             }
         }

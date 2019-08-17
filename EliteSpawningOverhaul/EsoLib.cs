@@ -16,6 +16,8 @@ namespace EliteSpawningOverhaul
     /// </summary>
     public static class EsoLib
     {
+        private static readonly Dictionary<CombatDirector, EliteAffixCard> ChosenAffix = new Dictionary<CombatDirector, EliteAffixCard>();
+
         internal static void Init()
         {
             On.RoR2.CombatDirector.PrepareNewMonsterWave += CombatDirectorOnPrepareNewMonsterWave;
@@ -76,11 +78,11 @@ namespace EliteSpawningOverhaul
         /// add those yourself if you want these.
         /// </summary>
         /// <param name="spawnCard">Card describing the type of monster to spawn</param>
-        /// <param name="affixCard">Card describing the type of elite to spawn</param>
+        /// <param name="affixCard">Card describing the type of elite to spawn; may pass null to spawn a non-elite</param>
         /// <param name="placement">How to place the elite in the scene</param>
         /// <param name="rng">Random number generator to use for placement</param>
         /// <returns></returns>
-        public static CharacterMaster SpawnElite(CharacterSpawnCard spawnCard, EliteAffixCard affixCard, DirectorPlacementRule placement, Xoroshiro128Plus rng)
+        public static CharacterMaster TrySpawnElite(CharacterSpawnCard spawnCard, EliteAffixCard affixCard, DirectorPlacementRule placement, Xoroshiro128Plus rng)
         {
             var spawnRequest = new DirectorSpawnRequest(spawnCard, placement, rng)
             {
@@ -91,30 +93,61 @@ namespace EliteSpawningOverhaul
             if (spawned == null)
                 return null;
 
-            //Elites are boosted
-            var healthBoost = affixCard.healthBoostCoeff;
-            var damageBoost = affixCard.damageBoostCoeff;
 
             //Configure as the chosen elite
             var spawnedMaster = spawned.GetComponent<CharacterMaster>();
-            spawnedMaster.inventory.GiveItem(ItemIndex.BoostHp, Mathf.RoundToInt((float)((healthBoost - 1.0) * 10.0)));
-            spawnedMaster.inventory.GiveItem(ItemIndex.BoostDamage, Mathf.RoundToInt((float)((damageBoost - 1.0) * 10.0)));
-            var eliteDef = EliteCatalog.GetEliteDef(affixCard.eliteType);
-            if (eliteDef != null)
-                spawnedMaster.inventory.SetEquipmentIndex(eliteDef.eliteEquipmentIndex);
+            if (affixCard != null)
+            {
+                //Elites are boosted
+                var healthBoost = affixCard.healthBoostCoeff;
+                var damageBoost = affixCard.damageBoostCoeff;
 
-            affixCard.onSpawned?.Invoke(spawnedMaster);
+                spawnedMaster.inventory.GiveItem(ItemIndex.BoostHp, Mathf.RoundToInt((float)((healthBoost - 1.0) * 10.0)));
+                spawnedMaster.inventory.GiveItem(ItemIndex.BoostDamage, Mathf.RoundToInt((float)((damageBoost - 1.0) * 10.0)));
+                var eliteDef = EliteCatalog.GetEliteDef(affixCard.eliteType);
+                if (eliteDef != null)
+                    spawnedMaster.inventory.SetEquipmentIndex(eliteDef.eliteEquipmentIndex);
+
+                affixCard.onSpawned?.Invoke(spawnedMaster);
+            }
             return spawnedMaster;
         }
 
-        private static readonly Dictionary<CombatDirector, EliteAffixCard> _chosenAffix = new Dictionary<CombatDirector, EliteAffixCard>();
+        public static EliteAffixCard ChooseEliteAffix(DirectorCard monsterCard, double monsterCredit, Xoroshiro128Plus rng)
+        {
+            if (((CharacterSpawnCard) monsterCard.spawnCard).noElites)
+                return null;
+
+            var eliteSelection = new WeightedSelection<EliteAffixCard>();
+
+            foreach (var card in Cards)
+            {
+                var weight = card.GetSpawnWeight(monsterCard);
+                if (weight > 0 && card.isAvailable())
+                {
+                    var cost = monsterCard.cost*card.costMultiplier;
+                    if (cost <= monsterCredit)
+                    {
+                        eliteSelection.AddChoice(card, weight);
+                    }
+                }
+            }
+
+            if (eliteSelection.Count > 0)
+            {
+                var card = eliteSelection.Evaluate(rng.nextNormalizedFloat);
+                return card;
+            }
+
+            return null;
+        }
 
         private static void CombatDirectorOnPrepareNewMonsterWave(On.RoR2.CombatDirector.orig_PrepareNewMonsterWave orig, CombatDirector self, DirectorCard monsterCard)
         {
             //NOTE: We're completely rewriting this method, so we don't call back to the orig
 
             self.SetFieldValue("currentMonsterCard", monsterCard);
-            _chosenAffix[self] = null;
+            ChosenAffix[self] = null;
             if (!((CharacterSpawnCard) monsterCard.spawnCard).noElites)
             {
                 var eliteSelection = new WeightedSelection<EliteAffixCard>();
@@ -136,7 +169,7 @@ namespace EliteSpawningOverhaul
                 {
                     var rng = self.GetFieldValue<Xoroshiro128Plus>("rng");
                     var card = eliteSelection.Evaluate(rng.nextNormalizedFloat);
-                    _chosenAffix[self] = card;
+                    ChosenAffix[self] = card;
                 }
             }
 
@@ -206,7 +239,7 @@ namespace EliteSpawningOverhaul
 
         private static EliteIndex GetNextElite(CombatDirector self, ref float cost, out float scaledCost)
         {
-            _chosenAffix.TryGetValue(self, out var affix);
+            ChosenAffix.TryGetValue(self, out var affix);
             scaledCost = affix != null ? affix.costMultiplier*cost : cost;
             if (scaledCost < self.monsterCredit)
             {
@@ -219,7 +252,7 @@ namespace EliteSpawningOverhaul
 
         private static void GetCoeffs(CombatDirector self, out float hpCoeff, out float dmgCoeff)
         {
-            _chosenAffix.TryGetValue(self, out var affix);
+            ChosenAffix.TryGetValue(self, out var affix);
             if (affix != null)
             {
                 hpCoeff = affix.healthBoostCoeff;
@@ -234,7 +267,7 @@ namespace EliteSpawningOverhaul
 
         private static void RunOnSpawn(CombatDirector self, CharacterMaster master)
         {
-            _chosenAffix.TryGetValue(self, out var affix);
+            ChosenAffix.TryGetValue(self, out var affix);
             affix?.onSpawned?.Invoke(master);
         }
 

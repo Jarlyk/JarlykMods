@@ -74,7 +74,7 @@ namespace JarlykMods.Hailstorm
                     preventOverhead = false
                 };
 
-                EsoLib.SpawnElite(beetle, _barrierElites.Card, placement, _rng);
+                EsoLib.TrySpawnElite(beetle, _barrierElites.Card, placement, _rng);
             }
         }
 
