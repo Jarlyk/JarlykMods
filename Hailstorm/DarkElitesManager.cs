@@ -26,7 +26,6 @@ namespace JarlykMods.Hailstorm
         private readonly Dictionary<string, Material> _darkMats = new Dictionary<string, Material>();
 
         private readonly Xoroshiro128Plus _rng;
-        private readonly EliteAffixCard _card;
         private readonly EliteIndex _eliteIndex;
         private readonly BuffIndex _buffIndex;
         private readonly EquipmentIndex _equipIndex;
@@ -64,7 +63,7 @@ namespace JarlykMods.Hailstorm
             
             //Register the card for spawning if ESO is enabled
             EsoLib.Cards.Add(card);
-            _card = card;
+            Card = card;
 
             //Create random walk trackers for dark elite material texture animation
             _walkerU = new AnimatedFloat
@@ -78,6 +77,8 @@ namespace JarlykMods.Hailstorm
                 MaxSpeed = 0.6f
             };
         }
+
+        public EliteAffixCard Card { get; }
 
         public static CustomElite Build()
         {
@@ -262,13 +263,13 @@ namespace JarlykMods.Hailstorm
         {
             if (Input.GetKeyDown(KeyCode.F4))
             {
-                if (_card.spawnWeight > 10)
+                if (Card.spawnWeight > 10)
                 {
-                    _card.spawnWeight = 0.02f;
+                    Card.spawnWeight = 0.02f;
                 }
                 else
                 {
-                    _card.spawnWeight = 100.0f;
+                    Card.spawnWeight = 100.0f;
                     Debug.Log("Darkness is amplified!");
                 }
             }

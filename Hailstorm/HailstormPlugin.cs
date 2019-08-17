@@ -55,7 +55,7 @@ namespace JarlykMods.Hailstorm
             _darkElites?.Update();
             _barrierElites?.Update();
 
-            if (Input.GetKeyDown(KeyCode.F5) && _barrierElites != null)
+            if (Input.GetKeyDown(KeyCode.F5) && _barrierElites != null && _darkElites != null)
             {
                 var user = LocalUserManager.GetFirstLocalUser();
                 var body = user.cachedBody;
@@ -65,7 +65,8 @@ namespace JarlykMods.Hailstorm
                     return;
                 }
 
-                var beetle = Resources.Load<CharacterSpawnCard>("SpawnCards/CharacterSpawnCards/cscBeetle");
+                //var beetle = Resources.Load<CharacterSpawnCard>("SpawnCards/CharacterSpawnCards/cscBeetle");
+                var wisp = Resources.Load<CharacterSpawnCard>("SpawnCards/CharacterSpawnCards/cscLesserWisp");
                 var placement = new DirectorPlacementRule
                 {
                     spawnOnTarget = body.transform,
@@ -74,7 +75,11 @@ namespace JarlykMods.Hailstorm
                     preventOverhead = false
                 };
 
-                EsoLib.TrySpawnElite(beetle, _barrierElites.Card, placement, _rng);
+                //EsoLib.TrySpawnElite(beetle, _barrierElites.Card, placement, _rng);
+                for (int i = 0; i < 5; i++)
+                {
+                    EsoLib.TrySpawnElite(wisp, _darkElites.Card, placement, _rng);
+                }
             }
         }
 

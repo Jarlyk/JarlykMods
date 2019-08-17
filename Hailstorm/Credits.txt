@@ -1,13 +1,12 @@
-﻿Images
+﻿Modders
 -------
-Flowfield image (used as component of source texture for dark elite material) by Wraithan and used with consent
+Much thanks to the members of the Risk of Rain 2 Modding Discord; this would not have been possible without their help.  Particular thanks to Rein, who helped solve the problems related to texture modification for the dark elites.
 
-Models
+Images
 -------
-Wrench model by Wraithan (wraithan.net) released under CC-BY
-Bullet Timer model by Canis and used with consent
+Flowfield image (used as component of source texture for dark elite material) by Wraithan (wraithan.net) and used with consent
 
-Sound
+Sounds
 -------
 By Serithi: https://freesound.org/people/Serithi/sounds/151480/ (licensed CC-BY 3.0)
 By RICHERlandTV: https://freesound.org/people/RICHERlandTV/sounds/234803/ (licensed CC-BY 3.0)
