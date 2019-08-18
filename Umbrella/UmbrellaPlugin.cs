@@ -39,6 +39,12 @@ namespace JarlykMods.Umbrella
                 return true;
             }
 
+            if (index == _jestersDice.EquipIndex)
+            {
+                _jestersDice.PerformAction(this);
+                return true;
+            }
+
             return orig(self, index);
         }
 

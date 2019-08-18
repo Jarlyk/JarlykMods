@@ -23,6 +23,7 @@
     <None Remove="manifest.json" />
     <None Remove="README.md" />
     <None Remove="umbrella" />
+    <None Remove="Umbrella.bnk" />
   </ItemGroup>
 
   <ItemGroup>
@@ -42,6 +43,9 @@
 
   <ItemGroup>
     <EmbeddedResource Include="umbrella" />
+    <EmbeddedResource Include="Umbrella.bnk">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </EmbeddedResource>
   </ItemGroup>
 
   <ItemGroup>
@@ -51,6 +55,10 @@
     </Reference>
     <Reference Include="Assembly-CSharp">
       <HintPath>..\Dependencies\Assembly-CSharp.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="AssetPlus">
+      <HintPath>..\Dependencies\AssetPlus.dll</HintPath>
       <Private>false</Private>
     </Reference>
     <Reference Include="BepInEx">
@@ -107,6 +115,10 @@
     </Reference>
     <Reference Include="UnityEngine.PhysicsModule">
       <HintPath>..\Dependencies\UnityEngine.PhysicsModule.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="Wwise">
+      <HintPath>..\Dependencies\Wwise.dll</HintPath>
       <Private>false</Private>
     </Reference>
   </ItemGroup>

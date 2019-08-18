@@ -4,3 +4,5 @@ bin
 obj
 buildreleases
 .idea
+Assets/
+Dependencies/MonoMod.RuntimeDetour.xml

@@ -6,6 +6,7 @@ using EliteSpawningOverhaul;
 using ItemLib;
 using RoR2;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 namespace JarlykMods.Hailstorm
 {
@@ -37,6 +38,9 @@ namespace JarlykMods.Hailstorm
                 _mimics = new Mimics();
 
             _rng = new Xoroshiro128Plus((ulong) DateTime.Now.Ticks);
+
+            //Whenever scene changes, stop sound effects
+            SceneManager.sceneUnloaded += s => AkSoundEngine.PostEvent(SoundEvents.StopAll, null);
         }
 
         private void Awake()

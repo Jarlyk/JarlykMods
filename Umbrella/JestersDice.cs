@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -6,6 +7,7 @@ using ItemLib;
 using RoR2;
 using TMPro;
 using UnityEngine;
+using UnityEngine.Networking;
 using Object = System.Object;
 
 namespace JarlykMods.Umbrella
@@ -27,33 +29,126 @@ namespace JarlykMods.Umbrella
             BuildTexture();
         }
 
-        public void PerformAction()
+        public void PerformAction(MonoBehaviour owner)
+        {
+            owner.StartCoroutine(RunDice());
+        }
+
+        private IEnumerator RunDice()
         {
             var user = LocalUserManager.GetFirstLocalUser();
             var body = user.cachedBody;
             if (body?.master == null)
             {
                 Debug.LogError("Jester's Dice: Cannot find local user body!");
-                return;
+                yield break;
             }
 
-            //TODO: Adjust radius?
-            var colliders = Physics.OverlapSphere(body.transform.position, 15, (int)LayerIndex.defaultLayer.mask);
-            var droplets = colliders.Select(c => c.GetComponent<PickupDropletController>())
-                                        .Where(pdc => pdc != null).ToList();
-            foreach (var droplet in droplets)
+            AkSoundEngine.PostEvent(SoundEvents.PlayJestersDice, body.gameObject);
+
+            //Allow the dice rolling sound to run before actually swapping items
+            yield return new WaitForSecondsRealtime(1.2f);
+
+            //Grab the body again, in case the player has lost it during the delay
+            body = user.cachedBody;
+            if (body?.master == null)
             {
-                //TODO: Reroll droplet
-                //TODO: Reroll item in inventory of same tier (or other tier if none of same tier available)
+                Debug.LogError("Jester's Dice: Cannot find local user body!");
+                yield break;
             }
 
-            if (droplets.Count == 0)
+            var colliders = Physics.OverlapSphere(body.corePosition, 25, (int)LayerIndex.fakeActor.mask);
+            var pickupControllers = colliders.Select(c => c.GetComponent<GenericPickupController>())
+                                             .Where(c => c != null).ToList();
+            int rerollCount = 0;
+            foreach (var controller in pickupControllers)
             {
-                //TODO: Even if no item was rerolled on the ground, still reroll a random item in inventory
-                //Will avoid rerolling Gesture
-                //This is primarily so that if using with Gesture, will create a 'shuffle' run
+                var newIndex = controller.pickupIndex;
+
+                if (controller.pickupIndex.itemIndex != ItemIndex.None)
+                {
+                    var tier = ItemCatalog.GetItemDef(controller.pickupIndex.itemIndex).tier;
+                    if (tier != ItemTier.NoTier)
+                    {
+                        newIndex = _rng.NextElementUniform(GetDropList(tier));
+                    }
+                }
+                else if (controller.pickupIndex.equipmentIndex != EquipmentIndex.None)
+                {
+                    if (controller.pickupIndex.IsLunar())
+                    {
+                        newIndex = _rng.NextElementUniform(Run.instance.availableLunarDropList);
+                    }
+                    else
+                    {
+                        newIndex = _rng.NextElementUniform(Run.instance.availableEquipmentDropList);
+                    }
+                }
+
+                Debug.Log($"Replacing {controller.pickupIndex} on ground with {newIndex}");
+                if (newIndex != controller.pickupIndex)
+                {
+                    var pos = controller.transform.position;
+                    NetworkServer.Destroy(controller.gameObject);
+                    PickupDropletController.CreatePickupDroplet(newIndex, pos, Vector3.zero);
+                    rerollCount++;
+                }
+            }
+
+            //Even if no item was rerolled on the ground, still reroll a random item in inventory
+            if (rerollCount == 0)
+                rerollCount = 1;
+
+            var inv = body.master.inventory;
+            for (int i = 0; i < rerollCount; i++)
+            {
+                //Accumulate list of all items in inventory so we can choose one randomly to reroll
+                var allItems = new List<ItemIndex>();
+                for (var item = ItemIndex.Syringe; item < (ItemIndex)ItemLib.ItemLib.TotalItemCount; item++)
+                {
+                    for (int k = 0; k < inv.GetItemCount(item); k++)
+                    {
+                        //Will avoid rerolling Gesture
+                        //This is primarily so that if using with Gesture, will create a 'shuffle' run
+                        //Also avoid rerolling 'hidden' (no tier) items and boss items
+                        var def = ItemCatalog.GetItemDef(item);
+                        if (item != ItemIndex.AutoCastEquipment && def.tier != ItemTier.NoTier && def.tier != ItemTier.Boss)
+                            allItems.Add(item);
+                    }
+                }
+
+                var rerollItem = _rng.NextElementUniform(allItems);
+                var tier = ItemCatalog.GetItemDef(rerollItem).tier;
+                var newPickup = _rng.NextElementUniform(GetDropList(tier));
+                inv.RemoveItem(rerollItem, 1);
+                inv.GiveItem(newPickup.itemIndex, 1);
+
+                var lostPickup = new PickupIndex(rerollItem);
+                var lostText = Util.GenerateColoredString(Language.GetString(lostPickup.GetPickupNameToken()), lostPickup.GetPickupColor());
+                var newText = Util.GenerateColoredString(Language.GetString(newPickup.GetPickupNameToken()), newPickup.GetPickupColor());
+                Chat.AddMessage($"The die has been cast: {lostText} has been lost and {newText} has been gained");
             }
         }
+
+        private List<PickupIndex> GetDropList(ItemTier tier)
+        {
+            switch (tier)
+            {
+                case ItemTier.Tier1:
+                    return Run.instance.availableTier1DropList;
+                case ItemTier.Tier2:
+                    return Run.instance.availableTier2DropList;
+                case ItemTier.Tier3:
+                    return Run.instance.availableTier3DropList;
+                case ItemTier.Lunar:
+                    return Run.instance.availableLunarDropList;
+                case ItemTier.Boss:
+                    return Run.instance.availableTier2DropList;
+                default:
+                    return new List<PickupIndex>();
+            }
+        }
+
 
         private void BuildTexture()
         {
@@ -156,6 +251,7 @@ namespace JarlykMods.Umbrella
                 cooldown = 30f,
                 pickupModelPath = "",
                 pickupIconPath = "",
+                pickupToken = "Jester's Dice",
                 nameToken = EquipNames.JestersDice,
                 descriptionToken = "Jester's Dice",
                 canDrop = true,
@@ -164,8 +260,8 @@ namespace JarlykMods.Umbrella
             };
 
             //TODO
-            GameObject prefab = UmbrellaAssets.JestersDicePrefab;
-            UnityEngine.Object icon = null;
+            var prefab = UmbrellaAssets.JestersDicePrefab;
+            var icon = UmbrellaAssets.JestersDiceIcon;
             var rule = new ItemDisplayRule
             {
                 ruleType = ItemDisplayRuleType.ParentedPrefab,

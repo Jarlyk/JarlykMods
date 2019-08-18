@@ -67,6 +67,7 @@ namespace JarlykMods.Umbrella
                 pickupIconPath = "",
                 nameToken = EquipNames.BulletTimer,
                 descriptionToken = "Bullet Timer",
+                pickupToken = "Bullet Timer",
                 canDrop = true,
                 enigmaCompatible = true
             };
