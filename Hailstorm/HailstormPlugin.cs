@@ -85,6 +85,22 @@ namespace JarlykMods.Hailstorm
                     EsoLib.TrySpawnElite(wisp, _darkElites.Card, placement, _rng);
                 }
             }
+
+            if (Input.GetKeyDown(KeyCode.F6))
+            {
+                var user = LocalUserManager.GetFirstLocalUser();
+                var body = user.cachedBody;
+                if (body?.master == null)
+                {
+                    Debug.LogError("Cannot find local user body!");
+                    return;
+                }
+
+                var spawnPos = body.aimOriginTransform.TransformPoint(0, 0, 2);
+                var twister = Instantiate(HailstormAssets.TwisterPrefab);
+                twister.transform.position = spawnPos;
+                twister.transform.localScale = new Vector3(15.0f, 35.0f, 15.0f);
+            }
         }
 
         [Item(ItemAttribute.ItemType.Elite)]

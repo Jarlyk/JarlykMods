@@ -6,3 +6,4 @@ buildreleases
 .idea
 Assets/
 Dependencies/MonoMod.RuntimeDetour.xml
+Dependencies/UnityEngine.ParticleSystemModule.xml
