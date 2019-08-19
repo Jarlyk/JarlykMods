@@ -48,61 +48,9 @@ namespace JarlykMods.Hailstorm
             //Register the card for spawning if ESO is enabled
             EsoLib.Cards.Add(card);
             Card = card;
-
-            IL.RoR2.RadialForce.AddToList += RadialForceOnAddToList;
-        }
-
-        private void RadialForceOnAddToList(ILContext il)
-        {
-            var c = new ILCursor(il);
-            c.GotoNext(i => i.MatchLdarg(1),
-                       i => i.MatchCallvirt("UnityEngine.GameObject", "get_transform"));
-            c.Emit(OpCodes.Dup);
-            c.Emit(OpCodes.Ldc_I4_1);
-            c.Emit(OpCodes.Callvirt,
-                   typeof(GameObject).GetMethod("SetActive", BindingFlags.Public | BindingFlags.Instance));
-
-            c.GotoNext(i => i.MatchRet());
-            c.Emit(OpCodes.Ldarg_0);
-            c.Emit(OpCodes.Ldfld, typeof(RadialForce).GetField("tetherPrefab"));
-            c.Emit(OpCodes.Ldc_I4_0);
-            c.Emit(OpCodes.Callvirt,
-                   typeof(GameObject).GetMethod("SetActive", BindingFlags.Public | BindingFlags.Instance));
         }
 
         public EliteAffixCard Card { get; }
-
-        public static CustomElite Build()
-        {
-            HailstormAssets.Init();
-
-            var eliteDef = new EliteDef
-            {
-                modifierToken = BarrierElitesManager.EliteName,
-                color = new Color32(162, 179, 241, 255)
-            };
-            var equipDef = new EquipmentDef
-            {
-                cooldown = 10f,
-                pickupModelPath = "",
-                pickupIconPath = "",
-                nameToken = BarrierElitesManager.EquipName,
-                pickupToken = "Shield-Bearer",
-                descriptionToken = "Shield-Bearer",
-                canDrop = false,
-                enigmaCompatible = false
-            };
-            var buffDef = new BuffDef
-            {
-                buffColor = eliteDef.color,
-                canStack = false
-            };
-
-            var equip = new CustomEquipment(equipDef, null, null, new ItemDisplayRule[0]);
-            var buff = new CustomBuff(BarrierElitesManager.BuffName, buffDef, HailstormAssets.IconBarrierElite);
-            var elite = new CustomElite(BarrierElitesManager.EliteName, eliteDef, equip, buff, 1);
-            return elite;
-        }
 
         public void Awake()
         {
@@ -206,6 +154,37 @@ namespace JarlykMods.Hailstorm
                     }
                 }
             }
+        }
+        public static CustomElite Build()
+        {
+            HailstormAssets.Init();
+
+            var eliteDef = new EliteDef
+            {
+                modifierToken = BarrierElitesManager.EliteName,
+                color = new Color32(162, 179, 241, 255)
+            };
+            var equipDef = new EquipmentDef
+            {
+                cooldown = 10f,
+                pickupModelPath = "",
+                pickupIconPath = "",
+                nameToken = BarrierElitesManager.EquipName,
+                pickupToken = "Shield-Bearer",
+                descriptionToken = "Shield-Bearer",
+                canDrop = false,
+                enigmaCompatible = false
+            };
+            var buffDef = new BuffDef
+            {
+                buffColor = eliteDef.color,
+                canStack = false
+            };
+
+            var equip = new CustomEquipment(equipDef, null, null, new ItemDisplayRule[0]);
+            var buff = new CustomBuff(BarrierElitesManager.BuffName, buffDef, HailstormAssets.IconBarrierElite);
+            var elite = new CustomElite(BarrierElitesManager.EliteName, eliteDef, equip, buff, 1);
+            return elite;
         }
     }
 }

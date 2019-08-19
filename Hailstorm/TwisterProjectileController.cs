@@ -12,6 +12,9 @@ namespace JarlykMods.Hailstorm
         private int _ffSizeZ;
         private Color[] _vectorField;
 
+        public static BuffIndex ImmunityBuff { get; internal set; }
+
+        public float forceScale = 5000.0f;
         public float damping = 0.8f;
 
         private void Awake()
@@ -28,7 +31,7 @@ namespace JarlykMods.Hailstorm
             //Check for stuff inside the tornado
             var pos = transform.position;
             var topPos = pos + 3*transform.localScale.y*Vector3.up;
-            var colliders = Physics.OverlapCapsule(pos, topPos, transform.localScale.x, LayerIndex.defaultLayer.mask);
+            var colliders = Physics.OverlapCapsule(pos, topPos, transform.localScale.x + 2.0f, LayerIndex.defaultLayer.mask);
             foreach (var collider in colliders)
             {
                 //TODO: Ignore Storm elites, as they are immune to their own storms
@@ -45,7 +48,7 @@ namespace JarlykMods.Hailstorm
                         var ryi = (int) Math.Round(0.5*(relPos.y + 1)*(_ffSizeY - 1));
                         var rzi = (int) Math.Round(0.5*(relPos.z + 1)*(_ffSizeZ - 1));
                         var c = _vectorField[rzi*_ffSizeX*_ffSizeY + ryi*_ffSizeX + rxi];
-                        var v = 5000*new Vector3(c.r, c.g, c.b);
+                        var v = forceScale*new Vector3(c.r, c.g, c.b);
                         v.y += Physics.gravity.y*Time.fixedDeltaTime;
 
                         Vector3 currentV;

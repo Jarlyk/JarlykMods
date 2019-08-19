@@ -20,6 +20,7 @@ namespace JarlykMods.Hailstorm
 
         private readonly DarkElitesManager _darkElites;
         private readonly BarrierElitesManager _barrierElites;
+        private readonly StormElitesManager _stormElites;
         private readonly Mimics _mimics;
         private readonly Xoroshiro128Plus _rng;
 
@@ -33,6 +34,9 @@ namespace JarlykMods.Hailstorm
 
             if (HailstormConfig.EnableBarrierElites.Value)
                 _barrierElites = new BarrierElitesManager();
+
+            if (HailstormConfig.EnableStormElites.Value)
+                _stormElites = new StormElitesManager();
 
             if (HailstormConfig.EnableMimics.Value)
                 _mimics = new Mimics();
@@ -115,6 +119,12 @@ namespace JarlykMods.Hailstorm
         public static CustomElite BuildBarrierElite()
         {
             return BarrierElitesManager.Build();
+        }
+
+        [Item(ItemAttribute.ItemType.Elite)]
+        public static CustomElite BuildStormElite()
+        {
+            return StormElitesManager.Build();
         }
     }
 }

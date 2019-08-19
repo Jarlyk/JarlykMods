@@ -29,6 +29,12 @@ namespace JarlykMods.Hailstorm
                 "Whether to enable Barrier elites; it will be much harder to kill their friends while they're still alive",
                 true);
 
+            EnableStormElites = config.Wrap(
+                "Settings",
+                "EnableStormElites",
+                "Whether to enable Storm elites; don't underestimate their damage and try not to get caught by their wind or chain lightning",
+                true);
+
             MimicChance = config.Wrap(
                 "Mimics",
                 "MimicChance",
@@ -41,6 +47,8 @@ namespace JarlykMods.Hailstorm
         public static ConfigWrapper<bool> EnableDarkElites;
 
         public static ConfigWrapper<bool> EnableBarrierElites;
+
+        public static ConfigWrapper<bool> EnableStormElites;
 
         public static ConfigWrapper<float> MimicChance;
     }
