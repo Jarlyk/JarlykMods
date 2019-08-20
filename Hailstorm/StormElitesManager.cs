@@ -54,10 +54,10 @@ namespace JarlykMods.Hailstorm
         private static void OnSpawned(CharacterMaster master)
         {
             master.inventory.GiveItem(ItemIndex.ChainLightning);
-            var decor = UnityEngine.Object.Instantiate(HailstormAssets.TwisterVisualPrefab, master.transform);
+            var bodyObj = master.GetBodyObject();
+            var decor = UnityEngine.Object.Instantiate(HailstormAssets.TwisterVisualPrefab, bodyObj.transform);
             decor.transform.localScale = new Vector3(1.5f, 1.5f, 1.5f);
-            NetworkServer.Spawn(decor);
-            var launcher = master.GetBodyObject().AddComponent<TornadoLauncher>();
+            var launcher = bodyObj.AddComponent<TornadoLauncher>();
             launcher.enabled = true;
         }
 

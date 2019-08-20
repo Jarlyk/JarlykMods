@@ -1,6 +1,7 @@
 ﻿using RoR2;
 using RoR2.Projectile;
 using System;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.Networking;
 
@@ -8,6 +9,7 @@ namespace JarlykMods.Hailstorm
 {
     public sealed class TwisterProjectileController : MonoBehaviour
     {
+        private Xoroshiro128Plus _rng;
         private ParticleSystemForceField _forceField;
         private int _ffSizeX;
         private int _ffSizeY;
@@ -45,6 +47,7 @@ namespace JarlykMods.Hailstorm
             var refTop = gameObject.transform.GetChild(gameObject.transform.childCount - 1).gameObject;
             _soundEvent2 = AkSoundEngine.PostEvent(SoundEvents.PlayTornado, refTop);
             _startTime = Time.fixedTime;
+            _rng = new Xoroshiro128Plus((ulong)DateTime.Now.Ticks);
         }
 
         private void OnDestroy()
@@ -75,8 +78,23 @@ namespace JarlykMods.Hailstorm
                 return;
             }
 
+            //Bias toward nearest player, with some randomization
+            var playerBodies = PlayerCharacterMasterController.instances.Select(p => p.master?.GetBody());
+            var nearestPlayer = playerBodies.Where(b => b != null)
+                                            .Select(b => new {Delta = b.corePosition - transform.position, Body = b})
+                                            .Where(b => b.Delta.sqrMagnitude > 2*transform.localScale.x*transform.localScale.x)
+                                            .OrderBy(b => b.Delta.sqrMagnitude)
+                                            .FirstOrDefault();
+            if (nearestPlayer != null)
+            {
+                var tApproach = 1.0f + 0.3f*_rng.nextNormalizedFloat;
+                var lookToPlayer = Quaternion.AngleAxis(-(float)Math.Atan2(nearestPlayer.Delta.z, nearestPlayer.Delta.x), Vector3.up);
+                transform.localRotation = Quaternion.Lerp(transform.localRotation, lookToPlayer, tApproach);
+            }
+
+            //Scale up over time
             var t = aliveTime/windLife;
-            var rt = (float)Math.Sqrt(t);
+            var rt = t*t;
             var scale = Vector3.Lerp(initialScale, finalScale, rt);
             transform.localScale = scale;
 
@@ -153,7 +171,7 @@ namespace JarlykMods.Hailstorm
 
             var pcc = prefab.AddComponent<ProjectileCharacterController>();
             pcc.lifetime = totalLife;
-            pcc.velocity = 2;
+            pcc.velocity = 4;
         }
     }
 }
