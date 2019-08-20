@@ -73,8 +73,8 @@ namespace JarlykMods.Hailstorm
                     return;
                 }
 
-                //var beetle = Resources.Load<CharacterSpawnCard>("SpawnCards/CharacterSpawnCards/cscBeetle");
-                var wisp = Resources.Load<CharacterSpawnCard>("SpawnCards/CharacterSpawnCards/cscLesserWisp");
+                var beetle = Resources.Load<CharacterSpawnCard>("SpawnCards/CharacterSpawnCards/cscBeetle");
+                //var wisp = Resources.Load<CharacterSpawnCard>("SpawnCards/CharacterSpawnCards/cscLesserWisp");
                 var placement = new DirectorPlacementRule
                 {
                     spawnOnTarget = body.transform,
@@ -83,10 +83,9 @@ namespace JarlykMods.Hailstorm
                     preventOverhead = false
                 };
 
-                //EsoLib.TrySpawnElite(beetle, _barrierElites.Card, placement, _rng);
                 for (int i = 0; i < 5; i++)
                 {
-                    EsoLib.TrySpawnElite(wisp, _darkElites.Card, placement, _rng);
+                    EsoLib.TrySpawnElite(beetle, _stormElites.Card, placement, _rng);
                 }
             }
 

@@ -27,6 +27,7 @@ namespace JarlykMods.Hailstorm
                 IconBarrierElite = bundle.LoadAsset<Sprite>("Assets/Icons/BarrierEliteIcon.png");
                 IconDarkElite = bundle.LoadAsset<Sprite>("Assets/Icons/DarkEliteIcon.png");
 
+                TwisterVisualPrefab = bundle.LoadAsset<GameObject>("Assets/Prefabs/TwisterVisual.prefab");
                 TwisterPrefab = bundle.LoadAsset<GameObject>("Assets/Prefabs/Twister.prefab");
                 TwisterProjectileController.AugumentPrefab(TwisterPrefab);
 
@@ -55,7 +56,9 @@ namespace JarlykMods.Hailstorm
         public static Sprite IconBarrierElite { get; private set; }
 
         public static Sprite IconDarkElite { get; private set; }
-        
+
+        public static GameObject TwisterVisualPrefab { get; private set; }
+
         public static GameObject TwisterPrefab { get; private set; }
     }
 }

@@ -5,6 +5,7 @@ using EliteSpawningOverhaul;
 using ItemLib;
 using RoR2;
 using UnityEngine;
+using UnityEngine.Networking;
 
 namespace JarlykMods.Hailstorm
 {
@@ -22,6 +23,7 @@ namespace JarlykMods.Hailstorm
 
             //Storm elites are immune to twisters
             TwisterProjectileController.ImmunityBuff = BuffIndex;
+            TornadoLauncher.StormBuff = BuffIndex;
 
             //Storm elites are tier 2 elites, on the same order as malachites
             //They're a bit less tanky than malachites, but even more dangerous in terms of damage
@@ -33,13 +35,12 @@ namespace JarlykMods.Hailstorm
                 healthBoostCoeff = 20.0f,
                 eliteType = EliteIndex,
                 isAvailable = () => Run.instance.loopClearCount > 0,
-                onSpawned = m => m.inventory.GiveItem(ItemIndex.ChainLightning)
+                onSpawned = OnSpawned
             };
 
             //Register the card for spawning if ESO is enabled
             EsoLib.Cards.Add(card);
             Card = card;
-
         }
 
         public EliteIndex EliteIndex { get; }
@@ -49,6 +50,16 @@ namespace JarlykMods.Hailstorm
         public EquipmentIndex EquipIndex { get; }
 
         public EliteAffixCard Card { get; }
+
+        private static void OnSpawned(CharacterMaster master)
+        {
+            master.inventory.GiveItem(ItemIndex.ChainLightning);
+            var decor = UnityEngine.Object.Instantiate(HailstormAssets.TwisterVisualPrefab, master.transform);
+            decor.transform.localScale = new Vector3(1.5f, 1.5f, 1.5f);
+            NetworkServer.Spawn(decor);
+            var launcher = master.GetBodyObject().AddComponent<TornadoLauncher>();
+            launcher.enabled = true;
+        }
 
         public static CustomElite Build()
         {
@@ -77,8 +88,8 @@ namespace JarlykMods.Hailstorm
             };
 
             var equip = new CustomEquipment(equipDef, null, null, new ItemDisplayRule[0]);
-            var buff = new CustomBuff(BarrierElitesManager.BuffName, buffDef, null);
-            var elite = new CustomElite(BarrierElitesManager.EliteName, eliteDef, equip, buff, 2);
+            var buff = new CustomBuff(BuffName, buffDef, null);
+            var elite = new CustomElite(EliteName, eliteDef, equip, buff, 2);
             return elite;
         }
     }

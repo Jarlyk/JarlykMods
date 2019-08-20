@@ -8,7 +8,8 @@
 
         public static uint StopLargeBreathing = 2944308828;
 
-        public static uint StopAll = 452547817;
+        public static uint PlayTornado = 3832882534;
 
+        public static uint StopAll = 452547817;
     }
 }
