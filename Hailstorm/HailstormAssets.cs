@@ -4,7 +4,9 @@ using System.IO;
 using System.Reflection;
 using System.Text;
 using AssetPlus;
+using RoR2.Networking;
 using UnityEngine;
+using UnityEngine.Networking;
 
 namespace JarlykMods.Hailstorm
 {
@@ -41,6 +43,8 @@ namespace JarlykMods.Hailstorm
                 bankStream.Read(bytes, 0, bytes.Length);
                 SoundBanks.Add(bytes);
             }
+
+            On.RoR2.Networking.GameNetworkManager.OnStartClient += GameNetworkManager_OnStartClient;
         }
 
         public static bool Loaded { get; private set; }
@@ -60,5 +64,11 @@ namespace JarlykMods.Hailstorm
         public static GameObject TwisterVisualPrefab { get; private set; }
 
         public static GameObject TwisterPrefab { get; private set; }
+
+        private static void GameNetworkManager_OnStartClient(On.RoR2.Networking.GameNetworkManager.orig_OnStartClient orig, GameNetworkManager self, NetworkClient newClient)
+        {
+            orig(self, newClient);
+            ClientScene.RegisterPrefab(TwisterPrefab);
+        }
     }
 }

@@ -11,7 +11,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JarlykMods.Hailstorm", "Hai
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JarlykMods.Labyrinth", "Labyrinth\JarlykMods.Labyrinth.csproj", "{A9B80368-4E7E-44CA-9011-CA7AC90A7012}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EliteSpawningOverhaul", "EliteSpawningOverhaul\EliteSpawningOverhaul.csproj", "{79FA0BBF-D321-40FC-BA61-229C59B28C14}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EliteSpawningOverhaul", "EliteSpawningOverhaul\EliteSpawningOverhaul.csproj", "{79FA0BBF-D321-40FC-BA61-229C59B28C14}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CatalogLib", "CatalogLib\CatalogLib.csproj", "{AA95439E-AF38-4565-8C20-A763EEE4A45C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -39,6 +41,10 @@ Global
 		{79FA0BBF-D321-40FC-BA61-229C59B28C14}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{79FA0BBF-D321-40FC-BA61-229C59B28C14}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{79FA0BBF-D321-40FC-BA61-229C59B28C14}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AA95439E-AF38-4565-8C20-A763EEE4A45C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AA95439E-AF38-4565-8C20-A763EEE4A45C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AA95439E-AF38-4565-8C20-A763EEE4A45C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AA95439E-AF38-4565-8C20-A763EEE4A45C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

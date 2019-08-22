@@ -22,12 +22,11 @@ namespace JarlykMods.Hailstorm
 
         public static BuffIndex ImmunityBuff { get; internal set; }
 
-        public bool affectProjectiles = true;
-        public float forceScale = 6000.0f;
+        public float forceScale = 4000.0f;
         public float damping = 0.8f;
         public float windLife = 20f;
         public Vector3 initialScale = new Vector3(1, 1, 1);
-        public Vector3 finalScale = new Vector3(15, 35, 15);
+        public Vector3 finalScale = new Vector3(20, 25, 20);
 
         public static float totalLife = 25f;
 
@@ -78,25 +77,28 @@ namespace JarlykMods.Hailstorm
                 return;
             }
 
-            //Bias toward nearest player, with some randomization
-            var playerBodies = PlayerCharacterMasterController.instances.Select(p => p.master?.GetBody());
-            var nearestPlayer = playerBodies.Where(b => b != null)
-                                            .Select(b => new {Delta = b.corePosition - transform.position, Body = b})
-                                            .Where(b => b.Delta.sqrMagnitude > 2*transform.localScale.x*transform.localScale.x)
-                                            .OrderBy(b => b.Delta.sqrMagnitude)
-                                            .FirstOrDefault();
-            if (nearestPlayer != null)
+            if (NetworkServer.active)
             {
-                var tApproach = 1.0f + 0.3f*_rng.nextNormalizedFloat;
-                var lookToPlayer = Quaternion.AngleAxis(-(float)Math.Atan2(nearestPlayer.Delta.z, nearestPlayer.Delta.x), Vector3.up);
-                transform.localRotation = Quaternion.Lerp(transform.localRotation, lookToPlayer, tApproach);
-            }
+                //Bias toward nearest player, with some randomization
+                var playerBodies = PlayerCharacterMasterController.instances.Select(p => p.master?.GetBody());
+                var nearestPlayer = playerBodies.Where(b => b != null)
+                                                .Select(b => new { Delta = b.corePosition - transform.position, Body = b })
+                                                .Where(b => b.Delta.sqrMagnitude > 2f * transform.localScale.x * transform.localScale.x)
+                                                .OrderBy(b => b.Delta.sqrMagnitude)
+                                                .FirstOrDefault();
+                if (nearestPlayer != null)
+                {
+                    var tApproach = 1.0f + 0.2f * _rng.nextNormalizedFloat;
+                    var lookToPlayer = Quaternion.AngleAxis((float)((180 / Math.PI) * Math.Atan2(nearestPlayer.Delta.x, nearestPlayer.Delta.z)), Vector3.up);
+                    transform.rotation = Quaternion.LerpUnclamped(transform.rotation, lookToPlayer, tApproach);
+                }
 
-            //Scale up over time
-            var t = aliveTime/windLife;
-            var rt = t*t;
-            var scale = Vector3.Lerp(initialScale, finalScale, rt);
-            transform.localScale = scale;
+                //Scale up over time
+                var t = aliveTime / windLife;
+                var rt = (float)Math.Sqrt(t);
+                var scale = Vector3.Lerp(initialScale, finalScale, rt);
+                transform.localScale = scale;
+            }
 
             //Check for stuff inside the tornado
             var pos = transform.position;
@@ -105,15 +107,20 @@ namespace JarlykMods.Hailstorm
             foreach (var collider in colliders)
             {
                 var body = collider.GetComponent<CharacterBody>();
-                var rigidBody = collider.GetComponent<Rigidbody>();
-                if ((body == null && !affectProjectiles) || rigidBody == null)
+                if (body == null)
+                    continue;
+
+                if (body.isPlayerControlled && !body.isLocalPlayer)
+                    continue;
+
+                if (!NetworkServer.active && !body.isPlayerControlled)
                     continue;
 
                 //TODO: Allow configurable inclusion of champions
                 if (body != null && (body.HasBuff(ImmunityBuff) || body.isChampion))
                     continue;
 
-                var position = body?.corePosition ?? rigidBody.position;
+                var position = body.corePosition;
                 var relPos = _forceField.transform.InverseTransformPoint(position);
                 if (relPos.x >= -1 && relPos.x <= 1 && relPos.y >= -1 && relPos.y <= 1 && relPos.z >= -1 && relPos.z <= 1)
                 {
@@ -124,7 +131,7 @@ namespace JarlykMods.Hailstorm
                     var v = forceScale*new Vector3(c.r, c.g, c.b);
 
                     //Apply an inward force to help balance out the tendency to spit out the player at high forces
-                    var inward = 0.2f*forceScale*new Vector3(-relPos.x, 0, -relPos.z).normalized;
+                    var inward = 0.1f*forceScale*new Vector3(-relPos.x, 0, -relPos.z).normalized;
                     v += inward;
                     v = v.magnitude*_forceField.transform.TransformDirection(v.normalized);
 
@@ -135,6 +142,7 @@ namespace JarlykMods.Hailstorm
                     Vector3 currentV;
                     float mass;
                     var motor = collider.GetComponent<CharacterMotor>();
+                    var rigidBody = collider.GetComponent<Rigidbody>();
                     if (motor != null)
                     {
                         currentV = motor.velocity;
@@ -163,6 +171,12 @@ namespace JarlykMods.Hailstorm
         /// <param name="prefab">The plain Twister prefab</param>
         public static void AugumentPrefab(GameObject prefab)
         {
+            var cc = prefab.GetComponent<CharacterController>();
+            cc.detectCollisions = false;
+            cc.enableOverlapRecovery = false;
+
+            var nid = prefab.AddComponent<NetworkIdentity>();
+
             var tpc = prefab.AddComponent<TwisterProjectileController>();
             
             var pc = prefab.AddComponent<ProjectileController>();
@@ -171,7 +185,7 @@ namespace JarlykMods.Hailstorm
 
             var pcc = prefab.AddComponent<ProjectileCharacterController>();
             pcc.lifetime = totalLife;
-            pcc.velocity = 4;
+            pcc.velocity = 6;
         }
     }
 }
