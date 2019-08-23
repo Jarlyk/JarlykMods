@@ -7,7 +7,7 @@ using UnityEngine.Networking;
 
 namespace JarlykMods.Hailstorm
 {
-    public sealed class TwisterProjectileController : MonoBehaviour
+    public sealed class TwisterProjectileController : NetworkBehaviour
     {
         private Xoroshiro128Plus _rng;
         private ParticleSystemForceField _forceField;
@@ -93,12 +93,14 @@ namespace JarlykMods.Hailstorm
                     transform.rotation = Quaternion.LerpUnclamped(transform.rotation, lookToPlayer, tApproach);
                 }
 
-                //Scale up over time
-                var t = aliveTime / windLife;
-                var rt = (float)Math.Sqrt(t);
-                var scale = Vector3.Lerp(initialScale, finalScale, rt);
-                transform.localScale = scale;
             }
+
+            //Scale up over time
+            //This is done on both client and server, as this is not synced normally over the network
+            var t = aliveTime / windLife;
+            var rt = (float)Math.Sqrt(t);
+            var scale = Vector3.Lerp(initialScale, finalScale, rt);
+            transform.localScale = scale;
 
             //Check for stuff inside the tornado
             var pos = transform.position;
@@ -180,6 +182,7 @@ namespace JarlykMods.Hailstorm
             var tpc = prefab.AddComponent<TwisterProjectileController>();
             
             var pc = prefab.AddComponent<ProjectileController>();
+            pc.allowPrediction = false;
 
             var pnt = prefab.AddComponent<ProjectileNetworkTransform>();
 

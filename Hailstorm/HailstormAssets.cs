@@ -68,7 +68,8 @@ namespace JarlykMods.Hailstorm
         private static void GameNetworkManager_OnStartClient(On.RoR2.Networking.GameNetworkManager.orig_OnStartClient orig, GameNetworkManager self, NetworkClient newClient)
         {
             orig(self, newClient);
-            ClientScene.RegisterPrefab(TwisterPrefab);
+            var h = new NetworkHash128();
+            ClientScene.RegisterPrefab(TwisterPrefab, NetworkHash128.Parse("9725011d8b662d98"));
         }
     }
 }

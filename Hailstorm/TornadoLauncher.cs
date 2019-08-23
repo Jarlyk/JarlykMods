@@ -40,7 +40,8 @@ namespace JarlykMods.Hailstorm
                 {
                     projectilePrefab = HailstormAssets.TwisterPrefab,
                     position = transform.position,
-                    rotation = Util.QuaternionSafeLookRotation(transform.forward)
+                    rotation = Util.QuaternionSafeLookRotation(transform.forward),
+                    owner = gameObject
                 };
                 ProjectileManager.instance.FireProjectile(info);
 
