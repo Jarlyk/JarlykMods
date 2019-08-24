@@ -92,7 +92,6 @@ namespace JarlykMods.Hailstorm
                     var lookToPlayer = Quaternion.AngleAxis((float)((180 / Math.PI) * Math.Atan2(nearestPlayer.Delta.x, nearestPlayer.Delta.z)), Vector3.up);
                     transform.rotation = Quaternion.LerpUnclamped(transform.rotation, lookToPlayer, tApproach);
                 }
-
             }
 
             //Scale up over time
@@ -112,14 +111,16 @@ namespace JarlykMods.Hailstorm
                 if (body == null)
                     continue;
 
-                if (body.isPlayerControlled && !body.isLocalPlayer)
+                //Can only act on player bodies if we have authority
+                if (body.isPlayerControlled && !body.hasAuthority)
                     continue;
 
-                if (!NetworkServer.active && !body.isPlayerControlled)
+                //For non-player bodies, only server may act
+                if (!body.isPlayerControlled && !NetworkServer.active)
                     continue;
 
                 //TODO: Allow configurable inclusion of champions
-                if (body != null && (body.HasBuff(ImmunityBuff) || body.isChampion))
+                if (body.HasBuff(ImmunityBuff) || body.isChampion)
                     continue;
 
                 var position = body.corePosition;
@@ -158,9 +159,11 @@ namespace JarlykMods.Hailstorm
 
                     var force = v - damping*mass*currentV;
                     var hc = collider.GetComponent<HealthComponent>();
-                    if (hc != null)
+                    if (hc != null && NetworkServer.active)
                         hc.TakeDamageForce(force, true, false);
-                    else if (rigidBody != null)
+                    else if (motor != null)
+                        motor.ApplyForce(force, true, false);
+                    else
                         rigidBody.AddForce(force, ForceMode.VelocityChange);
                 }
             }

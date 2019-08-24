@@ -10,7 +10,7 @@ namespace JarlykMods.Umbrella
 {
     [BepInPlugin(PluginGuid, "Umbrella", "0.1.0")]
     [BepInDependency(R2API.R2API.PluginGUID)]
-    [BepInDependency(ItemLib.ItemLibPlugin.ModGuid)]
+    [BepInDependency(ItemLibPlugin.ModGuid)]
     public class UmbrellaPlugin : BaseUnityPlugin
     {
         public const string PluginGuid = "com.jarlyk.umbrella";

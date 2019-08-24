@@ -17,7 +17,7 @@ namespace JarlykMods.Raincoat
             //NOTE: We're overwriting the behavior entirely here, so no need to call back to orig
 
             //If no players, nothing to do
-            int participatingPlayerCount = Run.instance.participatingPlayerCount;
+            int participatingPlayerCount = R2API.ItemDropAPI.BossDropParticipatingPlayerCount ?? Run.instance.participatingPlayerCount;
             if (participatingPlayerCount == 0)
                 return;
 
@@ -38,7 +38,7 @@ namespace JarlykMods.Raincoat
                 var controller = spawnCard.prefab.GetComponent<MultiShopController>();
 
                 //Slowly increasing chance of red items, capping at 20%
-                var redChance = Math.Min(0.20f, 0.02f * Run.instance.stageClearCount - 0.10f);
+                var redChance = Math.Min(0.20f, 0.02f*Run.instance.stageClearCount - 0.10f);
                 controller.itemTier = rng.nextNormalizedFloat < redChance ? ItemTier.Tier3 : ItemTier.Tier2;
 
                 //Determine where to place the shop (randomly relative to the teleporter)
