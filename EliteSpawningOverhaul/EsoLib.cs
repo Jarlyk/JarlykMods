@@ -93,7 +93,6 @@ namespace EliteSpawningOverhaul
             if (spawned == null)
                 return null;
 
-
             //Configure as the chosen elite
             var spawnedMaster = spawned.GetComponent<CharacterMaster>();
             if (affixCard != null)

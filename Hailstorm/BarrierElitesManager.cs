@@ -96,7 +96,7 @@ namespace JarlykMods.Hailstorm
 
         public void Update()
         {
-            if (Time.time - _lastBarrierTime > 3.0f)
+            if (Time.time - _lastBarrierTime > 5.0f)
             {
                 UpdateBarrier();
                 _lastBarrierTime = Time.time;
@@ -137,6 +137,7 @@ namespace JarlykMods.Hailstorm
             var shieldBearers = allBodies.Where(b => b.HasBuff(_buffIndex));
             foreach (var shieldBearer in shieldBearers)
             {
+                AkSoundEngine.PostEvent(SoundEvents.PlayBarrierWobble, shieldBearer.gameObject);
                 var tetherMaster = shieldBearer.gameObject.GetComponent<ForcelessTetherMaster>();
                 if (tetherMaster == null)
                     tetherMaster = BuildTetherMaster(shieldBearer.gameObject);

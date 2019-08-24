@@ -10,6 +10,8 @@
 
         public static uint PlayTornado = 3832882534;
 
+        public static uint PlayBarrierWobble = 495870487;
+
         public static uint StopAll = 452547817;
     }
 }

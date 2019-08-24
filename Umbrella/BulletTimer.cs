@@ -27,6 +27,10 @@ namespace JarlykMods.Umbrella
         public void PerformAction()
         {
             _startTime = Time.time;
+
+            var user = LocalUserManager.GetFirstLocalUser();
+            if (user.cachedBodyObject != null)
+                AkSoundEngine.PostEvent(SoundEvents.PlayBulletTimer, user.cachedBodyObject);
         }
 
         private void ProjectileManagerOnFireProjectileServer(ILContext il)
