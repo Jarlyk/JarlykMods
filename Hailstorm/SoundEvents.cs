@@ -12,6 +12,6 @@
 
         public static uint PlayBarrierWobble = 495870487;
 
-        public static uint StopAll = 452547817;
+        public static uint StopAll = 3048906737;
     }
 }

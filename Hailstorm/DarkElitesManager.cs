@@ -76,6 +76,10 @@ namespace JarlykMods.Hailstorm
                 Accel = 0.3f,
                 MaxSpeed = 0.6f
             };
+
+
+            //Whenever scene changes, stop the breathing sound
+            SceneManager.sceneUnloaded += s => AkSoundEngine.PostEvent(SoundEvents.StopLargeBreathing, null);
         }
 
         public EliteAffixCard Card { get; }
