@@ -12,6 +12,9 @@ These elites spawn somewhat rarely, but they bring the darkness with them.  When
 ### Barrier Elites
 These elites provide Barrier to their nearby allies while they are alive, so they're a priority target.
 
+### Storm Elites
+These elites show up relatively late (around the time that Malachites start spawning) and they're just about as tough.  They bring storms in their wake that dislocate friend and foe alike.
+
 ### Mimics
 Not all chests are what they appear to be.  Occasionally a chest will reveal itself to be a monster in disguise; beware, for it wields the item that was within the chest and will not yield it until it is dead.
 
@@ -30,6 +33,11 @@ You can reach me via Github or can find me on the modding Discord at https://dis
 This mod is released under the standard MIT license, which is a permissive license that allows for free use with attribution, while disclaiming liability.  The text of this is included in the release archive in License.txt.
 
 ### Changelog
+
+0.2.0 | 2019-08-26
+- Added Storm elites and accompanying tornado projectiles
+- Increased spawn rate of dark elites
+- Disabled some debugging keys to avoid interfering with other mods
 
 0.1.0 | 2019-08-16
 - Initial tracked version
