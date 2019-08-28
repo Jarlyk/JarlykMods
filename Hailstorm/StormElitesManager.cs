@@ -88,7 +88,7 @@ namespace JarlykMods.Hailstorm
             };
 
             var equip = new CustomEquipment(equipDef, null, null, new ItemDisplayRule[0]);
-            var buff = new CustomBuff(BuffName, buffDef, null);
+            var buff = new CustomBuff(BuffName, buffDef, HailstormAssets.IconStormElite);
             var elite = new CustomElite(EliteName, eliteDef, equip, buff, 2);
             return elite;
         }
