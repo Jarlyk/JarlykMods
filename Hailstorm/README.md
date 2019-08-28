@@ -18,7 +18,7 @@ Not all chests are what they appear to be.  Occasionally a chest will reveal its
 ## Technical Notes
 
 ### Installation
-Place JarlykMods.Hailstorm.dll in your BepInEx\plugins folder.  If you're using a Mod Manager, it may place it under its own folder under plugins, which is also fine.  Please note that this mod has several depedencies (as visible in the Thunderstore) that will need to be present in order for it to function.
+Place JarlykMods.Hailstorm.dll in your BepInEx\plugins folder.  If you're using a Mod Manager, it may place it under its own folder under plugins, which is also fine.  Please note that this mod has several dependencies (as visible in the Thunderstore) that will need to be present in order for it to function.
 
 ### Configuration
 After you run the mod once, a configuration file will be created under BepInEx\config.  It is a simple text file with configuration options that are commented as to what they do.  Here you can disable particular features and configure the spawn rate for mimics.

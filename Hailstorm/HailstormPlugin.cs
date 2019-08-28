@@ -6,12 +6,12 @@ using EliteSpawningOverhaul;
 using ItemLib;
 using RoR2;
 using UnityEngine;
-using UnityEngine.SceneManagement;
 
 namespace JarlykMods.Hailstorm
 {
     [BepInPlugin(PluginGuid, "Hailstorm", "0.1.0")]
     [BepInDependency(R2API.R2API.PluginGUID)]
+    [BepInDependency(AssetPlus.AssetPlus.modguid)]
     [BepInDependency(EsoPlugin.PluginGuid)]
     [BepInDependency(ItemLibPlugin.ModGuid)]
     public sealed class HailstormPlugin : BaseUnityPlugin

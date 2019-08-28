@@ -1,7 +1,20 @@
-﻿Wrench model by Wraithan (wraithan.net) released under CC-BY
+﻿Models
+-------
+Bullet Timer model by Canis and used with consent (https://www.deviantart.com/canineindustries)
 
-Bullet Timer model by Canis and used with consent
+Images
+-------
+Photo by Craig Whitehead on Unsplash "person under black umbrella"
+Photo by Marc Szeglat on Unsplash "Lava from Kilauea on Hawaii flows into the ocean"
+In-game art from Risk of Rain 2
 
+Sounds
+-------
+By SeanMPorio: https://freesound.org/people/SeanMPorio/sounds/441841/ (licensed CC0)
+By JohnsonBrandEditing: https://freesound.org/people/JohnsonBrandEditing/sounds/173933/ (licensed CC0)
+By Syna-Max: https://freesound.org/people/Syna-Max/sounds/58812/ (licensed CC BY-NC 3.0)
+
+Risk of Rain 2 was developed by Hopoo Games (http://hopoogames.com/) and modding is done based on fair use doctrine, with implied permission from the developer as supported here: https://steamcommunity.com/games/632360/announcements/detail/2536008342705603109
 
 ---------------------------------
 

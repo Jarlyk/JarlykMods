@@ -54,7 +54,7 @@ namespace JarlykMods.Hailstorm
             //Dark elites spawn much less frequently, but are only slightly stronger/costlier than tier 1s
             var card = new EliteAffixCard
             {
-                spawnWeight = 0.1f,
+                spawnWeight = 0.3f,
                 costMultiplier = 10.0f,
                 damageBoostCoeff = 2.0f,
                 healthBoostCoeff = 6.0f,

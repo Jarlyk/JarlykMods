@@ -133,8 +133,11 @@ namespace JarlykMods.Hailstorm
                     var c = _vectorField[rzi*_ffSizeX*_ffSizeY + ryi*_ffSizeX + rxi];
                     var v = forceScale*new Vector3(c.r, c.g, c.b);
 
-                    //Apply an inward force to help balance out the tendency to spit out the player at high forces
+                    //At low elevation, apply an inward force to help balance out the tendency to spit out the player at high forces
+                    //At high elevation, the force is inverted
                     var inward = 0.1f*forceScale*new Vector3(-relPos.x, 0, -relPos.z).normalized;
+                    if (rzi > 0.8)
+                        inward *= -1;
                     v += inward;
                     v = v.magnitude*_forceField.transform.TransformDirection(v.normalized);
 
