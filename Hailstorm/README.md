@@ -34,7 +34,7 @@ This mod is released under the standard MIT license, which is a permissive licen
 
 ### Changelog
 
-0.2.0 | 2019-08-26
+0.2.0 | 2019-08-27
 - Added Storm elites and accompanying tornado projectiles
 - Increased spawn rate of dark elites
 - Disabled some debugging keys to avoid interfering with other mods
