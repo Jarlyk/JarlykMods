@@ -4,6 +4,7 @@ using System.IO;
 using System.Reflection;
 using System.Text;
 using AssetPlus;
+using JarlykMods.Hailstorm.Cataclysm;
 using RoR2.Networking;
 using UnityEngine;
 using UnityEngine.Networking;
@@ -36,6 +37,10 @@ namespace JarlykMods.Hailstorm
 
                 BarrierMaterial = Resources.Load<GameObject>("Prefabs/TemporaryVisualEffects/barriereffect")
                                            .GetComponentInChildren<MeshRenderer>().material;
+
+                CataclysmPlanePrefab = bundle.LoadAsset<GameObject>("Assets/Prefabs/CataclysmPlane.prefab");
+                CataclysmPlatformPrefab = bundle.LoadAsset<GameObject>("Assets/Prefabs/CataclysmPlatform.prefab");
+                CataclysmPlatformPrefab.AddComponent<MobilePlatform>();
             }
 
             using (var bankStream = execAssembly.GetManifestResourceStream("JarlykMods.Hailstorm.Hailstorm.bnk"))
@@ -67,6 +72,10 @@ namespace JarlykMods.Hailstorm
         public static GameObject TwisterVisualPrefab { get; private set; }
 
         public static GameObject TwisterPrefab { get; private set; }
+
+        public static GameObject CataclysmPlanePrefab { get; private set; }
+
+        public static GameObject CataclysmPlatformPrefab { get; private set; }
 
         private static void GameNetworkManager_OnStartClient(On.RoR2.Networking.GameNetworkManager.orig_OnStartClient orig, GameNetworkManager self, NetworkClient newClient)
         {

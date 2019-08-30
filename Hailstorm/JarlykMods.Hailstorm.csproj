@@ -62,10 +62,12 @@
     <Reference Include="ItemLib">
       <HintPath>..\Dependencies\ItemLib.dll</HintPath>
       <Private>false</Private>
+      <Aliases></Aliases>
     </Reference>
     <Reference Include="MiniRpcLib">
       <HintPath>..\Dependencies\MiniRpcLib.dll</HintPath>
       <Private>false</Private>
+      <Aliases></Aliases>
     </Reference>
     <Reference Include="MMHOOK_Assembly-CSharp">
       <HintPath>..\Dependencies\MMHOOK_Assembly-CSharp.dll</HintPath>

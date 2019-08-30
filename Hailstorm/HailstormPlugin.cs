@@ -4,6 +4,7 @@ using System.Text;
 using BepInEx;
 using EliteSpawningOverhaul;
 using ItemLib;
+using JarlykMods.Hailstorm.Cataclysm;
 using RoR2;
 using UnityEngine;
 
@@ -42,6 +43,12 @@ namespace JarlykMods.Hailstorm
                 _mimics = new Mimics();
 
             _rng = new Xoroshiro128Plus((ulong) DateTime.Now.Ticks);
+
+            On.RoR2.Console.Awake += (orig, self) =>
+            {
+                CommandHelper.RegisterCommands(self);
+                orig(self);
+            };
         }
 
         private void Awake()
@@ -121,6 +128,14 @@ namespace JarlykMods.Hailstorm
         public static CustomElite BuildStormElite()
         {
             return StormElitesManager.Build();
+        }
+
+        [ConCommand(commandName = "hs_cataclysm", flags = ConVarFlags.ExecuteOnServer,
+            helpText = "Test the cataclysm")]
+        private static void Spawn(ConCommandArgs args)
+        {
+            var cataclysm = new CataclysmBossSceneBuilder();
+            cataclysm.LoadCataclysm();
         }
     }
 }
