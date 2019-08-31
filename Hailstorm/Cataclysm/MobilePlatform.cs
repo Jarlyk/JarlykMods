@@ -1,8 +1,6 @@
-﻿using System;
+﻿using RoR2;
 using System.Collections.Generic;
-using System.Text;
 using UnityEngine;
-using RoR2;
 
 namespace JarlykMods.Hailstorm.Cataclysm
 {
@@ -10,6 +8,8 @@ namespace JarlykMods.Hailstorm.Cataclysm
     {
         private List<CharacterBody> _bodies;
         private Vector3 _lastPosition;
+        private Vector3 _lastDeltaPosition;
+        private Matrix4x4 _lastWorldToLocal;
 
         private void OnTriggerEnter(Collider other)
         {
@@ -26,6 +26,14 @@ namespace JarlykMods.Hailstorm.Cataclysm
             if (body != null && body.hasAuthority)
             {
                 _bodies.Remove(body);
+
+                //When body leaves the surface, it inherits some momentum from the platform
+                var motor = body.characterMotor;
+                if (motor != null)
+                {
+                    var force = (_lastDeltaPosition/Time.fixedDeltaTime)*motor.mass;
+                    motor.ApplyForce(force, true, true);
+                }
             }
         }
 
@@ -37,6 +45,7 @@ namespace JarlykMods.Hailstorm.Cataclysm
         private void Start()
         {
             _lastPosition = transform.position;
+            _lastWorldToLocal = transform.worldToLocalMatrix;
         }
 
         private void FixedUpdate()
@@ -44,14 +53,18 @@ namespace JarlykMods.Hailstorm.Cataclysm
             if (_bodies.Count > 0)
             {
                 var dp = transform.position - _lastPosition;
+                _lastDeltaPosition = dp;
                 foreach (var body in _bodies)
                 {
-                    //TODO: Account for body offset relative to center and displacement due to rotation
-                    body.characterMotor.Motor.SetPosition(body.characterMotor.Motor.TransientPosition + dp, true);
+                    var bodyPos = body.characterMotor.Motor.TransientPosition;
+                    var locPos = _lastWorldToLocal.MultiplyPoint(bodyPos);
+                    var newPos = transform.TransformPoint(locPos);
+                    body.characterMotor.Motor.SetPosition(newPos, true);
                 }
             }
 
             _lastPosition = transform.position;
+            _lastWorldToLocal = transform.worldToLocalMatrix;
         }
     }
 }

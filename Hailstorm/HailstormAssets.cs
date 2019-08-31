@@ -41,6 +41,10 @@ namespace JarlykMods.Hailstorm
                 CataclysmPlanePrefab = bundle.LoadAsset<GameObject>("Assets/Prefabs/CataclysmPlane.prefab");
                 CataclysmPlatformPrefab = bundle.LoadAsset<GameObject>("Assets/Prefabs/CataclysmPlatform.prefab");
                 CataclysmPlatformPrefab.AddComponent<MobilePlatform>();
+
+                //CataclysmSkyboxMaterial = bundle.LoadAsset<Material>("Assets/Mirza Beig/Particle Systems/Ultimate VFX/Demos/Starfall/Materials/Skybox/mat_skybox.mat");
+                CataclysmSkyboxMaterial = bundle.LoadAsset<Material>("Assets/SpaceSkies Free/Skybox_3/Purple_4K_Resolution.mat");
+                CataclysmArenaPrefab = bundle.LoadAsset<GameObject>("Assets/Prefabs/CataclysmArena.prefab");
             }
 
             using (var bankStream = execAssembly.GetManifestResourceStream("JarlykMods.Hailstorm.Hailstorm.bnk"))
@@ -76,6 +80,10 @@ namespace JarlykMods.Hailstorm
         public static GameObject CataclysmPlanePrefab { get; private set; }
 
         public static GameObject CataclysmPlatformPrefab { get; private set; }
+
+        public static Material CataclysmSkyboxMaterial { get; private set; }
+
+        public static GameObject CataclysmArenaPrefab { get; private set; }
 
         private static void GameNetworkManager_OnStartClient(On.RoR2.Networking.GameNetworkManager.orig_OnStartClient orig, GameNetworkManager self, NetworkClient newClient)
         {

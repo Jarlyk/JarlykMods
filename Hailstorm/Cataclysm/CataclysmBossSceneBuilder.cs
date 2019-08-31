@@ -23,7 +23,7 @@ namespace JarlykMods.Hailstorm.Cataclysm
 
         private Transform StageOnGetPlayerSpawnTransform(On.RoR2.Stage.orig_GetPlayerSpawnTransform orig, Stage self)
         {
-            return new GameObject {transform = {position = new Vector3(0,5,0)}}.transform;
+            return new GameObject {transform = {position = new Vector3(-40,3,0)}}.transform;
         }
 
         private void StageOnStart(On.RoR2.Stage.orig_Start orig, Stage self)
@@ -48,14 +48,28 @@ namespace JarlykMods.Hailstorm.Cataclysm
             foreach (var combatDirector in director.GetComponents<CombatDirector>())
                 combatDirector.enabled = false;
 
-            //Add an exciting flat plane!
-            BuildGround();
+            ////Add an exciting flat plane!
+            //BuildGround();
 
-            //Build a floating platform that orbits the center
-            var orbit = BuildOrbit();
-            var platform = Object.Instantiate(HailstormAssets.CataclysmPlatformPrefab, orbit.transform);
-            platform.transform.localPosition = new Vector3(20, 5, 0);
-            platform.transform.localScale = new Vector3(3, 1, 3);
+            ////Build a floating platform that orbits the center
+            //var orbit = BuildOrbit();
+            //var platform = Object.Instantiate(HailstormAssets.CataclysmPlatformPrefab, orbit.transform);
+            //platform.transform.localPosition = new Vector3(20, 5, 0);
+            //platform.transform.localScale = new Vector3(3, 1, 3);
+
+            var arena = Object.Instantiate(HailstormAssets.CataclysmArenaPrefab);
+            foreach (var meshRenderer in arena.GetComponentsInChildren<MeshRenderer>())
+            {
+                var obj = meshRenderer.gameObject;
+                if (obj.name.Contains("_P"))
+                {
+                    obj.AddComponent<MobilePlatform>();
+                }
+            }
+
+            RenderSettings.skybox = HailstormAssets.CataclysmSkyboxMaterial;
+            RenderSettings.ambientSkyColor = Color.white;
+            RenderSettings.ambientGroundColor = Color.white;
 
             //Our hooks are done processing to load this stage, so revert to normal handling
             UnHook();
