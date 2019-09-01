@@ -20,41 +20,7 @@ namespace JarlykMods.Hailstorm.Cataclysm
             IL.RoR2.CharacterBody.HandleConstructTurret += CharacterBodyOnHandleConstructTurret;
         }
 
-        private void CharacterBodyOnHandleConstructTurret(ILContext il)
-        {
-            int turretMaster = 0;
-            var c = new ILCursor(il);
-            c.GotoNext(i => i.MatchCallvirt("RoR2.MasterSummon", "Perform"),
-                       i => i.MatchStloc(out turretMaster));
-
-            //The ret is the target of multiple branches, but as long as we insert before it, we should be good
-            c.GotoNext(i => i.MatchRet());
-
-            c.Emit(OpCodes.Ldloc_S, (byte) turretMaster);
-            c.EmitDelegate<Action<CharacterMaster>>(OnTurretSpawned);
-        }
-
-        private void OnTurretSpawned(CharacterMaster turretMaster)
-        {
-            var body = turretMaster.GetBody();
-            var worldLayer = LayerMask.NameToLayer("World");
-            var colliders = Physics.OverlapSphere(body.footPosition, 2.0f, LayerMask.GetMask("Projectile", "World"));
-
-            //TODO: Better way to get closest surface?
-            var closest = colliders.FirstOrDefault(c => c.gameObject.layer == worldLayer);
-
-            if (closest != null)
-            {
-                Debug.Log($"Parenting Engi turret to {closest.gameObject.name}");
-                //var parentScale = closest.transform.localScale;
-                //var oldScale = body.transform.localScale;
-                //var newScale = new Vector3(oldScale.x/parentScale.x, 
-                //                           oldScale.y/parentScale.y,
-                //                           oldScale.z/parentScale.z);
-                body.transform.SetParent(closest.transform, true);
-                //body.transform.localScale = newScale;
-            }
-        }
+        public static CataclysmBossFightController BossFight { get; private set; }
 
         public void LoadCataclysm()
         {
@@ -93,16 +59,10 @@ namespace JarlykMods.Hailstorm.Cataclysm
             foreach (var combatDirector in director.GetComponents<CombatDirector>())
                 combatDirector.enabled = false;
 
-            ////Add an exciting flat plane!
-            //BuildGround();
-
-            ////Build a floating platform that orbits the center
-            //var orbit = BuildOrbit();
-            //var platform = Object.Instantiate(HailstormAssets.CataclysmPlatformPrefab, orbit.transform);
-            //platform.transform.localPosition = new Vector3(20, 5, 0);
-            //platform.transform.localScale = new Vector3(3, 1, 3);
-
+            //Load the arena
             var arena = Object.Instantiate(HailstormAssets.CataclysmArenaPrefab);
+
+            //Make mobile platforms transport properly
             foreach (var meshRenderer in arena.GetComponentsInChildren<MeshRenderer>())
             {
                 var obj = meshRenderer.gameObject;
@@ -117,108 +77,70 @@ namespace JarlykMods.Hailstorm.Cataclysm
                 }
             }
 
+            //Configure out-of-bounds box
+            var mapBounds = arena.transform.Find("MapBounds").gameObject;
+            var mapZone = mapBounds.AddComponent<MapZone>();
+            mapZone.triggerType = MapZone.TriggerType.TriggerExit;
+            mapZone.zoneType = MapZone.ZoneType.OutOfBounds;
+
+            //Apply skybox material
             RenderSettings.skybox = HailstormAssets.CataclysmSkyboxMaterial;
             RenderSettings.ambientSkyColor = Color.white;
             RenderSettings.ambientGroundColor = Color.white;
 
+            //Replace ground nodes with dynamically computed nodes on the central platform
+            BuildGroundNodes();
+
+            BossFight = arena.AddComponent<CataclysmBossFightController>();
+
             //Our hooks are done processing to load this stage, so revert to normal handling
-            UnHook();
+            UnhookStageTransition();
         }
 
-        private void UnHook()
+        private void BuildGroundNodes()
         {
-            On.RoR2.Stage.Start -= StageOnStart;
-            On.RoR2.Stage.GetPlayerSpawnTransform -= StageOnGetPlayerSpawnTransform;
         }
 
-        private static GameObject BuildOrbit()
+        private void CharacterBodyOnHandleConstructTurret(ILContext il)
         {
-            var orbit = Object.Instantiate(new GameObject("Orbit"));
-            var rigidBody = orbit.AddComponent<Rigidbody>();
-            rigidBody.isKinematic = true;
-            rigidBody.useGravity = false;
-            var orbiter = orbit.AddComponent<Orbiter>();
-            orbiter.AngularVelocity = 5f;
-            return orbit;
+            int turretMaster = 0;
+            var c = new ILCursor(il);
+            c.GotoNext(i => i.MatchCallvirt("RoR2.MasterSummon", "Perform"),
+                       i => i.MatchStloc(out turretMaster));
+
+            //The ret is the target of multiple branches, but as long as we insert before it, we should be good
+            c.GotoNext(i => i.MatchRet());
+
+            c.Emit(OpCodes.Ldloc_S, (byte)turretMaster);
+            c.EmitDelegate<Action<CharacterMaster>>(OnTurretSpawned);
         }
 
-        public void LoadSceneExperimental()
+        private void OnTurretSpawned(CharacterMaster turretMaster)
         {
-            var activeScene = SceneManager.GetActiveScene();
-            var unloadAsync = SceneManager.UnloadSceneAsync(activeScene);
-            unloadAsync.completed += UnloadAsyncOnCompleted;
-        }
+            var body = turretMaster.GetBody();
+            var worldLayer = LayerMask.NameToLayer("World");
+            var colliders = Physics.OverlapSphere(body.footPosition, 2.0f, LayerMask.GetMask("Projectile", "World"));
 
-        private void UnloadAsyncOnCompleted(AsyncOperation obj)
-        {
-            var scene = SceneManager.CreateScene("CataclysmBossScene");
-            var roots = BuildSceneRoots();
-            foreach (var root in roots)
+            //TODO: Better way to get closest surface?
+            var closest = colliders.FirstOrDefault(c => c.gameObject.layer == worldLayer);
+
+            if (closest != null)
             {
-                SceneManager.MoveGameObjectToScene(root, scene);
+                Debug.Log($"Parenting Engi turret to {closest.gameObject.name}");
+                //var parentScale = closest.transform.localScale;
+                //var oldScale = body.transform.localScale;
+                //var newScale = new Vector3(oldScale.x/parentScale.x, 
+                //                           oldScale.y/parentScale.y,
+                //                           oldScale.z/parentScale.z);
+                body.transform.SetParent(closest.transform, true);
+                //body.transform.localScale = newScale;
             }
         }
 
-        private IReadOnlyList<GameObject> BuildSceneRoots()
+        private void UnhookStageTransition()
         {
-            var roots = new List<GameObject>();
-            roots.Add(BuildSceneInfo());
-            roots.Add(BuildGround());
-            roots.Add(BuildSun());
-            roots.Add(BuildGameManager());
-            roots.Add(BuildDirector());
-            return roots;
-        }
-
-        private GameObject BuildGround()
-        {
-            var obj = Object.Instantiate(HailstormAssets.CataclysmPlanePrefab);
-            obj.transform.localScale = new Vector3(100, 1, 100);
-            obj.transform.localPosition = new Vector3(0, 0, 0);
-            obj.GetComponent<MeshRenderer>().material.mainTextureScale = new Vector2(0.05f, 0.05f);
-            return obj;
-        }
-
-        private GameObject BuildGameManager()
-        {
-            var obj = new GameObject("GameManager");
-            var gem = obj.AddComponent<GlobalEventManager>();
-            return obj;
-        }
-
-        private GameObject BuildSceneInfo()
-        {
-            var obj = new GameObject("SceneInfo");
-            var info = obj.AddComponent<SceneInfo>();
-            var csi = obj.AddComponent<ClassicStageInfo>();
-
-            //TODO: Sound system registration, including AkGameObj, possibly AkAmbient and RTPCController
-
-            return obj;
-        }
-
-        private GameObject BuildSun()
-        {
-            var obj = new GameObject("Directional Light (SUN)");
-            var light = obj.AddComponent<Light>();
-            light.type = LightType.Directional;
-            light.color = new Color32(101, 171, 229, 255);
-            light.intensity = 1.43f;
-            light.shadows = LightShadows.Hard;
-            light.shadowStrength = 0.8f;
-            light.shadowBias = 0.05f;
-            light.shadowNormalBias = 0.4f;
-            light.shadowNearPlane = 0.2f;
-            return obj;
-        }
-
-        private GameObject BuildDirector()
-        {
-            var obj = new GameObject("Director");
-            var nid = obj.AddComponent<NetworkIdentity>();
-            var core = obj.AddComponent<DirectorCore>();
-            
-            return obj;
+            On.RoR2.Stage.Start -= StageOnStart;
+            On.RoR2.Stage.GetPlayerSpawnTransform -= StageOnGetPlayerSpawnTransform;
         }
     }
 }

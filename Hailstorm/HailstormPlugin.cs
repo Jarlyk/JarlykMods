@@ -151,9 +151,33 @@ namespace JarlykMods.Hailstorm
                 return;
             }
 
-            var bomb = Instantiate(HailstormAssets.GravBombPrefab, body.corePosition + 5f*Vector3.up, Quaternion.identity);
-            bomb.transform.localScale = new Vector3(5, 5, 5);
-            NetworkServer.Spawn(bomb);
+            GravBombEffect.Spawn(body.corePosition + 5f*Vector3.up, 6);
+        }
+
+        [ConCommand(commandName = "hs_bossphase", flags = ConVarFlags.ExecuteOnServer,
+            helpText = "Set Boss Phase for Cataclysm fight")]
+        private static void SetBossPhase(ConCommandArgs args)
+        {
+            var bossFight = CataclysmManager.BossFight;
+            if (bossFight == null)
+            {
+                Debug.LogWarning("Boss fight is not currently active");
+                return;
+            }
+
+            if (args.Count < 1)
+            {
+                Debug.LogWarning("Must specify phase as argument; enum name or integer value are both acceptable");
+                return;
+            }
+
+            if (!Enum.TryParse<BossPhase>(args.userArgs[0], out var phase))
+            {
+                Debug.LogWarning($"{args.userArgs[0]} is not a valid boss phase");
+                return;
+            }
+
+            bossFight.SetPhase(phase);
         }
     }
 }

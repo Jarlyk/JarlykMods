@@ -61,6 +61,7 @@ namespace EliteSpawningOverhaul
                 placementMode = DirectorPlacementRule.PlacementMode.Approximate,
                 preventOverhead = false
             };
+
             var rng = new Xoroshiro128Plus((ulong) DateTime.Now.Ticks);
             if (EsoLib.TrySpawnElite(spawnCard, affixCard, placement, rng) == null)
             {

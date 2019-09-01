@@ -75,6 +75,13 @@ namespace JarlykMods.Hailstorm.Cataclysm
             }
         }
 
+        public static void Spawn(Vector3 position, float scale)
+        {
+            var bomb = Instantiate(HailstormAssets.GravBombPrefab, position, Quaternion.identity);
+            bomb.transform.localScale = new Vector3(scale, scale, scale);
+            NetworkServer.Spawn(bomb);
+        }
+
         public static void AugmentPrefab(GameObject prefab)
         {
             var nid = prefab.AddComponent<NetworkIdentity>();
