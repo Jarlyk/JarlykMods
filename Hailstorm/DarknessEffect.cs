@@ -1,4 +1,5 @@
 ﻿using System;
+using RoR2;
 using UnityEngine;
 
 namespace JarlykMods.Hailstorm

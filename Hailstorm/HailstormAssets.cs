@@ -45,6 +45,9 @@ namespace JarlykMods.Hailstorm
                 //CataclysmSkyboxMaterial = bundle.LoadAsset<Material>("Assets/Mirza Beig/Particle Systems/Ultimate VFX/Demos/Starfall/Materials/Skybox/mat_skybox.mat");
                 CataclysmSkyboxMaterial = bundle.LoadAsset<Material>("Assets/SpaceSkies Free/Skybox_3/Purple_4K_Resolution.mat");
                 CataclysmArenaPrefab = bundle.LoadAsset<GameObject>("Assets/Prefabs/CataclysmArena.prefab");
+
+                GravBombPrefab = bundle.LoadAsset<GameObject>("Assets/Prefabs/GravBomb.prefab");
+                GravBombEffect.AugmentPrefab(GravBombPrefab);
             }
 
             using (var bankStream = execAssembly.GetManifestResourceStream("JarlykMods.Hailstorm.Hailstorm.bnk"))
@@ -85,11 +88,24 @@ namespace JarlykMods.Hailstorm
 
         public static GameObject CataclysmArenaPrefab { get; private set; }
 
+        public static GameObject GravBombPrefab { get; private set; }
+
         private static void GameNetworkManager_OnStartClient(On.RoR2.Networking.GameNetworkManager.orig_OnStartClient orig, GameNetworkManager self, NetworkClient newClient)
         {
             orig(self, newClient);
-            var h = new NetworkHash128();
             ClientScene.RegisterPrefab(TwisterPrefab, NetworkHash128.Parse("9725011d8b662d98"));
+            ClientScene.RegisterPrefab(GravBombPrefab, NetworkHash128.Parse("6d803141bb60b3f7"));
+
+            //For convenience: pre-generated random IDs that could be used later
+            //34eddec13b017082
+            //164497abc3b46e41
+            //bfd424a1ac1b07ce
+            //7c3cba1b92427f72
+            //0ab8e989d1c6c999
+            //0e90dedbde0f4b5a
+            //a2177e2b92a917c3
+            //0327fff31597212d
+            //6cd812cea49b73c5
         }
     }
 }

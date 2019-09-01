@@ -7,6 +7,7 @@ using ItemLib;
 using JarlykMods.Hailstorm.Cataclysm;
 using RoR2;
 using UnityEngine;
+using UnityEngine.Networking;
 
 namespace JarlykMods.Hailstorm
 {
@@ -134,8 +135,25 @@ namespace JarlykMods.Hailstorm
             helpText = "Test the cataclysm")]
         private static void Spawn(ConCommandArgs args)
         {
-            var cataclysm = new CataclysmBossSceneBuilder();
+            var cataclysm = new CataclysmManager();
             cataclysm.LoadCataclysm();
+        }
+
+        [ConCommand(commandName = "hs_gravbomb", flags = ConVarFlags.ExecuteOnServer,
+            helpText = "Spawn a grav bomb where you're standing")]
+        private static void GravBomb(ConCommandArgs args)
+        {
+            var user = LocalUserManager.GetFirstLocalUser();
+            var body = user.cachedBody;
+            if (body?.master == null)
+            {
+                Debug.LogError("Cannot find local user body!");
+                return;
+            }
+
+            var bomb = Instantiate(HailstormAssets.GravBombPrefab, body.corePosition + 5f*Vector3.up, Quaternion.identity);
+            bomb.transform.localScale = new Vector3(5, 5, 5);
+            NetworkServer.Spawn(bomb);
         }
     }
 }

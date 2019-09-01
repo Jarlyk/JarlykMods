@@ -1,22 +1,35 @@
 ﻿using RoR2;
 using System.Collections.Generic;
+using System.Linq;
+using RoR2.Projectile;
 using UnityEngine;
+using UnityEngine.Networking;
 
 namespace JarlykMods.Hailstorm.Cataclysm
 {
     public sealed class MobilePlatform : MonoBehaviour
     {
-        private List<CharacterBody> _bodies;
+        private List<GameObject> _occupants;
         private Vector3 _lastPosition;
         private Vector3 _lastDeltaPosition;
         private Matrix4x4 _lastWorldToLocal;
+        private Collider _triggerCollider;
 
         private void OnTriggerEnter(Collider other)
         {
             var body = other.GetComponent<CharacterBody>();
-            if (body != null && body.hasAuthority)
+            //if ((body != null && body.hasAuthority) || (other.GetComponent<Deployable>() != null && NetworkServer.active))
+            if (body != null && body.hasAuthority && body.GetComponent<Deployable>() == null)
             {
-                _bodies.Add(body);
+                _occupants.Add(other.gameObject);
+                Debug.Log($"Platform add body: {other.name}");
+            }
+
+            var projectile = other.GetComponent<ProjectileController>();
+            if (projectile != null && projectile.hasAuthority)
+            {
+                _occupants.Add(other.gameObject);
+                Debug.Log($"Platform add projectile: {other.name}");
             }
         }
 
@@ -25,8 +38,6 @@ namespace JarlykMods.Hailstorm.Cataclysm
             var body = other.GetComponent<CharacterBody>();
             if (body != null && body.hasAuthority)
             {
-                _bodies.Remove(body);
-
                 //When body leaves the surface, it inherits some momentum from the platform
                 var motor = body.characterMotor;
                 if (motor != null)
@@ -35,11 +46,19 @@ namespace JarlykMods.Hailstorm.Cataclysm
                     motor.ApplyForce(force, true, true);
                 }
             }
+
+            _occupants.Remove(other.gameObject);
         }
 
         private void Awake()
         {
-            _bodies = new List<CharacterBody>();
+            _occupants = new List<GameObject>();
+            _triggerCollider = GetComponents<Collider>().FirstOrDefault(c => c.isTrigger);
+            if (_triggerCollider == null)
+            {
+                Debug.LogWarning("MobilePlatform behaviour attached to an object with no trigger collider; disabling");
+                enabled = false;
+            }
         }
 
         private void Start()
@@ -50,16 +69,50 @@ namespace JarlykMods.Hailstorm.Cataclysm
 
         private void FixedUpdate()
         {
-            if (_bodies.Count > 0)
+            if (!isActiveAndEnabled)
+                return;
+
+            if (_occupants.Count > 0)
             {
                 var dp = transform.position - _lastPosition;
                 _lastDeltaPosition = dp;
-                foreach (var body in _bodies)
+                foreach (var gameObj in _occupants)
                 {
-                    var bodyPos = body.characterMotor.Motor.TransientPosition;
-                    var locPos = _lastWorldToLocal.MultiplyPoint(bodyPos);
-                    var newPos = transform.TransformPoint(locPos);
-                    body.characterMotor.Motor.SetPosition(newPos, true);
+                    bool moved = false;
+                    var body = gameObj.GetComponent<CharacterBody>();
+                    if (body != null)
+                    {
+                        var motor = body.characterMotor;
+                        if (motor != null)
+                        {
+                            var bodyPos = motor.Motor.TransientPosition;
+                            var locPos = _lastWorldToLocal.MultiplyPoint(bodyPos);
+                            var newPos = transform.TransformPoint(locPos);
+                            motor.Motor.SetPosition(newPos, true);
+                            moved = true;
+                        }
+                    }
+
+                    if (!moved)
+                    {
+                        var rigidBody = gameObj.GetComponent<Rigidbody>();
+                        if (rigidBody != null)
+                        {
+                            var bodyPos = rigidBody.position;
+                            var locPos = _lastWorldToLocal.MultiplyPoint(bodyPos);
+                            var newPos = transform.TransformPoint(locPos);
+                            rigidBody.MovePosition(newPos);
+                        }
+                        else
+                        {
+                            //No rigid body or motor controller, so just change its transform directly to follow
+                            //This applies to Engi turrets in particular
+                            var bodyPos = gameObj.transform.position;
+                            var locPos = _lastWorldToLocal.MultiplyPoint(bodyPos);
+                            var newPos = transform.TransformPoint(locPos);
+                            gameObj.transform.position = newPos;
+                        }
+                    }
                 }
             }
 
