@@ -20,7 +20,7 @@ namespace JarlykMods.Hailstorm
 
             Loaded = true;
             var execAssembly = Assembly.GetExecutingAssembly();
-            using (var stream = execAssembly.GetManifestResourceStream("JarlykMods.Hailstorm.hailstorm"))
+            using (var stream = execAssembly.GetManifestResourceStream("JarlykMods.Hailstorm.hailstorm.assets"))
             {
                 var bundle = AssetBundle.LoadFromStream(stream);
                 DarknessShader = bundle.LoadAsset<Shader>("Assets/Effects/darkness.shader");

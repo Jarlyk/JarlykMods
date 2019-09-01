@@ -24,6 +24,7 @@
     <None Remove="manifest.json" />
     <None Remove="README.md" />
     <None Remove="umbrella" />
+    <None Remove="umbrella.assets" />
     <None Remove="Umbrella.bnk" />
   </ItemGroup>
 
@@ -46,7 +47,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <EmbeddedResource Include="umbrella" />
+    <EmbeddedResource Include="umbrella.assets" />
     <EmbeddedResource Include="Umbrella.bnk">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </EmbeddedResource>

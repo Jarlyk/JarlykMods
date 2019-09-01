@@ -16,7 +16,7 @@ namespace JarlykMods.Umbrella
 
             Loaded = true;
             var execAssembly = Assembly.GetExecutingAssembly();
-            using (var stream = execAssembly.GetManifestResourceStream("JarlykMods.Umbrella.umbrella"))
+            using (var stream = execAssembly.GetManifestResourceStream("JarlykMods.Umbrella.umbrella.assets"))
             {
                 var bundle = AssetBundle.LoadFromStream(stream);
                 BulletTimerPrefab = bundle.LoadAsset<GameObject>("Assets/Import/bullet_timer/BulletTimer.prefab");
