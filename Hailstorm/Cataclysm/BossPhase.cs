@@ -4,8 +4,8 @@
     {
         Inactive,
         Introduction,
-        BreakShield,
-        ActivateLaser,
+        ChargeLaser,
+        RunLaser,
         TheHatching,
         Voidspawn,
         Finale,

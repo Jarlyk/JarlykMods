@@ -12,7 +12,7 @@ namespace JarlykMods.Hailstorm.Cataclysm.BossPhases
 
         public override BossPhase FixedUpdate()
         {
-            return BossPhase.BreakShield;
+            return BossPhase.ChargeLaser;
         }
     }
 }

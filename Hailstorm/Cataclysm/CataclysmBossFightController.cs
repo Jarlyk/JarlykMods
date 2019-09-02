@@ -76,8 +76,8 @@ namespace JarlykMods.Hailstorm.Cataclysm
             _rng = new Xoroshiro128Plus((ulong) DateTime.Now.Ticks);
             _phases.Add(BossPhase.Inactive, null);
             _phases.Add(BossPhase.Introduction, new IntroductionPhase(this));
-            _phases.Add(BossPhase.BreakShield, new BreakShieldPhase(this));
-            _phases.Add(BossPhase.ActivateLaser, new ActivateLaserPhase(this));
+            _phases.Add(BossPhase.ChargeLaser, new ChargeLaserPhase(this));
+            _phases.Add(BossPhase.RunLaser, new RunLaserPhase(this));
             _phases.Add(BossPhase.TheHatching, new TheHatchingPhase(this));
             _phases.Add(BossPhase.Voidspawn, new VoidspawnPhase(this));
             _phases.Add(BossPhase.Finale, new FinalePhase(this));
