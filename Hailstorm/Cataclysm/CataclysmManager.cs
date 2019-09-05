@@ -91,6 +91,10 @@ namespace JarlykMods.Hailstorm.Cataclysm
             //Replace ground nodes with dynamically computed nodes on the central platform
             BuildGroundNodes();
 
+            //Instantiate laser chargers
+            Object.Instantiate(HailstormAssets.LaserChargerPrefab, new Vector3(-35, -0.8f, 0), Quaternion.identity);
+
+            //Enable the boss fight mechanics
             BossFight = arena.AddComponent<CataclysmBossFightController>();
 
             //Our hooks are done processing to load this stage, so revert to normal handling

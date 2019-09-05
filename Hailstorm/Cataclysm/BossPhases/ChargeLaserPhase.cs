@@ -12,7 +12,8 @@ namespace JarlykMods.Hailstorm.Cataclysm.BossPhases
 
         public override BossPhase FixedUpdate()
         {
-            Controller.AutoSpawnGravBombs(20, 8, 8);
+            Controller.AutoSpawnGravBombs(20, 8, 6);
+            Controller.AutoAsteroidSwarm();
             return BossPhase.ChargeLaser;
         }
     }

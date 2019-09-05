@@ -1,8 +1,9 @@
-﻿using System;
+﻿using JarlykMods.Hailstorm.Cataclysm.BossPhases;
+using System;
+using System.Collections;
 using System.Collections.Generic;
-using System.Text;
-using JarlykMods.Hailstorm.Cataclysm.BossPhases;
 using UnityEngine;
+using UnityEngine.Networking;
 
 namespace JarlykMods.Hailstorm.Cataclysm
 {
@@ -11,8 +12,11 @@ namespace JarlykMods.Hailstorm.Cataclysm
         private readonly Dictionary<BossPhase, PhaseBase> _phases = new Dictionary<BossPhase, PhaseBase>();
         private Xoroshiro128Plus _rng;
         private float _lastAutoGravBombs;
+        private float _lastAutoAsteroidSwarm;
 
         public BossPhase ActivePhase { get; private set; }
+
+        public AsteroidSwarmSettings AsteroidSwarm { get; private set; }
 
         public void SetPhase(BossPhase bossPhase)
         {
@@ -26,6 +30,10 @@ namespace JarlykMods.Hailstorm.Cataclysm
 
         public void AutoSpawnGravBombs(int count, float scale, float interval)
         {
+            //Attacks are marshaled to the client, so only host needs to spawn them
+            if (!NetworkServer.active)
+                return;
+
             var now = Time.fixedTime;
             if (now - _lastAutoGravBombs > interval)
             {
@@ -34,7 +42,21 @@ namespace JarlykMods.Hailstorm.Cataclysm
             }
         }
 
-        public void SpawnGravBombs(int count, float scale)
+        public void AutoAsteroidSwarm()
+        {
+            //Attacks are marshaled to the client, so only host needs to spawn them
+            if (!NetworkServer.active)
+                return;
+
+            var now = Time.fixedTime;
+            if (now - _lastAutoAsteroidSwarm > AsteroidSwarm.SwarmInterval)
+            {
+                BeginAsteroidSwarm();
+                _lastAutoAsteroidSwarm = now;
+            }
+        }
+
+        private void SpawnGravBombs(int count, float scale)
         {
             //We want the bombs to be roughly evenly distributed, so we'll use radial coordinates and distribute at multiple angles
             //We'll then alternate toward smaller and larger radial biases
@@ -71,9 +93,40 @@ namespace JarlykMods.Hailstorm.Cataclysm
             }
         }
 
+        private void BeginAsteroidSwarm()
+        {
+            StartCoroutine(RunAsteroidSwarm());
+        }
+
+        private IEnumerator RunAsteroidSwarm()
+        {
+            int count = 0;
+            while (count < AsteroidSwarm.TotalCount)
+            {
+                int spawnCount = Math.Min(AsteroidSwarm.CountPerWave, AsteroidSwarm.TotalCount - count);
+                for (int i = 0; i < spawnCount; i++)
+                {
+                    var w = _rng.nextNormalizedFloat*2*Mathf.PI;
+                    var phi = (0.07f + _rng.PlusMinus(0.15f))*Mathf.PI;
+                    var r = AsteroidSwarm.StartRadius + _rng.PlusMinus(AsteroidSwarm.StartRadiusRange);
+
+                    var pos = new Vector3(r*Mathf.Cos(w),
+                                          r*Mathf.Sin(phi),
+                                          r*Mathf.Sin(w));
+                    var rot = Quaternion.FromToRotation(Vector3.forward, -pos.normalized);
+                    var speed = AsteroidSwarm.ProjectileSpeed + _rng.PlusMinus(AsteroidSwarm.ProjectileSpeedRange);
+                    AsteroidProjectileController.Fire(pos, rot, speed);
+                }
+
+                count += spawnCount;
+                yield return new WaitForSeconds(AsteroidSwarm.WaveInterval);
+            }
+        }
+
         private void Awake()
         {
             _rng = new Xoroshiro128Plus((ulong) DateTime.Now.Ticks);
+            AsteroidSwarm = new AsteroidSwarmSettings();
             _phases.Add(BossPhase.Inactive, null);
             _phases.Add(BossPhase.Introduction, new IntroductionPhase(this));
             _phases.Add(BossPhase.ChargeLaser, new ChargeLaserPhase(this));
@@ -89,6 +142,7 @@ namespace JarlykMods.Hailstorm.Cataclysm
             //TODO: Automatically start the Introduction phase when not debugging
             //SetPhase(BossPhase.Introduction);
             _lastAutoGravBombs = Time.fixedTime;
+            _lastAutoAsteroidSwarm = Time.fixedTime;
         }
 
         private void FixedUpdate()

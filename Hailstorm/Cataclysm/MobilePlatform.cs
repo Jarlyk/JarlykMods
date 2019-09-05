@@ -18,19 +18,18 @@ namespace JarlykMods.Hailstorm.Cataclysm
         private void OnTriggerEnter(Collider other)
         {
             var body = other.GetComponent<CharacterBody>();
-            //if ((body != null && body.hasAuthority) || (other.GetComponent<Deployable>() != null && NetworkServer.active))
             if (body != null && body.hasAuthority && body.GetComponent<Deployable>() == null)
             {
                 _occupants.Add(other.gameObject);
                 Debug.Log($"Platform add body: {other.name}");
             }
 
-            var projectile = other.GetComponent<ProjectileController>();
-            if (projectile != null && projectile.hasAuthority)
-            {
-                _occupants.Add(other.gameObject);
-                Debug.Log($"Platform add projectile: {other.name}");
-            }
+            //var projectile = other.GetComponent<ProjectileController>();
+            //if (projectile != null && projectile.hasAuthority)
+            //{
+            //    _occupants.Add(other.gameObject);
+            //    Debug.Log($"Platform add projectile: {other.name}");
+            //}
         }
 
         private void OnTriggerExit(Collider other)

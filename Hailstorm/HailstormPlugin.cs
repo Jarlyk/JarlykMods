@@ -132,8 +132,8 @@ namespace JarlykMods.Hailstorm
         }
 
         [ConCommand(commandName = "hs_cataclysm", flags = ConVarFlags.ExecuteOnServer,
-            helpText = "Test the cataclysm")]
-        private static void Spawn(ConCommandArgs args)
+            helpText = "Test the Cataclysm")]
+        private static void TestCataclysm(ConCommandArgs args)
         {
             var cataclysm = new CataclysmManager();
             cataclysm.LoadCataclysm();
@@ -178,6 +178,52 @@ namespace JarlykMods.Hailstorm
             }
 
             bossFight.SetPhase(phase);
+        }
+
+        [ConCommand(commandName = "hs_gearup", flags = ConVarFlags.ExecuteOnServer, 
+            helpText = "Provide random late-game gear to help test Cataclysm boss fight; run again to reroll.  May optionally specify number of [white] [green] [red] items as space-delimited arguments")]
+        private static void GearUp(ConCommandArgs args)
+        {
+            int whites = 80;
+            int greens = 20;
+            int reds = 5;
+            if (args.Count == 3)
+            {
+                bool success = int.TryParse(args[0], out whites);
+                success &= int.TryParse(args[1], out greens);
+                success &= int.TryParse(args[2], out reds);
+
+                if (!success)
+                {
+                    Debug.LogWarning("Invalid parameters: specify space delivered number of items for [white] [green] [red].");
+                    return;
+                }
+            }
+
+            var rng = new Xoroshiro128Plus((ulong) DateTime.Now.Ticks);
+
+            //Gearing applies to all players
+            foreach (var controller in PlayerCharacterMasterController.instances)
+            {
+                //Get inventory, accommodating case where body doesn't exist yet
+                var inv = controller.master.GetBody()?.inventory;
+                if (inv != null)
+                {
+                    //Start by clearing existing inventory
+                    for (var item = ItemIndex.Syringe; item < (ItemIndex) ItemLib.ItemLib.TotalItemCount; item++)
+                    {
+                        inv.RemoveItem(item, int.MaxValue);
+                    }
+
+                    //Grant items of each rarity
+                    for (int i=0; i < whites; i++)
+                        inv.GiveItem(rng.NextElementUniform(Run.instance.availableTier1DropList).itemIndex);
+                    for (int i = 0; i < greens; i++)
+                        inv.GiveItem(rng.NextElementUniform(Run.instance.availableTier2DropList).itemIndex);
+                    for (int i = 0; i < reds; i++)
+                        inv.GiveItem(rng.NextElementUniform(Run.instance.availableTier3DropList).itemIndex);
+                }
+            }
         }
     }
 }

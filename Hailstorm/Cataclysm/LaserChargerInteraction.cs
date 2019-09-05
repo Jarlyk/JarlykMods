@@ -278,6 +278,10 @@ namespace JarlykMods.Hailstorm.Cataclysm
             return written;
         }
 
+        public static void AugmentPrefab(GameObject prefab)
+        {
+        }
+
         private enum ActivationState
         {
             Idle,

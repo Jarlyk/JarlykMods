@@ -48,6 +48,12 @@ namespace JarlykMods.Hailstorm
 
                 GravBombPrefab = bundle.LoadAsset<GameObject>("Assets/Prefabs/GravBomb.prefab");
                 GravBombEffect.AugmentPrefab(GravBombPrefab);
+
+                AsteroidProjectilePrefab = bundle.LoadAsset<GameObject>("Assets/Prefabs/AsteroidProjectile.prefab");
+                AsteroidProjectileController.AugmentPrefab(AsteroidProjectilePrefab);
+
+                LaserChargerPrefab = bundle.LoadAsset<GameObject>("Assets/Prefabs/LaserCharger.prefab");
+                LaserChargerInteraction.AugmentPrefab(LaserChargerPrefab);
             }
 
             using (var bankStream = execAssembly.GetManifestResourceStream("JarlykMods.Hailstorm.Hailstorm.bnk"))
@@ -90,14 +96,18 @@ namespace JarlykMods.Hailstorm
 
         public static GameObject GravBombPrefab { get; private set; }
 
+        public static GameObject AsteroidProjectilePrefab { get; private set; }
+
+        public static GameObject LaserChargerPrefab { get; private set; }
+
         private static void GameNetworkManager_OnStartClient(On.RoR2.Networking.GameNetworkManager.orig_OnStartClient orig, GameNetworkManager self, NetworkClient newClient)
         {
             orig(self, newClient);
             ClientScene.RegisterPrefab(TwisterPrefab, NetworkHash128.Parse("9725011d8b662d98"));
             ClientScene.RegisterPrefab(GravBombPrefab, NetworkHash128.Parse("6d803141bb60b3f7"));
+            ClientScene.RegisterPrefab(AsteroidProjectilePrefab, NetworkHash128.Parse("34eddec13b017082"));
 
             //For convenience: pre-generated random IDs that could be used later
-            //34eddec13b017082
             //164497abc3b46e41
             //bfd424a1ac1b07ce
             //7c3cba1b92427f72
