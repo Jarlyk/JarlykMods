@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Runtime;
 using System.Text;
 using Mono.Cecil.Cil;
 using MonoMod.Cil;
 using RoR2;
+using RoR2.Navigation;
 using UnityEngine;
 using UnityEngine.Networking;
 using UnityEngine.SceneManagement;
@@ -89,10 +91,13 @@ namespace JarlykMods.Hailstorm.Cataclysm
             RenderSettings.ambientGroundColor = Color.white;
 
             //Replace ground nodes with dynamically computed nodes on the central platform
-            BuildGroundNodes();
+            BuildGroundNodes(arena);
 
             //Instantiate laser chargers
-            Object.Instantiate(HailstormAssets.LaserChargerPrefab, new Vector3(-35, -0.8f, 0), Quaternion.identity);
+            var folP2 = GameObject.Find("FOL_P2");
+            var charger1 = Object.Instantiate(HailstormAssets.LaserChargerPrefab, folP2.transform.position, Quaternion.identity);
+            var folP4 = GameObject.Find("FOL_P4");
+            var charger2 = Object.Instantiate(HailstormAssets.LaserChargerPrefab, folP4.transform.position, Quaternion.identity);
 
             //Enable the boss fight mechanics
             BossFight = arena.AddComponent<CataclysmBossFightController>();
@@ -101,8 +106,80 @@ namespace JarlykMods.Hailstorm.Cataclysm
             UnhookStageTransition();
         }
 
-        private void BuildGroundNodes()
+        private void BuildGroundNodes(GameObject arena)
         {
+            //Destroy existing nodes
+            Object.DestroyImmediate(GameObject.Find("TestSceneGroundNode"));
+
+            var nodeGroupObj = Object.Instantiate(new GameObject("GroundNodes"));
+            var nodeGroup = nodeGroupObj.AddComponent<MapNodeGroup>();
+
+            //We're going to distribute ground nodes as a vertex fan around the central ring platform
+            //First, we'll generate these positions as local positions
+            const int n = 40;
+            const float dw = 2*Mathf.PI/n;
+            const float r1 = 35f;
+            const float r2 = 45f;
+            const float y = 0.2f;
+            var ringVertices = new Vector3[n];
+            for (int i = 0; i < n; i++)
+            {
+                var r = (i & 1) == 0 ? r1 : r2;
+                var w = i*dw;
+                var x = r*Mathf.Cos(w);
+                var z = r*Mathf.Sin(w);
+                ringVertices[i] = new Vector3(x, y, z);
+            }
+
+            //Transform the local vertices into world space around the central arena and use those to construct nodes
+            var centralArena = GameObject.Find("Central Arena");
+            var nodes = new MapNode[n];
+            for (int i = 0; i < n; i++)
+            {
+                var p = centralArena.transform.TransformPoint(ringVertices[i]);
+                var nodeObj = Object.Instantiate(new GameObject("MapNode"), nodeGroupObj.transform);
+                nodes[i] = nodeObj.AddComponent<MapNode>();
+                nodes[i].flags = NodeFlags.NoCeiling;
+                nodes[i].transform.position = p;
+            }
+
+            //Construct links based on tri strip topology
+            var lineOfSightMasks = new SerializableBitArray[n];
+            for (int i = 0; i < n; i++)
+            {
+                var links = new List<MapNode.Link>(4);
+                for (int k = -2; k <= 2; k++)
+                {
+                    if (k == 0)
+                        continue;
+
+                    int relIdx = (i + k) % n;
+                    if (relIdx < 0)
+                        relIdx += n;
+                    var link = new MapNode.Link
+                    {
+                        nodeB = nodes[relIdx],
+                        distanceScore = Vector3.Distance(nodes[i].transform.position, nodes[relIdx].transform.position),
+                        minJumpHeight = 100f,
+                        hullMask = -1
+                    };
+                    links.Add(link);
+                }
+                nodes[i].links = links;
+
+                var losMask = new SerializableBitArray(n);
+                for (int j = 0; j < n; j++)
+                    losMask[j] = true;
+                lineOfSightMasks[i] = losMask;
+            }
+
+            nodeGroup.graphType = MapNodeGroup.GraphType.Ground;
+            nodeGroup.nodeGraph = new NodeGraph();
+            nodeGroup.nodeGraph.SetNodes(new ReadOnlyCollection<MapNode>(nodes),
+                                         new ReadOnlyCollection<SerializableBitArray>(lineOfSightMasks));
+            nodeGroup.nodeGraph.DebugDrawLinks(HullClassification.Human);
+            SceneInfo.instance.groundNodes = nodeGroup.nodeGraph;
+            SceneInfo.instance.groundNodeGroup = nodeGroup;
         }
 
         private void CharacterBodyOnHandleConstructTurret(ILContext il)

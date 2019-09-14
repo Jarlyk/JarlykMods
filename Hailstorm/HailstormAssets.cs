@@ -38,11 +38,9 @@ namespace JarlykMods.Hailstorm
                 BarrierMaterial = Resources.Load<GameObject>("Prefabs/TemporaryVisualEffects/barriereffect")
                                            .GetComponentInChildren<MeshRenderer>().material;
 
-                CataclysmPlanePrefab = bundle.LoadAsset<GameObject>("Assets/Prefabs/CataclysmPlane.prefab");
                 CataclysmPlatformPrefab = bundle.LoadAsset<GameObject>("Assets/Prefabs/CataclysmPlatform.prefab");
                 CataclysmPlatformPrefab.AddComponent<MobilePlatform>();
 
-                //CataclysmSkyboxMaterial = bundle.LoadAsset<Material>("Assets/Mirza Beig/Particle Systems/Ultimate VFX/Demos/Starfall/Materials/Skybox/mat_skybox.mat");
                 CataclysmSkyboxMaterial = bundle.LoadAsset<Material>("Assets/SpaceSkies Free/Skybox_3/Purple_4K_Resolution.mat");
                 CataclysmArenaPrefab = bundle.LoadAsset<GameObject>("Assets/Prefabs/CataclysmArena.prefab");
 
@@ -86,8 +84,6 @@ namespace JarlykMods.Hailstorm
 
         public static GameObject TwisterPrefab { get; private set; }
 
-        public static GameObject CataclysmPlanePrefab { get; private set; }
-
         public static GameObject CataclysmPlatformPrefab { get; private set; }
 
         public static Material CataclysmSkyboxMaterial { get; private set; }
@@ -107,7 +103,7 @@ namespace JarlykMods.Hailstorm
             ClientScene.RegisterPrefab(GravBombPrefab, NetworkHash128.Parse("6d803141bb60b3f7"));
             ClientScene.RegisterPrefab(AsteroidProjectilePrefab, NetworkHash128.Parse("34eddec13b017082"));
 
-            //For convenience: pre-generated random IDs that could be used later
+            //For convenience: pre-generated random IDs that can be used later
             //164497abc3b46e41
             //bfd424a1ac1b07ce
             //7c3cba1b92427f72

@@ -280,6 +280,14 @@ namespace JarlykMods.Hailstorm.Cataclysm
 
         public static void AugmentPrefab(GameObject prefab)
         {
+            var nid = prefab.AddComponent<NetworkIdentity>();
+
+            var holo = prefab.AddComponent<CustomHologramProjector>();
+
+            var lci = prefab.AddComponent<LaserChargerInteraction>();
+
+            var h = prefab.AddComponent<Highlight>();
+            h.highlightColor = Highlight.HighlightColor.teleporter;
         }
 
         private enum ActivationState
