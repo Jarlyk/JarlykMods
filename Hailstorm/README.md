@@ -34,6 +34,10 @@ This mod is released under the standard MIT license, which is a permissive licen
 
 ### Changelog
 
+0.3.0 | 2019-09-20
+- Updated for RoR2 Skills 2.0 Release
+- Prep work for future fun stuff (sorry about the file size increase...)
+
 0.2.0 | 2019-08-27
 - Added Storm elites and accompanying tornado projectiles
 - Increased spawn rate of dark elites

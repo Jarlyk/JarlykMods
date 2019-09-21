@@ -1,11 +1,11 @@
 {
   "name": "Raincoat",
-  "version_number": "0.1.2",
+  "version_number": "0.2.0",
   "website_url": "https://github.com/Jarlyk/JarlykMods",
   "description": "Collection of optional tweaks for an improved Risk of Rain experience",
   "dependencies": [
     "bbepis-BepInExPack-1.3.1",
     "wildbook-MiniRpcLib-0.0.1",
-    "tristanmcpherson-R2API-2.1.15"
+    "tristanmcpherson-R2API-2.1.16"
   ]
 }

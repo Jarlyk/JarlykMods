@@ -24,5 +24,8 @@ This mod is released under the standard MIT license, which is a permissive licen
 
 ### Changelog
 
+0.2.0 | 2019-09-20
+- Updated for RoR2 Skills 2.0 Release
+
 0.1.0 | 2019-08-27
 - Initial tracked version
