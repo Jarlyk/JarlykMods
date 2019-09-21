@@ -184,11 +184,12 @@ namespace JarlykMods.Hailstorm.Cataclysm
         {
             if (CurrentState == ActivationState.Idle)
             {
-                Chat.SendBroadcastChat(new Chat.SubjectChatMessage
+                var message = new Chat.SubjectChatMessage
                 {
-                    subjectCharacterBodyGameObject = activator.gameObject,
+                    subjectAsCharacterBody = activator.gameObject.GetComponent<CharacterBody>(),
                     baseToken = "{0} has begun charging the laser power node"
-                });
+                };
+                Chat.SendBroadcastChat(message);
                 CurrentState = ActivationState.Charging;
             }
         }

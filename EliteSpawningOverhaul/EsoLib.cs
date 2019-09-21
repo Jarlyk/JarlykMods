@@ -58,8 +58,17 @@ namespace EliteSpawningOverhaul
                 spawnWeight = 1.0f,
                 costMultiplier = 36.0f,
                 damageBoostCoeff = 6.0f,
-                healthBoostCoeff = 28.2f,
+                healthBoostCoeff = 23.5f,
                 eliteType = EliteIndex.Poison,
+                isAvailable = () => Run.instance.loopClearCount > 0
+            });
+            Cards.Add(new EliteAffixCard
+            {
+                spawnWeight = 1.0f,
+                costMultiplier = 36.0f,
+                damageBoostCoeff = 6.0f,
+                healthBoostCoeff = 23.5f,
+                eliteType = EliteIndex.Haunted,
                 isAvailable = () => Run.instance.loopClearCount > 0
             });
         }
