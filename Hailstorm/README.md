@@ -34,6 +34,9 @@ This mod is released under the standard MIT license, which is a permissive licen
 
 ### Changelog
 
+0.3.1 | 2019-09-21
+- Added missing dependency reference
+
 0.3.0 | 2019-09-20
 - Updated for RoR2 Skills 2.0 Release
 - Prep work for future fun stuff (sorry about the file size increase...)
