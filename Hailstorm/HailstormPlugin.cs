@@ -67,48 +67,6 @@ namespace JarlykMods.Hailstorm
         {
             _darkElites?.Update();
             _barrierElites?.Update();
-
-            //if (Input.GetKeyDown(KeyCode.F5) && _barrierElites != null && _darkElites != null)
-            //{
-            //    var user = LocalUserManager.GetFirstLocalUser();
-            //    var body = user.cachedBody;
-            //    if (body?.master == null)
-            //    {
-            //        Debug.LogError("Cannot find local user body!");
-            //        return;
-            //    }
-
-            //    var beetle = Resources.Load<CharacterSpawnCard>("SpawnCards/CharacterSpawnCards/cscBeetle");
-            //    //var wisp = Resources.Load<CharacterSpawnCard>("SpawnCards/CharacterSpawnCards/cscLesserWisp");
-            //    var placement = new DirectorPlacementRule
-            //    {
-            //        spawnOnTarget = body.transform,
-            //        maxDistance = 40,
-            //        placementMode = DirectorPlacementRule.PlacementMode.Approximate,
-            //        preventOverhead = false
-            //    };
-
-            //    for (int i = 0; i < 5; i++)
-            //    {
-            //        EsoLib.TrySpawnElite(beetle, _stormElites.Card, placement, _rng);
-            //    }
-            //}
-
-            //if (Input.GetKeyDown(KeyCode.F6))
-            //{
-            //    var user = LocalUserManager.GetFirstLocalUser();
-            //    var body = user.cachedBody;
-            //    if (body?.master == null)
-            //    {
-            //        Debug.LogError("Cannot find local user body!");
-            //        return;
-            //    }
-
-            //    var spawnPos = body.aimOriginTransform.TransformPoint(0, 0, 2);
-            //    var twister = Instantiate(HailstormAssets.TwisterPrefab);
-            //    twister.transform.position = spawnPos;
-            //    twister.transform.localScale = new Vector3(15.0f, 35.0f, 15.0f);
-            //}
         }
 
         [Item(ItemAttribute.ItemType.Elite)]

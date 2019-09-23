@@ -69,7 +69,7 @@ namespace JarlykMods.Raincoat
         public void Update()
         {
             if (_recentItemDroppper != null && _dropItemKey != null && Input.GetKeyDown(_dropItemKey.Value))
-                _recentItemDroppper?.DropRecentItem();
+                _recentItemDroppper.DropRecentItem();
 
             if (RaincoatConfig.EnableStarterPack.Value && NetworkServer.active && _starterPackKey != null && Input.GetKeyDown(_starterPackKey.Value))
                 StarterPack.GrantStarterItemsToAll();

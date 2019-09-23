@@ -12,6 +12,7 @@ namespace JarlykMods.Hailstorm
     {
         private List<GameObject> _tetheredObjects = new List<GameObject>();
         private TeamComponent _teamComponent;
+        private Collider[] _colliders;
 
         public GameObject TetherPrefab;
 
@@ -24,17 +25,11 @@ namespace JarlykMods.Hailstorm
         private void Awake()
         {
             _teamComponent = GetComponent<TeamComponent>();
+            _colliders = new Collider[20];
         }
 
         private void AddToList(GameObject affectedObject)
         {
-            if (TetherPrefab == null)
-            {
-                Debug.Log("No tether prefab active for ForcelessTetherMaster; disabling");
-                enabled = false;
-                return;
-            }
-
             var tetherObj = Instantiate(TetherPrefab, affectedObject.transform);
             tetherObj.SetActive(true);
 
@@ -46,20 +41,22 @@ namespace JarlykMods.Hailstorm
 
         private void FixedUpdate()
         {
-            var colliders = Physics.OverlapSphere(transform.position, Radius, LayerIndex.defaultLayer.mask);
+            int colliderCount = Physics.OverlapSphereNonAlloc(transform.position, Radius, _colliders, LayerIndex.defaultLayer.mask);
             var newTethered = new List<GameObject>();
-            foreach (var collider in colliders)
+            for (var i = 0; i < colliderCount; i++)
             {
-                bool canTether = collider.gameObject != gameObject && CanTether(collider.gameObject);
+                var collider = _colliders[i];
+                var colliderObj = collider.gameObject;
+                bool canTether = colliderObj != gameObject && CanTether(colliderObj);
                 if (canTether && _teamComponent)
                 {
                     var teamComponent = collider.GetComponent<TeamComponent>();
-                    canTether = teamComponent != null && teamComponent.teamIndex == _teamComponent.teamIndex;
+                    canTether = teamComponent && teamComponent.teamIndex == _teamComponent.teamIndex;
                 }
 
                 if (canTether)
                 {
-                    newTethered.Add(collider.gameObject);
+                    newTethered.Add(colliderObj);
                 }
             }
 

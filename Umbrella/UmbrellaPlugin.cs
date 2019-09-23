@@ -61,23 +61,24 @@ namespace JarlykMods.Umbrella
             return JestersDice.Build();
         }
 
-        public void Update()
-        {
-            if (Input.GetKeyDown(KeyCode.F3) && NetworkServer.active)
-            {
-                var user = LocalUserManager.GetFirstLocalUser();
-                var body = user.cachedBody;
-                if (body?.master == null)
-                {
-                    Debug.LogError("Cannot find local user body!");
-                    return;
-                }
+        //public void Update()
+        //{
+        //    if (Input.GetKeyDown(KeyCode.F3) && NetworkServer.active)
+        //    {
+        //        var user = LocalUserManager.GetFirstLocalUser();
+        //        var body = user.cachedBody;
+        //        if (body?.master == null)
+        //        {
+        //            Debug.LogError("Cannot find local user body!");
+        //            return;
+        //        }
 
-                var charTransform = body.transform;
-                var pickupIndex = new PickupIndex(_jestersDice.EquipIndex);
-                PickupDropletController.CreatePickupDroplet(pickupIndex,
-                                                            charTransform.position, Vector3.up * 20f + charTransform.forward * 10f);
-            }
-        }
+        //        var charTransform = body.transform;
+        //        var pickupIndex = new PickupIndex(_jestersDice.EquipIndex);
+        //        PickupDropletController.CreatePickupDroplet(pickupIndex,
+        //                                                    charTransform.position,
+        //                                                    Vector3.up*20f + charTransform.forward*10f);
+        //    }
+        //}
     }
 }

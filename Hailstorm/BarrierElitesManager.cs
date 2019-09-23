@@ -151,11 +151,13 @@ namespace JarlykMods.Hailstorm
                     foreach (var obj in tetherMaster.GetTetheredObjects())
                     {
                         var healthComponent = obj.GetComponent<HealthComponent>();
-                        healthComponent?.AddBarrier(0.1f*shieldBearer.maxHealth);
+                        if (healthComponent != null)
+                            healthComponent.AddBarrier(0.1f*shieldBearer.maxHealth);
                     }
                 }
             }
         }
+
         public static CustomElite Build()
         {
             HailstormAssets.Init();
@@ -170,7 +172,7 @@ namespace JarlykMods.Hailstorm
                 cooldown = 10f,
                 pickupModelPath = "",
                 pickupIconPath = "",
-                nameToken = BarrierElitesManager.EquipName,
+                nameToken = EquipName,
                 pickupToken = "Shield-Bearer",
                 descriptionToken = "Shield-Bearer",
                 canDrop = false,
@@ -183,8 +185,8 @@ namespace JarlykMods.Hailstorm
             };
 
             var equip = new CustomEquipment(equipDef, null, null, new ItemDisplayRule[0]);
-            var buff = new CustomBuff(BarrierElitesManager.BuffName, buffDef, HailstormAssets.IconBarrierElite);
-            var elite = new CustomElite(BarrierElitesManager.EliteName, eliteDef, equip, buff, 1);
+            var buff = new CustomBuff(BuffName, buffDef, HailstormAssets.IconBarrierElite);
+            var elite = new CustomElite(EliteName, eliteDef, equip, buff, 1);
             return elite;
         }
     }

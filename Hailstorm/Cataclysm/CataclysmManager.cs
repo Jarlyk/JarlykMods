@@ -30,8 +30,9 @@ namespace JarlykMods.Hailstorm.Cataclysm
             //https://github.com/x753/Risk-of-Ridiculous/blob/master/Ridiculous/Ridiculous.cs
             On.RoR2.Stage.Start += StageOnStart;
             On.RoR2.Stage.GetPlayerSpawnTransform += StageOnGetPlayerSpawnTransform;
-            Run.instance.nextStageScene = SceneCatalog.GetSceneDefFromSceneName("testscene");
-            Run.instance.AdvanceStage(Run.instance.nextStageScene);
+            var nextScene = ScriptableObject.CreateInstance<SceneDef>();
+            nextScene.SetPropertyValue("sceneName", "testscene");
+            Run.instance.AdvanceStage(nextScene);
         }
 
         private Transform StageOnGetPlayerSpawnTransform(On.RoR2.Stage.orig_GetPlayerSpawnTransform orig, Stage self)

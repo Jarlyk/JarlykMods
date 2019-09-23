@@ -27,8 +27,8 @@ namespace JarlykMods.Hailstorm
 
         private void FixedUpdate()
         {
-            //If owner dies or loses buff, we should die too
-            if (_body == null || !_body.HasBuff(StormBuff))
+            //If owner loses buff, we should die too
+            if (!_body.HasBuff(StormBuff))
             {
                 Destroy(this);
                 return;

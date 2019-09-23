@@ -49,7 +49,6 @@ namespace JarlykMods.Hailstorm
 
             //Update elite materials
             On.RoR2.CharacterModel.InstanceUpdate += CharacterModelOnInstanceUpdate;
-            //IL.RoR2.CharacterModel.UpdateOverlays += CharacterModelOnUpdateOverlays;
 
             //Dark elites spawn much less frequently, but are only slightly stronger/costlier than tier 1s
             var card = new EliteAffixCard
@@ -76,7 +75,6 @@ namespace JarlykMods.Hailstorm
                 Accel = 0.3f,
                 MaxSpeed = 0.6f
             };
-
 
             //Whenever scene changes, stop the breathing sound
             SceneManager.sceneUnloaded += s => AkSoundEngine.PostEvent(SoundEvents.StopLargeBreathing, null);
@@ -114,22 +112,6 @@ namespace JarlykMods.Hailstorm
             var buff = new CustomBuff(BuffName, buffDef, HailstormAssets.IconDarkElite);
             var elite = new CustomElite(EliteName, eliteDef, equip, buff, 1);
             return elite;
-        }
-
-        private void CharacterModelOnUpdateOverlays(ILContext il)
-        {
-            var c = new ILCursor(il);
-            c.GotoNext(i => i.MatchLdarg(0),
-                       i => i.MatchLdfld("RoR2.CharacterModel", "wasPreviouslyClayGooed"));
-            c.Emit(OpCodes.Ldarg_0);
-            c.EmitDelegate<Func<Material>>(() => HailstormAssets.PureBlack);
-            c.Emit(OpCodes.Ldarg_0);
-            c.Emit(OpCodes.Ldfld, typeof(CharacterModel).GetField("myEliteIndex", BindingFlags.Instance | BindingFlags.NonPublic));
-            c.Emit(OpCodes.Ldc_I4, (int)_eliteIndex);
-            c.Emit(OpCodes.Ceq);
-            c.Emit(OpCodes.Call, typeof(CharacterModel).GetMethod("<UpdateOverlays>g__AddOverlay|94_0", BindingFlags.Instance | BindingFlags.NonPublic));
-
-            //TODO: Overlays is something that we might want to make extensible?
         }
 
         private void CharacterModelOnInstanceUpdate(On.RoR2.CharacterModel.orig_InstanceUpdate orig, CharacterModel self)
@@ -265,25 +247,14 @@ namespace JarlykMods.Hailstorm
 
         public void Update()
         {
-            if (Input.GetKeyDown(KeyCode.F4))
-            {
-                if (Card.spawnWeight > 10)
-                {
-                    Card.spawnWeight = 0.02f;
-                }
-                else
-                {
-                    Card.spawnWeight = 100.0f;
-                    Debug.Log("Darkness is amplified!");
-                }
-            }
-
+            //Animate the darkness texture
             _walkerU.Update(Time.deltaTime);
             _walkerV.Update(Time.deltaTime);
             HailstormAssets.PurpleCracks.SetTextureOffset("_MainTex", new Vector2(_walkerU.Position, _walkerV.Position));
 
             if (Time.time - _lastCheckTime > 0.5f)
             {
+                //Give darkness texture a new target setpoint and update darkness effect in general
                 _walkerU.Setpoint = _rng.nextNormalizedFloat - 0.5f;
                 _walkerV.Setpoint = _rng.nextNormalizedFloat - 0.5f;
                 CheckUpdate();
@@ -293,14 +264,19 @@ namespace JarlykMods.Hailstorm
 
         private void CheckUpdate()
         {
-            var camera = CameraRigController.readOnlyInstancesList[0]?.sceneCam;
-            if (camera == null || _darknessEffect == null)
+            var rigs = CameraRigController.readOnlyInstancesList;
+            if (rigs.Count == 0)
+                return;
+
+            var camera = rigs[0]?.sceneCam;
+            var bodies = CharacterBody.readOnlyInstancesList;
+            if (camera == null || _darknessEffect == null || bodies == null)
                 return;
 
             bool canSeeDarkElite = false;
             int darkEliteCount = 0;
             var minX = 0.5f;
-            foreach (var body in CharacterBody.readOnlyInstancesList)
+            foreach (var body in bodies)
             {
                 if (body.isPlayerControlled || !body.HasBuff(_buffIndex) || body.teamComponent?.teamIndex != TeamIndex.Monster)
                     continue;
@@ -331,7 +307,7 @@ namespace JarlykMods.Hailstorm
             {
                 _darknessEffect.SetDarkTarget(80f);
             }
-            else
+            else if (_darknessEffect.enabled)
             {
                 _darknessEffect.Banish();
                 _darknessSeen = false;
