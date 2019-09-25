@@ -23,7 +23,7 @@ namespace JarlykMods.Umbrella
             EquipIndex = (EquipmentIndex)ItemLib.ItemLib.GetEquipmentId(EquipNames.JestersDice);
         }
 
-        public EquipmentIndex EquipIndex { get; }
+        public static EquipmentIndex EquipIndex { get; private set; }
 
         public void Awake()
         {

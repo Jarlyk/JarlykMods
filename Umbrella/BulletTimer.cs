@@ -22,7 +22,7 @@ namespace JarlykMods.Umbrella
 
         }
 
-        public EquipmentIndex EquipIndex { get; }
+        public static EquipmentIndex EquipIndex { get; private set; }
 
         public void PerformAction(CharacterBody body)
         {

@@ -25,6 +25,12 @@ namespace JarlykMods.Umbrella
             _jestersDice = new JestersDice();
 
             On.RoR2.EquipmentSlot.PerformEquipmentAction += EquipmentSlotOnPerformEquipmentAction;
+
+            On.RoR2.Console.Awake += (orig, self) =>
+            {
+                CommandHelper.RegisterCommands(self);
+                orig(self);
+            };
         }
 
         private void Awake()
@@ -34,13 +40,13 @@ namespace JarlykMods.Umbrella
 
         private bool EquipmentSlotOnPerformEquipmentAction(On.RoR2.EquipmentSlot.orig_PerformEquipmentAction orig, EquipmentSlot self, EquipmentIndex index)
         {
-            if (index == _bulletTimer.EquipIndex)
+            if (index == BulletTimer.EquipIndex)
             {
                 _bulletTimer.PerformAction(self.characterBody);
                 return true;
             }
 
-            if (index == _jestersDice.EquipIndex)
+            if (index == JestersDice.EquipIndex)
             {
                 _jestersDice.PerformAction(this, self.characterBody);
                 return true;
@@ -61,24 +67,36 @@ namespace JarlykMods.Umbrella
             return JestersDice.Build();
         }
 
-        //public void Update()
-        //{
-        //    if (Input.GetKeyDown(KeyCode.F3) && NetworkServer.active)
-        //    {
-        //        var user = LocalUserManager.GetFirstLocalUser();
-        //        var body = user.cachedBody;
-        //        if (body?.master == null)
-        //        {
-        //            Debug.LogError("Cannot find local user body!");
-        //            return;
-        //        }
+        [ConCommand(commandName = "umb_spawn_equip", flags = ConVarFlags.ExecuteOnServer, helpText="Spawn Umbrella Equipment")]
+        private static void SpawnEquip(ConCommandArgs args)
+        {
+            if (args.Count < 1)
+                return;
 
-        //        var charTransform = body.transform;
-        //        var pickupIndex = new PickupIndex(_jestersDice.EquipIndex);
-        //        PickupDropletController.CreatePickupDroplet(pickupIndex,
-        //                                                    charTransform.position,
-        //                                                    Vector3.up*20f + charTransform.forward*10f);
-        //    }
-        //}
+            if (args[0].ToLower().StartsWith("b"))
+                SpawnEquip(BulletTimer.EquipIndex);
+            else if (args[0].ToLower().StartsWith("j"))
+                SpawnEquip(JestersDice.EquipIndex);
+        }
+
+        private static void SpawnEquip(EquipmentIndex equip)
+        {
+            if (NetworkServer.active)
+            {
+                var user = LocalUserManager.GetFirstLocalUser();
+                var body = user.cachedBody;
+                if (body?.master == null)
+                {
+                    Debug.LogError("Cannot find local user body!");
+                    return;
+                }
+
+                var charTransform = body.transform;
+                var pickupIndex = new PickupIndex(equip);
+                PickupDropletController.CreatePickupDroplet(pickupIndex,
+                                                            charTransform.position,
+                                                            Vector3.up * 20f + charTransform.forward * 10f);
+            }
+        }
     }
 }
