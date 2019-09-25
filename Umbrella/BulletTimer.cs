@@ -24,13 +24,10 @@ namespace JarlykMods.Umbrella
 
         public EquipmentIndex EquipIndex { get; }
 
-        public void PerformAction()
+        public void PerformAction(CharacterBody body)
         {
             _startTime = Time.time;
-
-            var user = LocalUserManager.GetFirstLocalUser();
-            if (user.cachedBodyObject != null)
-                AkSoundEngine.PostEvent(SoundEvents.PlayBulletTimer, user.cachedBodyObject);
+            AkSoundEngine.PostEvent(SoundEvents.PlayBulletTimer, body.gameObject);
         }
 
         private void ProjectileManagerOnFireProjectileServer(ILContext il)

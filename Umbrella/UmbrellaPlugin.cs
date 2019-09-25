@@ -8,7 +8,7 @@ using UnityEngine.Networking;
 
 namespace JarlykMods.Umbrella
 {
-    [BepInPlugin(PluginGuid, "Umbrella", "0.1.0")]
+    [BepInPlugin(PluginGuid, "Umbrella", "0.2.1")]
     [BepInDependency(R2API.R2API.PluginGUID)]
     [BepInDependency(AssetPlus.AssetPlus.modguid)]
     [BepInDependency(ItemLibPlugin.ModGuid)]
@@ -36,13 +36,13 @@ namespace JarlykMods.Umbrella
         {
             if (index == _bulletTimer.EquipIndex)
             {
-                _bulletTimer.PerformAction();
+                _bulletTimer.PerformAction(self.characterBody);
                 return true;
             }
 
             if (index == _jestersDice.EquipIndex)
             {
-                _jestersDice.PerformAction(this);
+                _jestersDice.PerformAction(this, self.characterBody);
                 return true;
             }
 

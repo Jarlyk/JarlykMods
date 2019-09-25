@@ -15,6 +15,7 @@ namespace JarlykMods.Umbrella
     public sealed class JestersDice
     {
         private readonly Xoroshiro128Plus _rng;
+        private Collider[] _colliders;
 
         public JestersDice()
         {
@@ -26,40 +27,27 @@ namespace JarlykMods.Umbrella
 
         public void Awake()
         {
+            _colliders = new Collider[20];
             BuildTexture();
         }
 
-        public void PerformAction(MonoBehaviour owner)
+        public void PerformAction(MonoBehaviour owner, CharacterBody body)
         {
-            owner.StartCoroutine(RunDice());
+            owner.StartCoroutine(RunDice(body));
         }
 
-        private IEnumerator RunDice()
+        private IEnumerator RunDice(CharacterBody body)
         {
-            var user = LocalUserManager.GetFirstLocalUser();
-            var body = user.cachedBody;
-            if (body?.master == null)
-            {
-                Debug.LogError("Jester's Dice: Cannot find local user body!");
-                yield break;
-            }
-
             AkSoundEngine.PostEvent(SoundEvents.PlayJestersDice, body.gameObject);
 
             //Allow the dice rolling sound to run before actually swapping items
             yield return new WaitForSecondsRealtime(1.2f);
 
-            //Grab the body again, in case the player has lost it during the delay
-            body = user.cachedBody;
-            if (body?.master == null)
-            {
-                Debug.LogError("Jester's Dice: Cannot find local user body!");
-                yield break;
-            }
+            int collideCount = Physics.OverlapSphereNonAlloc(body.corePosition, 25, _colliders, (int)LayerIndex.fakeActor.mask);
+            var pickupControllers = Enumerable.Range(0, collideCount)
+                                              .Select(i => _colliders[i].GetComponent<GenericPickupController>())
+                                              .Where(c => c != null).ToList();
 
-            var colliders = Physics.OverlapSphere(body.corePosition, 25, (int)LayerIndex.fakeActor.mask);
-            var pickupControllers = colliders.Select(c => c.GetComponent<GenericPickupController>())
-                                             .Where(c => c != null).ToList();
             int rerollCount = 0;
             foreach (var controller in pickupControllers)
             {
