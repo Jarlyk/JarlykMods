@@ -21,13 +21,10 @@ namespace JarlykMods.Raincoat
             if (participatingPlayerCount == 0)
                 return;
 
-            //If no teleporter, nothing to do
-            var teleporterInteraction = TeleporterInteraction.instance;
-            if (teleporterInteraction == null)
-                return;
-
             //More items for more players and for more mountain shrines
-            int itemCount = participatingPlayerCount*(1 + teleporterInteraction.shrineBonusStacks);
+            int itemCount = (1 + self.bonusRewardCount);
+            if (self.scaleRewardsByPlayerCount)
+                itemCount *= participatingPlayerCount;
 
             for (int i = 0; i < itemCount; i++)
             {
@@ -39,15 +36,15 @@ namespace JarlykMods.Raincoat
 
                 //Slowly increasing chance of red items, capping at 20%
                 var redChance = Math.Min(0.20f, 0.02f*Run.instance.stageClearCount - 0.10f);
-                controller.itemTier = rng.nextNormalizedFloat < redChance ? ItemTier.Tier3 : ItemTier.Tier2;
+                controller.itemTier = rng.nextNormalizedFloat < redChance || self.forceTier3Reward ? ItemTier.Tier3 : ItemTier.Tier2;
 
-                //Determine where to place the shop (randomly relative to the teleporter)
+                //Determine where to place the shop (randomly relative to the drop position)
                 var placementRule = new DirectorPlacementRule();
                 placementRule.maxDistance = 60f;
                 placementRule.minDistance = 10f;
                 placementRule.placementMode = DirectorPlacementRule.PlacementMode.Approximate;
-                placementRule.position = teleporterInteraction.transform.position;
-                placementRule.spawnOnTarget = teleporterInteraction.transform;
+                placementRule.position = self.dropPosition.position;
+                placementRule.spawnOnTarget = self.dropPosition;
 
                 var spawnRequest = new DirectorSpawnRequest(spawnCard, placementRule, rng);
 
