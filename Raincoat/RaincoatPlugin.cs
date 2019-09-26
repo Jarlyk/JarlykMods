@@ -14,7 +14,7 @@ using UnityEngine.Networking;
 
 namespace JarlykMods.Raincoat
 {
-    [BepInPlugin(PluginGuid, "Raincoat", "0.2.0")]
+    [BepInPlugin(PluginGuid, "Raincoat", "0.2.1")]
     [BepInDependency(R2API.R2API.PluginGUID)]
     public class RaincoatPlugin : BaseUnityPlugin
     {

@@ -40,6 +40,10 @@ This mod is released under the standard MIT license, which is a permissive licen
 
 ### Changelog
 
+0.2.1 | 2019-09-25
+- Fixed issue with optional boss; when boss shop dropping is enabled, will now drop a red shop near the death site, rather than a green shop near the teleporter
+- Fixed issue where Aurelionite fight would not result in any drops
+
 0.2.0 | 2019-09-20
 - Updated for RoR2 Skills 2.0 Release
 

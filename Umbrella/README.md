@@ -24,6 +24,10 @@ This mod is released under the standard MIT license, which is a permissive licen
 
 ### Changelog
 
+0.2.2 | 2019-09-25
+- Fixed issue where Bullet Timer sound would play on host player rather than activating player
+- Fixed issue where Jester's Dice applied effects to host player rather than activating player
+
 0.2.1 | 2019-09-21
 - Added missing dependency reference
 

@@ -34,6 +34,9 @@ This mod is released under the standard MIT license, which is a permissive licen
 
 ### Changelog
 
+0.3.2 | 2019-09-25
+- Made tornadoes less deafening
+
 0.3.1 | 2019-09-21
 - Added missing dependency reference
 

@@ -8,7 +8,7 @@ using UnityEngine.Networking;
 
 namespace JarlykMods.Umbrella
 {
-    [BepInPlugin(PluginGuid, "Umbrella", "0.2.1")]
+    [BepInPlugin(PluginGuid, "Umbrella", "0.2.2")]
     [BepInDependency(R2API.R2API.PluginGUID)]
     [BepInDependency(AssetPlus.AssetPlus.modguid)]
     [BepInDependency(ItemLibPlugin.ModGuid)]
