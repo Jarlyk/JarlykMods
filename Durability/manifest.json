@@ -1,0 +1,11 @@
+{
+  "name": "EquipmentDurability",
+  "version_number": "0.1.0",
+  "website_url": "https://github.com/Jarlyk/JarlykMods",
+  "description": "Equipment no longer lasts forever; you'll have to improvise",
+  "dependencies": [
+    "bbepis-BepInExPack-2.0.0",
+    "wildbook-MiniRpcLib-0.0.1",
+    "tristanmcpherson-R2API-2.1.16"
+  ]
+}
