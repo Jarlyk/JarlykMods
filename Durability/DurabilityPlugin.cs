@@ -56,13 +56,13 @@ namespace JarlykMods.Durability
 
         private void OnUpdateDurability(NetworkUser user, UpdateDurabilityMessage message)
         {
-            var body = LocalUserManager.GetFirstLocalUser().cachedBody;
-            if (body != null)
+            var master = LocalUserManager.GetFirstLocalUser().cachedMasterObject;
+            if (master != null)
             {
-                var tracker = body.GetComponent<DurabilityTracker>();
+                var tracker = master.GetComponent<DurabilityTracker>();
                 if (tracker == null)
                 {
-                    tracker = body.gameObject.AddComponent<DurabilityTracker>();
+                    tracker = master.gameObject.AddComponent<DurabilityTracker>();
                 }
 
                 tracker.durability = message.durability;
@@ -80,18 +80,22 @@ namespace JarlykMods.Durability
                 feedback = self.gameObject.AddComponent<DurabilityFeedback>();
             }
 
-            var body = self.playerCharacterMasterController?.master?.GetBody();
-            if (body != null)
+            var master = self.playerCharacterMasterController?.master;
+            if (master != null)
             {
-                var tracker = body.GetComponent<DurabilityTracker>();
-                if (tracker != null)
+                var tracker = master.GetComponent<DurabilityTracker>();
+                if (tracker == null)
                 {
-                    bool useAlt = self.targetEquipmentSlot.activeEquipmentSlot == 0
-                        ? self.displayAlternateEquipment
-                        : !self.displayAlternateEquipment;
-                    feedback.percentDurability = useAlt ? tracker.durabilityAlt : tracker.durability;
-                    feedback.showBar = self.hasEquipment;
+                    tracker = master.gameObject.AddComponent<DurabilityTracker>();
+                    tracker.durability = FullDurability;
+                    tracker.durabilityAlt = FullDurability;
                 }
+
+                bool useAlt = self.targetEquipmentSlot.activeEquipmentSlot == 0
+                    ? self.displayAlternateEquipment
+                    : !self.displayAlternateEquipment;
+                feedback.percentDurability = useAlt ? tracker.durabilityAlt : tracker.durability;
+                feedback.showBar = self.hasEquipment;
             }
         }
 
@@ -99,7 +103,7 @@ namespace JarlykMods.Durability
         {
             if (NetworkServer.active)
             {
-                var tracker = body.GetComponent<DurabilityTracker>();
+                var tracker = body.master.GetComponent<DurabilityTracker>();
                 if (tracker != null)
                 {
                     _nextDropDurability = inventory.activeEquipmentSlot == 0 ? tracker.durability : tracker.durabilityAlt;
@@ -121,18 +125,18 @@ namespace JarlykMods.Durability
                     _nextDropDurability = FullDurability;
                 }
 
-                var bodyTracker = body.GetComponent<DurabilityTracker>();
-                if (bodyTracker == null)
+                var masterTracker = body.master.GetComponent<DurabilityTracker>();
+                if (masterTracker == null)
                 {
-                    bodyTracker = body.gameObject.AddComponent<DurabilityTracker>();
+                    masterTracker = body.masterObject.AddComponent<DurabilityTracker>();
                 }
                 if (inventory.activeEquipmentSlot == 0)
                 {
-                    bodyTracker.durability = durability;
+                    masterTracker.durability = durability;
                 }
                 else
                 {
-                    bodyTracker.durabilityAlt = durability;
+                    masterTracker.durabilityAlt = durability;
                 }
 
                 var networkUser = body.master?.playerCharacterMasterController?.networkUser;
@@ -140,8 +144,8 @@ namespace JarlykMods.Durability
                 {
                     var message = new UpdateDurabilityMessage
                     {
-                        durability = bodyTracker.durability,
-                        durabilityAlt = bodyTracker.durabilityAlt
+                        durability = masterTracker.durability,
+                        durabilityAlt = masterTracker.durabilityAlt
                     };
                     _cmdUpdateDurability.Invoke(message, networkUser);
                 }
@@ -205,10 +209,10 @@ namespace JarlykMods.Durability
 
             if (executed)
             {
-                var tracker = self.characterBody.GetComponent<DurabilityTracker>();
+                var tracker = self.characterBody.master.GetComponent<DurabilityTracker>();
                 if (tracker == null)
                 {
-                    tracker = self.characterBody.gameObject.AddComponent<DurabilityTracker>();
+                    tracker = self.characterBody.masterObject.AddComponent<DurabilityTracker>();
                 }
 
                 var durability = self.activeEquipmentSlot == 0 ? tracker.durability : tracker.durabilityAlt;
@@ -250,7 +254,7 @@ namespace JarlykMods.Durability
                     _cmdUpdateDurability.Invoke(message, networkUser);
                 }
             }
-
+            
             return executed;
         }
     }

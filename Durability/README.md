@@ -3,8 +3,11 @@
 # Equipment Durability
 There's lots of interesting equipment to be found, but most of it gets ignored once the 'optimal' equipment is found.  This mod aims to rectify that by giving equipment a limited durability, incentivizing swapping out your equipment from time to time.  Using your equipment repeatedly in quick succession wears it out even faster, so beware those who are tempted by the Gesture of the Drowned.
 
-### Overheating and Breakage
-All equipments have a limited durability.  When you use an equipment, it loses a small amount of durability, with extra durability loss if activated by Gesture of the Drowned.  When the durability is exhausted, the equipment breaks and you'll need to find something new.
+### Mechanics
+All equipments have a limited durability.  When you use an equipment, it loses a small amount of durability.  When the durability is exhausted, the equipment breaks and you'll need to find something new.  Fuel cells make the equipment lose durability less quickly, but Gesture of the Drowned does not.
+
+### Configuration
+You can configure the durability of equipment in terms of the expected lifetime, in seconds.  Durability loss will be scaled automatically so that if you were to use the item immediatley when it comes off cooldown, equipment would last this long.  Lunar equipment has a separate lifetime (by default, twice that of regular equipment)
 
 ### Installation
 Place JarlykMods.Durability.dll in your BepInEx\plugins folder.  If you're using a Mod Manager, it may place it under its own folder under plugins, which is also fine.
