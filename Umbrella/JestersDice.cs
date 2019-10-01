@@ -96,25 +96,39 @@ namespace JarlykMods.Umbrella
                 {
                     for (int k = 0; k < inv.GetItemCount(item); k++)
                     {
-                        //Will avoid rerolling Gesture
-                        //This is primarily so that if using with Gesture, will create a 'shuffle' run
-                        //Also avoid rerolling 'hidden' (no tier) items and boss items
+                        //Vvoid rerolling 'hidden' (no tier) items and boss items
                         var def = ItemCatalog.GetItemDef(item);
-                        if (item != ItemIndex.AutoCastEquipment && def.tier != ItemTier.NoTier && def.tier != ItemTier.Boss)
-                            allItems.Add(item);
+                        if (def.tier != ItemTier.NoTier && def.tier != ItemTier.Boss)
+                        {
+                            //Will also avoid rerolling the last Gesture
+                            //This is primarily so that if using with Gesture, will create a 'shuffle' run
+                            if (item != ItemIndex.AutoCastEquipment || inv.GetItemCount(ItemIndex.AutoCastEquipment) > 1)
+                            {
+                                allItems.Add(item);
+                            }
+                        }
                     }
                 }
 
+                //If no items to reroll, we're done
+                if (allItems.Count == 0)
+                    break;
+
+                //Replace item with a random item in the same tier
                 var rerollItem = _rng.NextElementUniform(allItems);
                 var tier = ItemCatalog.GetItemDef(rerollItem).tier;
                 var newPickup = _rng.NextElementUniform(GetDropList(tier));
                 inv.RemoveItem(rerollItem, 1);
                 inv.GiveItem(newPickup.itemIndex, 1);
 
+                //Display message 
                 var lostPickup = new PickupIndex(rerollItem);
                 var lostText = Util.GenerateColoredString(Language.GetString(lostPickup.GetPickupNameToken()), lostPickup.GetPickupColor());
                 var newText = Util.GenerateColoredString(Language.GetString(newPickup.GetPickupNameToken()), newPickup.GetPickupColor());
-                Chat.AddMessage($"The die has been cast: {lostText} has been lost and {newText} has been gained");
+                Chat.SendBroadcastChat(new Chat.SimpleChatMessage
+                {
+                    baseToken = $"The die has been cast: {lostText} has been lost and {newText} has been gained"
+                });
             }
         }
 

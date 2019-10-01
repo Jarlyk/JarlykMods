@@ -35,7 +35,10 @@ namespace JarlykMods.Raincoat
                 var controller = spawnCard.prefab.GetComponent<MultiShopController>();
 
                 //Slowly increasing chance of red items, capping at 20%
-                var redChance = Math.Min(0.20f, 0.02f*Run.instance.stageClearCount - 0.10f);
+                var maxChance = RaincoatConfig.BossDropRedsMaxChance.Value;
+                var chancePerStage = RaincoatConfig.BossDropRedsChancePerStage.Value;
+                var minStage = RaincoatConfig.BossDropRedsMinStage.Value;
+                var redChance = Mathf.Min(maxChance, chancePerStage*(Run.instance.stageClearCount - minStage - 1));
                 controller.itemTier = rng.nextNormalizedFloat < redChance || self.forceTier3Reward ? ItemTier.Tier3 : ItemTier.Tier2;
 
                 //Determine where to place the shop (randomly relative to the drop position)

@@ -53,6 +53,24 @@ namespace JarlykMods.Raincoat
                 "StarterPackKey",
                 "Key code for granting starter pack to all players in the game",
                 KeyCode.F1.ToString());
+
+            BossDropRedsMinStage = config.Wrap(
+                "BossShopDropping",
+                "BossDropRedsMinStage",
+                "The first stage number at which red item shops can drop from bosses",
+                6);
+
+            BossDropRedsChancePerStage = config.Wrap(
+                "BossShopDropping",
+                "BossDropRedsChancePerStage",
+                "The additive chance per stage, as a ratio;  0.02 would be a 2% chance",
+                0.02f);
+
+            BossDropRedsMaxChance = config.Wrap(
+                "BossShopDropping",
+                "BossDropRedsMaxChance",
+                "The maximum chance of a red shop dropping on any stage, as a ratio; 0.2 would be a 20% chance",
+                0.2f);
         }
 
         public static ConfigWrapper<bool> EnableRecentItemDropper;
@@ -70,5 +88,11 @@ namespace JarlykMods.Raincoat
         public static ConfigWrapper<string> DropItemKey;
 
         public static ConfigWrapper<string> StarterPackKey;
+
+        public static ConfigWrapper<int> BossDropRedsMinStage;
+
+        public static ConfigWrapper<float> BossDropRedsChancePerStage;
+
+        public static ConfigWrapper<float> BossDropRedsMaxChance;
     }
 }
