@@ -15,7 +15,7 @@ using UnityEngine.Networking;
 
 namespace JarlykMods.Durability
 {
-    [BepInPlugin(PluginGuid, "EquipmentDurability", "0.1.0")]
+    [BepInPlugin(PluginGuid, "EquipmentDurability", "0.1.1")]
     [BepInDependency(R2API.R2API.PluginGUID)]
     public sealed class DurabilityPlugin : BaseUnityPlugin
     {
@@ -205,9 +205,10 @@ namespace JarlykMods.Durability
 
         private bool EquipmentSlotOnExecuteIfReady(On.RoR2.EquipmentSlot.orig_ExecuteIfReady orig, EquipmentSlot self)
         {
+            var origStock = self.stock;
             var executed = orig(self);
 
-            if (executed)
+            if (executed && self.stock < origStock)
             {
                 var tracker = self.characterBody.master.GetComponent<DurabilityTracker>();
                 if (tracker == null)

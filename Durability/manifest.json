@@ -1,6 +1,6 @@
 {
   "name": "EquipmentDurability",
-  "version_number": "0.1.0",
+  "version_number": "0.1.1",
   "website_url": "https://github.com/Jarlyk/JarlykMods",
   "description": "Equipment no longer lasts forever; you'll have to improvise",
   "dependencies": [
