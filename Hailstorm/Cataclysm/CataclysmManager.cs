@@ -45,6 +45,10 @@ namespace JarlykMods.Hailstorm.Cataclysm
             orig(self);
 
             //Destroy random junk that was left in the scene
+            UnityEngine.Object.DestroyImmediate(GameObject.Find("EngiTurretMaster"));
+            UnityEngine.Object.DestroyImmediate(GameObject.Find("EngiTurretMaster (1)"));
+            UnityEngine.Object.DestroyImmediate(GameObject.Find("EngiTurretMaster (2)"));
+            UnityEngine.Object.DestroyImmediate(GameObject.Find("EngiTurretMaster (3)"));
             UnityEngine.Object.DestroyImmediate(GameObject.Find("EngiTurretBody(Clone)"));
             UnityEngine.Object.DestroyImmediate(GameObject.Find("EngiTurretBody(Clone)"));
             UnityEngine.Object.DestroyImmediate(GameObject.Find("EngiTurretBody(Clone)"));
