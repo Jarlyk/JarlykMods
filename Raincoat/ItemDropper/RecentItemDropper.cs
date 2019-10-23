@@ -40,7 +40,7 @@ namespace JarlykMods.Raincoat.ItemDropper
                 // Server, execute command
                 var characterBody = inventory.GetComponent<CharacterMaster>().GetBody();
                 var charTransform = characterBody.transform;
-                var pickupIndex = new PickupIndex(pickup.ItemIndex);
+                var pickupIndex = PickupCatalog.FindPickupIndex(pickup.ItemIndex);
 
                 DropItem(charTransform, inventory, pickupIndex);
             }
@@ -49,7 +49,7 @@ namespace JarlykMods.Raincoat.ItemDropper
         private void GenericPickupControllerGrantItem(On.RoR2.GenericPickupController.orig_GrantItem orig, RoR2.GenericPickupController self, CharacterBody body, Inventory inventory)
         {
             orig(self, body, inventory);
-            _pickups[inventory] = new PickupRecord(Time.time, self.pickupIndex.itemIndex);
+            _pickups[inventory] = new PickupRecord(Time.time, PickupCatalog.GetPickupDef(self.pickupIndex).itemIndex);
         }
 
         private void DoDropItem(NetworkUser user, DropRecentItemMessage message)
@@ -80,7 +80,7 @@ namespace JarlykMods.Raincoat.ItemDropper
             }
 
             Debug.Log($"Dropping item \'{pickup.ItemIndex}\' for player \'{master.name}\'");
-            var pickupIndex = new PickupIndex(pickup.ItemIndex);
+            var pickupIndex = PickupCatalog.FindPickupIndex(pickup.ItemIndex);
             DropItem(charTransform, inventory, pickupIndex);
         }
         
@@ -91,9 +91,10 @@ namespace JarlykMods.Raincoat.ItemDropper
             //if (!inventory.hasAuthority)
             //    return false;
 
-            if (pickupIndex.equipmentIndex != EquipmentIndex.None)
+            var pickupDef = PickupCatalog.GetPickupDef(pickupIndex);
+            if (pickupDef.equipmentIndex != EquipmentIndex.None)
             {
-                if (inventory.GetEquipmentIndex() != pickupIndex.equipmentIndex)
+                if (inventory.GetEquipmentIndex() != pickupDef.equipmentIndex)
                 {
                     return false;
                 }
@@ -102,12 +103,12 @@ namespace JarlykMods.Raincoat.ItemDropper
             }
             else
             {
-                if (inventory.GetItemCount(pickupIndex.itemIndex) <= 0)
+                if (inventory.GetItemCount(pickupDef.itemIndex) <= 0)
                 {
                     return false;
                 }
 
-                inventory.RemoveItem(pickupIndex.itemIndex, 1);
+                inventory.RemoveItem(pickupDef.itemIndex, 1);
             }
 
             PickupDropletController.CreatePickupDroplet(pickupIndex,

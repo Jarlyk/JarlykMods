@@ -36,9 +36,12 @@ Place JarlykMods.Raincoat.dll in your BepInEx\plugins folder.  If you're using a
 You can reach me via Github or can find me on the modding Discord at https://discord.gg/5MbXZvd.  As with most mods, this is a hobby project, so please understand that response times to questions and time to update for new RoR2 releases may vary.
 
 ### License
-This mod is released under the standard MIT license, which is a permissive license that allows for free use with attribution, while disclaiming liability.  The text of this is included in the release archive in License.txt.
+This mod is released under the standard MIT license, which is a permissive license that allows for free use, while disclaiming liability.  The text of this is included in the release archive in License.txt.
 
 ### Changelog
+
+0.2.2 | 2019-10-22
+- Fixed broken item dropping and starter pack (broken in last game patch)
 
 0.2.1 | 2019-09-25
 - Fixed issue with optional boss; when boss shop dropping is enabled, will now drop a red shop near the death site, rather than a green shop near the teleporter

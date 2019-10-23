@@ -53,17 +53,18 @@ namespace JarlykMods.Umbrella
             {
                 var newIndex = controller.pickupIndex;
 
-                if (controller.pickupIndex.itemIndex != ItemIndex.None)
+                var pickupDef = PickupCatalog.GetPickupDef(controller.pickupIndex);
+                if (pickupDef.itemIndex != ItemIndex.None)
                 {
-                    var tier = ItemCatalog.GetItemDef(controller.pickupIndex.itemIndex).tier;
+                    var tier = ItemCatalog.GetItemDef(pickupDef.itemIndex).tier;
                     if (tier != ItemTier.NoTier)
                     {
                         newIndex = _rng.NextElementUniform(GetDropList(tier));
                     }
                 }
-                else if (controller.pickupIndex.equipmentIndex != EquipmentIndex.None)
+                else if (pickupDef.equipmentIndex != EquipmentIndex.None)
                 {
-                    if (controller.pickupIndex.IsLunar())
+                    if (pickupDef.isLunar)
                     {
                         newIndex = _rng.NextElementUniform(Run.instance.availableLunarDropList);
                     }
@@ -118,13 +119,15 @@ namespace JarlykMods.Umbrella
                 var rerollItem = _rng.NextElementUniform(allItems);
                 var tier = ItemCatalog.GetItemDef(rerollItem).tier;
                 var newPickup = _rng.NextElementUniform(GetDropList(tier));
+                var newPickupDef = PickupCatalog.GetPickupDef(newPickup);
                 inv.RemoveItem(rerollItem, 1);
-                inv.GiveItem(newPickup.itemIndex, 1);
+                inv.GiveItem(newPickupDef.itemIndex, 1);
 
                 //Display message 
-                var lostPickup = new PickupIndex(rerollItem);
-                var lostText = Util.GenerateColoredString(Language.GetString(lostPickup.GetPickupNameToken()), lostPickup.GetPickupColor());
-                var newText = Util.GenerateColoredString(Language.GetString(newPickup.GetPickupNameToken()), newPickup.GetPickupColor());
+                var lostPickup = PickupCatalog.FindPickupIndex(rerollItem);
+                var lostPickupDef = PickupCatalog.GetPickupDef(lostPickup);
+                var lostText = Util.GenerateColoredString(Language.GetString(lostPickupDef.nameToken), lostPickupDef.baseColor);
+                var newText = Util.GenerateColoredString(Language.GetString(newPickupDef.nameToken), newPickupDef.baseColor);
                 Chat.SendBroadcastChat(new Chat.SimpleChatMessage
                 {
                     baseToken = $"The die has been cast: {lostText} has been lost and {newText} has been gained"
