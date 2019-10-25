@@ -49,6 +49,9 @@ namespace JarlykMods.Raincoat
                 case "TreebotBody":
                     GrantStarterRex(master);
                     break;
+                case "LoaderBody":
+                    GrantStarterLoader(master);
+                    break;
             }
         }
 
@@ -120,6 +123,14 @@ namespace JarlykMods.Raincoat
             inv.GiveItem(ItemIndex.SprintBonus, 1);
             inv.GiveItem(ItemIndex.SprintOutOfCombat, 1);
             inv.GiveItem(ItemIndex.Feather, 1);
+        }
+
+        public static void GrantStarterLoader(CharacterMaster master)
+        {
+            var inv = master.inventory;
+            inv.GiveItem(ItemIndex.Syringe, 3);
+            inv.GiveItem(ItemIndex.CritGlasses, 1);
+            inv.GiveItem(ItemIndex.HealOnCrit, 1);
         }
     }
 }
