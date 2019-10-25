@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-using ItemLib;
 using RoR2;
 using UnityEngine;
 using Mono.Cecil.Cil;
 using MonoMod.Cil;
+using R2API;
 using RoR2.Projectile;
 
 namespace JarlykMods.Umbrella
@@ -16,10 +16,33 @@ namespace JarlykMods.Umbrella
 
         public BulletTimer()
         {
-            EquipIndex = (EquipmentIndex)ItemLib.ItemLib.GetEquipmentId(EquipNames.BulletTimer);
+            var equipDef = new EquipmentDef
+            {
+                cooldown = 40f,
+                pickupModelPath = UmbrellaAssets.PrefabBulletTimer,
+                pickupIconPath = UmbrellaAssets.IconBulletTimer,
+                nameToken = EquipNames.BulletTimer,
+                descriptionToken = "Bullet Timer",
+                pickupToken = "Bullet Timer",
+                canDrop = true,
+                enigmaCompatible = true
+            };
+
+            var rule = new ItemDisplayRule
+            {
+                ruleType = ItemDisplayRuleType.ParentedPrefab,
+                followerPrefab = UmbrellaAssets.BulletTimerPrefab,
+                childName = "Chest",
+                localScale = new Vector3(0.15f, 0.15f, 0.15f),
+                localAngles = new Vector3(0f, 180f, 0f),
+                localPos = new Vector3(-0.35f, -0.1f, 0f)
+            };
+
+            var equip = new CustomEquipment(equipDef, new[] { rule });
+            EquipIndex = (EquipmentIndex)ItemAPI.AddCustomEquipment(equip);
+
             IL.RoR2.Projectile.ProjectileManager.FireProjectileServer += ProjectileManagerOnFireProjectileServer;
             _startTime = float.NaN;
-
         }
 
         public static EquipmentIndex EquipIndex { get; private set; }
@@ -55,35 +78,6 @@ namespace JarlykMods.Umbrella
                 simple.velocity *= 0.1f;
                 simple.lifetime *= 10f;
             }
-        }
-
-        public static CustomEquipment Build()
-        {
-            UmbrellaAssets.Init();
-
-            var equipDef = new EquipmentDef
-            {
-                cooldown = 40f,
-                pickupModelPath = "",
-                pickupIconPath = "",
-                nameToken = EquipNames.BulletTimer,
-                descriptionToken = "Bullet Timer",
-                pickupToken = "Bullet Timer",
-                canDrop = true,
-                enigmaCompatible = true
-            };
-
-            var rule = new ItemDisplayRule
-            {
-                ruleType = ItemDisplayRuleType.ParentedPrefab,
-                followerPrefab = UmbrellaAssets.BulletTimerPrefab,
-                childName = "Chest",
-                localScale = new Vector3(0.15f, 0.15f, 0.15f),
-                localAngles = new Vector3(0f, 180f, 0f),
-                localPos = new Vector3(-0.35f, -0.1f, 0f)
-            };
-
-            return new CustomEquipment(equipDef, UmbrellaAssets.BulletTimerPrefab, UmbrellaAssets.BulletTimerIcon, new[] { rule });
         }
     }
 }

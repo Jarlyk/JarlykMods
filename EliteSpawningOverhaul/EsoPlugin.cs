@@ -16,12 +16,7 @@ namespace EliteSpawningOverhaul
         public EsoPlugin()
         {
             EsoLib.Init();
-
-            On.RoR2.Console.Awake += (orig, self) =>
-            {
-                CommandHelper.RegisterCommands(self);
-                orig(self);
-            };
+            R2API.Utils.CommandHelper.AddToConsoleWhenReady();
         }
 
         [ConCommand(commandName = "eso_spawn", flags = ConVarFlags.ExecuteOnServer, 

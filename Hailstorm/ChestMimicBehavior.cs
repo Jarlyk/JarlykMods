@@ -46,7 +46,8 @@ namespace JarlykMods.Hailstorm
 
                 //Check what item was supposed to drop from this chest
                 var chestDrop = chest.GetFieldValue<PickupIndex>("dropPickup");
-                if (chestDrop.itemIndex == ItemIndex.None)
+                var dropItem = PickupCatalog.GetPickupDef(chestDrop).itemIndex;
+                if (dropItem == ItemIndex.None)
                     return;
 
                 //We're not really a chest, so remove it, noting where we were located
@@ -96,16 +97,16 @@ namespace JarlykMods.Hailstorm
                         Debug.LogWarning("Failed to spawn monster for Mimic!");
 
                         //This ideally shouldn't happen, but for now we'll at least drop the item
-                        PickupDropletController.CreatePickupDroplet(new PickupIndex(chestDrop.itemIndex), position, 10f*Vector3.up);
+                        PickupDropletController.CreatePickupDroplet(PickupCatalog.FindPickupIndex(dropItem), position, 10f*Vector3.up);
                         return;
                     }
 
                     //This monster carries the item that would've been in the chest and only gives xp, no gold
                     var spawnedMaster = spawned.GetComponent<CharacterMaster>();
-                    spawnedMaster.inventory.GiveItem(chestDrop.itemIndex);
+                    spawnedMaster.inventory.GiveItem(dropItem);
                     BoundReward = spawnedMaster.GetBody().GetComponent<DeathRewards>();
                     BoundReward.expReward = (uint)(chosenDirectorCard.cost*0.2*Run.instance.compensatedDifficultyCoefficient);
-                    BoundItem = chestDrop.itemIndex;
+                    BoundItem = dropItem;
                 }
             }
         }

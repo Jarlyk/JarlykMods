@@ -3,16 +3,22 @@ using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
 using System.Text;
-using AssetPlus;
 using JarlykMods.Hailstorm.Cataclysm;
 using RoR2.Networking;
 using UnityEngine;
 using UnityEngine.Networking;
+using R2API;
 
 namespace JarlykMods.Hailstorm
 {
     public static class HailstormAssets
     {
+        public static string Prefix = "@JarlykMods.Hailstorm:";
+
+        public static string IconBarrierElite = Prefix + "Assets/Icons/BarrierEliteIcon.png";
+        public static string IconDarkElite = Prefix + "Assets/Icons/DarkEliteIcon.png";
+        public static string IconStormElite = Prefix + "Assets/Icons/StormEliteIcon.png";
+
         public static void Init()
         {
             if (Loaded)
@@ -23,13 +29,13 @@ namespace JarlykMods.Hailstorm
             using (var stream = execAssembly.GetManifestResourceStream("JarlykMods.Hailstorm.hailstorm.assets"))
             {
                 var bundle = AssetBundle.LoadFromStream(stream);
+                var provider = new AssetBundleResourcesProvider(Prefix.TrimEnd(':'), bundle);
+                ResourcesAPI.AddProvider(provider);
+
                 DarknessShader = bundle.LoadAsset<Shader>("Assets/Effects/darkness.shader");
 
                 PureBlack = bundle.LoadAsset<Material>("Assets/Materials/PureBlack.mat");
                 PurpleCracks = bundle.LoadAsset<Material>("Assets/Materials/PurpleCracks.mat");
-                IconBarrierElite = bundle.LoadAsset<Sprite>("Assets/Icons/BarrierEliteIcon.png");
-                IconDarkElite = bundle.LoadAsset<Sprite>("Assets/Icons/DarkEliteIcon.png");
-                IconStormElite = bundle.LoadAsset<Sprite>("Assets/Icons/StormEliteIcon.png");
 
                 TwisterVisualPrefab = bundle.LoadAsset<GameObject>("Assets/Prefabs/TwisterVisual.prefab");
                 TwisterPrefab = bundle.LoadAsset<GameObject>("Assets/Prefabs/Twister.prefab");
@@ -73,12 +79,6 @@ namespace JarlykMods.Hailstorm
         public static Material PurpleCracks { get; private set; }
 
         public static Material BarrierMaterial { get; private set; }
-
-        public static Sprite IconBarrierElite { get; private set; }
-
-        public static Sprite IconDarkElite { get; private set; }
-
-        public static Sprite IconStormElite { get; private set; }
 
         public static GameObject TwisterVisualPrefab { get; private set; }
 

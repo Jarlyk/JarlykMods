@@ -4,9 +4,9 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using EliteSpawningOverhaul;
-using ItemLib;
 using Mono.Cecil.Cil;
 using MonoMod.Cil;
+using R2API;
 using RoR2;
 using UnityEngine;
 using UnityEngine.Networking;
@@ -29,10 +29,39 @@ namespace JarlykMods.Hailstorm
 
         public BarrierElitesManager()
         {
-            //Custom items should be registered now, so grab their indices
-            _eliteIndex = (EliteIndex) ItemLib.ItemLib.GetEliteId(EliteName);
-            _buffIndex = (BuffIndex) ItemLib.ItemLib.GetBuffId(BuffName);
-            _equipIndex = (EquipmentIndex) ItemLib.ItemLib.GetEquipmentId(EquipName);
+            var eliteDef = new EliteDef
+            {
+                modifierToken = BarrierElitesManager.EliteName,
+                color = new Color32(162, 179, 241, 255)
+            };
+            var equipDef = new EquipmentDef
+            {
+                cooldown = 10f,
+                pickupModelPath = "",
+                pickupIconPath = HailstormAssets.IconBarrierElite,
+                nameToken = EquipName,
+                pickupToken = "Shield-Bearer",
+                descriptionToken = "Shield-Bearer",
+                canDrop = false,
+                enigmaCompatible = false
+            };
+            var buffDef = new BuffDef
+            {
+                buffColor = eliteDef.color,
+                iconPath = HailstormAssets.IconBarrierElite,
+                canStack = false
+            };
+
+            var equip = new CustomEquipment(equipDef, new ItemDisplayRule[0]);
+            var buff = new CustomBuff(BuffName, buffDef);
+            var elite = new CustomElite(EliteName, eliteDef, equip, buff, 1);
+
+            _eliteIndex = (EliteIndex)ItemAPI.AddCustomElite(elite);
+            _buffIndex = (BuffIndex) ItemAPI.AddCustomBuff(buff);
+            _equipIndex = (EquipmentIndex) ItemAPI.AddCustomEquipment(equip);
+            eliteDef.eliteEquipmentIndex = _equipIndex;
+            equipDef.passiveBuff = _buffIndex;
+            buffDef.eliteIndex = _eliteIndex;
 
             //Barrier elites are a bit more uncommon than regular tier 1 elites
             //They're also a bit tankier than usual, but not more damaging
@@ -156,38 +185,6 @@ namespace JarlykMods.Hailstorm
                     }
                 }
             }
-        }
-
-        public static CustomElite Build()
-        {
-            HailstormAssets.Init();
-
-            var eliteDef = new EliteDef
-            {
-                modifierToken = BarrierElitesManager.EliteName,
-                color = new Color32(162, 179, 241, 255)
-            };
-            var equipDef = new EquipmentDef
-            {
-                cooldown = 10f,
-                pickupModelPath = "",
-                pickupIconPath = "",
-                nameToken = EquipName,
-                pickupToken = "Shield-Bearer",
-                descriptionToken = "Shield-Bearer",
-                canDrop = false,
-                enigmaCompatible = false
-            };
-            var buffDef = new BuffDef
-            {
-                buffColor = eliteDef.color,
-                canStack = false
-            };
-
-            var equip = new CustomEquipment(equipDef, null, null, new ItemDisplayRule[0]);
-            var buff = new CustomBuff(BuffName, buffDef, HailstormAssets.IconBarrierElite);
-            var elite = new CustomElite(EliteName, eliteDef, equip, buff, 1);
-            return elite;
         }
     }
 }

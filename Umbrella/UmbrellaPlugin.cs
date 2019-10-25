@@ -1,5 +1,4 @@
 ﻿using BepInEx;
-using ItemLib;
 using RoR2;
 using UnityEngine;
 using UnityEngine.Networking;
@@ -10,8 +9,6 @@ namespace JarlykMods.Umbrella
 {
     [BepInPlugin(PluginGuid, "Umbrella", "0.2.2")]
     [BepInDependency(R2API.R2API.PluginGUID)]
-    [BepInDependency(AssetPlus.AssetPlus.modguid)]
-    [BepInDependency(ItemLibPlugin.ModGuid)]
     public class UmbrellaPlugin : BaseUnityPlugin
     {
         public const string PluginGuid = "com.jarlyk.umbrella";
@@ -55,18 +52,6 @@ namespace JarlykMods.Umbrella
             return orig(self, index);
         }
 
-        [Item(ItemAttribute.ItemType.Equipment)]
-        public static CustomEquipment EquipmentBulletTimer()
-        {
-            return BulletTimer.Build();
-        }
-
-        [Item(ItemAttribute.ItemType.Equipment)]
-        public static CustomEquipment EquipmentJestersDice()
-        {
-            return JestersDice.Build();
-        }
-
         [ConCommand(commandName = "umb_spawn_equip", flags = ConVarFlags.ExecuteOnServer, helpText="Spawn Umbrella Equipment")]
         private static void SpawnEquip(ConCommandArgs args)
         {
@@ -92,7 +77,7 @@ namespace JarlykMods.Umbrella
                 }
 
                 var charTransform = body.transform;
-                var pickupIndex = new PickupIndex(equip);
+                var pickupIndex = PickupCatalog.FindPickupIndex(equip);
                 PickupDropletController.CreatePickupDroplet(pickupIndex,
                                                             charTransform.position,
                                                             Vector3.up * 20f + charTransform.forward * 10f);

@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 using EliteSpawningOverhaul;
-using ItemLib;
+using R2API;
 using RoR2;
 using UnityEngine;
 using UnityEngine.Networking;
@@ -17,9 +17,39 @@ namespace JarlykMods.Hailstorm
 
         public StormElitesManager()
         {
-            EliteIndex = (EliteIndex) ItemLib.ItemLib.GetEliteId(EliteName);
-            BuffIndex = (BuffIndex) ItemLib.ItemLib.GetBuffId(BuffName);
-            EquipIndex = (EquipmentIndex) ItemLib.ItemLib.GetEquipmentId(EquipName);
+            var eliteDef = new EliteDef
+            {
+                modifierToken = EliteName,
+                color = new Color32(162, 179, 241, 255)
+            };
+            var equipDef = new EquipmentDef
+            {
+                cooldown = 10f,
+                pickupModelPath = "",
+                pickupIconPath = HailstormAssets.IconStormElite,
+                nameToken = EquipName,
+                pickupToken = "Storm Bringer",
+                descriptionToken = "Storm Bringer",
+                canDrop = false,
+                enigmaCompatible = false
+            };
+            var buffDef = new BuffDef
+            {
+                buffColor = eliteDef.color,
+                iconPath = HailstormAssets.IconStormElite,
+                canStack = false
+            };
+
+            var equip = new CustomEquipment(equipDef, new ItemDisplayRule[0]);
+            var buff = new CustomBuff(BuffName, buffDef);
+            var elite = new CustomElite(EliteName, eliteDef, equip, buff, 1);
+
+            EliteIndex = (EliteIndex)ItemAPI.AddCustomElite(elite);
+            BuffIndex = (BuffIndex) ItemAPI.AddCustomBuff(buff);
+            EquipIndex = (EquipmentIndex) ItemAPI.AddCustomEquipment(equip);
+            eliteDef.eliteEquipmentIndex = EquipIndex;
+            equipDef.passiveBuff = BuffIndex;
+            buffDef.eliteIndex = EliteIndex;
 
             //Storm elites are immune to twisters
             TwisterProjectileController.ImmunityBuff = BuffIndex;
@@ -59,38 +89,6 @@ namespace JarlykMods.Hailstorm
             decor.transform.localScale = new Vector3(1.5f, 1.5f, 1.5f);
             var launcher = bodyObj.AddComponent<TornadoLauncher>();
             launcher.enabled = true;
-        }
-
-        public static CustomElite Build()
-        {
-            HailstormAssets.Init();
-
-            var eliteDef = new EliteDef
-            {
-                modifierToken = EliteName,
-                color = new Color32(162, 179, 241, 255)
-            };
-            var equipDef = new EquipmentDef
-            {
-                cooldown = 10f,
-                pickupModelPath = "",
-                pickupIconPath = "",
-                nameToken = EquipName,
-                pickupToken = "Storm Bringer",
-                descriptionToken = "Storm Bringer",
-                canDrop = false,
-                enigmaCompatible = false
-            };
-            var buffDef = new BuffDef
-            {
-                buffColor = eliteDef.color,
-                canStack = false
-            };
-
-            var equip = new CustomEquipment(equipDef, null, null, new ItemDisplayRule[0]);
-            var buff = new CustomBuff(BuffName, buffDef, HailstormAssets.IconStormElite);
-            var elite = new CustomElite(EliteName, eliteDef, equip, buff, 2);
-            return elite;
         }
     }
 }

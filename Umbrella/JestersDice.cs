@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using ItemLib;
+using R2API;
 using RoR2;
 using TMPro;
 using UnityEngine;
@@ -20,7 +20,33 @@ namespace JarlykMods.Umbrella
         public JestersDice()
         {
             _rng = new Xoroshiro128Plus((ulong)DateTime.Now.Ticks);
-            EquipIndex = (EquipmentIndex)ItemLib.ItemLib.GetEquipmentId(EquipNames.JestersDice);
+
+            var equipDef = new EquipmentDef
+            {
+                cooldown = 30f,
+                pickupModelPath = UmbrellaAssets.PrefabJestersDice,
+                pickupIconPath = UmbrellaAssets.IconJestersDice,
+                pickupToken = "Jester's Dice",
+                nameToken = EquipNames.JestersDice,
+                descriptionToken = "Jester's Dice",
+                canDrop = true,
+                enigmaCompatible = true,
+                isLunar = true
+            };
+
+            var prefab = UmbrellaAssets.JestersDicePrefab;
+            var rule = new ItemDisplayRule
+            {
+                ruleType = ItemDisplayRuleType.ParentedPrefab,
+                followerPrefab = prefab,
+                childName = "Chest",
+                localScale = new Vector3(0.15f, 0.15f, 0.15f),
+                localAngles = new Vector3(0f, 180f, 0f),
+                localPos = new Vector3(-0.35f, -0.1f, 0f)
+            };
+
+            var equip = new CustomEquipment(equipDef, new[] { rule });
+            EquipIndex = (EquipmentIndex)ItemAPI.AddCustomEquipment(equip);
         }
 
         public static EquipmentIndex EquipIndex { get; private set; }
@@ -93,7 +119,7 @@ namespace JarlykMods.Umbrella
             {
                 //Accumulate list of all items in inventory so we can choose one randomly to reroll
                 var allItems = new List<ItemIndex>();
-                for (var item = ItemIndex.Syringe; item < (ItemIndex)ItemLib.ItemLib.TotalItemCount; item++)
+                for (var item = ItemIndex.Syringe; item < (ItemIndex)ItemCatalog.itemCount; item++)
                 {
                     for (int k = 0; k < inv.GetItemCount(item); k++)
                     {
@@ -246,39 +272,5 @@ namespace JarlykMods.Umbrella
             }
 
         }
-
-        public static CustomEquipment Build()
-        {
-            UmbrellaAssets.Init();
-
-            var equipDef = new EquipmentDef
-            {
-                cooldown = 30f,
-                pickupModelPath = "",
-                pickupIconPath = "",
-                pickupToken = "Jester's Dice",
-                nameToken = EquipNames.JestersDice,
-                descriptionToken = "Jester's Dice",
-                canDrop = true,
-                enigmaCompatible = true,
-                isLunar = true
-            };
-
-            //TODO
-            var prefab = UmbrellaAssets.JestersDicePrefab;
-            var icon = UmbrellaAssets.JestersDiceIcon;
-            var rule = new ItemDisplayRule
-            {
-                ruleType = ItemDisplayRuleType.ParentedPrefab,
-                followerPrefab = prefab,
-                childName = "Chest",
-                localScale = new Vector3(0.15f, 0.15f, 0.15f),
-                localAngles = new Vector3(0f, 180f, 0f),
-                localPos = new Vector3(-0.35f, -0.1f, 0f)
-            };
-
-            return new CustomEquipment(equipDef, prefab, icon, new[] { rule });
-        }
-
     }
 }

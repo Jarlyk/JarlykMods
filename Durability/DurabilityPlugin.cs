@@ -164,7 +164,7 @@ namespace JarlykMods.Durability
                 if (NetworkServer.active)
                 {
                     var controller = obj.GetComponent<PickupDropletController>();
-                    if (controller != null && controller.pickupIndex.equipmentIndex != EquipmentIndex.None)
+                    if (controller != null && PickupCatalog.GetPickupDef(controller.pickupIndex).equipmentIndex != EquipmentIndex.None)
                     {
                         var tracker = obj.AddComponent<DurabilityTracker>();
                         tracker.durability = _nextDropDurability;

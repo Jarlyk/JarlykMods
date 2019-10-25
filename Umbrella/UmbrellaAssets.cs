@@ -2,13 +2,20 @@
 using System.Collections.Generic;
 using System.Reflection;
 using System.Text;
-using AssetPlus;
+using R2API;
 using UnityEngine;
 
 namespace JarlykMods.Umbrella
 {
     public static class UmbrellaAssets
     {
+        public static string Prefix = "@JarlykMods.Umbrella:";
+
+        public static string PrefabBulletTimer = Prefix + "Assets/Import/bullet_timer/BulletTimer.prefab";
+        public static string PrefabJestersDice = Prefix + "Assets/Prefabs/JestersDice.prefab";
+        public static string IconBulletTimer = Prefix + "Assets/Import/bullet_timer/BulletTimer.png";
+        public static string IconJestersDice = Prefix + "Assets/Icons/JestersDiceIcon.png";
+
         public static void Init()
         {
             if (Loaded)
@@ -19,11 +26,11 @@ namespace JarlykMods.Umbrella
             using (var stream = execAssembly.GetManifestResourceStream("JarlykMods.Umbrella.umbrella.assets"))
             {
                 var bundle = AssetBundle.LoadFromStream(stream);
-                BulletTimerPrefab = bundle.LoadAsset<GameObject>("Assets/Import/bullet_timer/BulletTimer.prefab");
-                BulletTimerIcon = bundle.LoadAsset<UnityEngine.Object>("Assets/Import/bullet_timer/BulletTimer.png");
+                var provider = new AssetBundleResourcesProvider(Prefix.TrimEnd(':'), bundle);
+                ResourcesAPI.AddProvider(provider);
 
+                BulletTimerPrefab = bundle.LoadAsset<GameObject>("Assets/Import/bullet_timer/BulletTimer.prefab");
                 JestersDicePrefab = bundle.LoadAsset<GameObject>("Assets/Prefabs/JestersDice.prefab");
-                JestersDiceIcon = bundle.LoadAsset<UnityEngine.Object>("Assets/Icons/JestersDiceIcon.png");
             }
 
             using (var bankStream = execAssembly.GetManifestResourceStream("JarlykMods.Umbrella.Umbrella.bnk"))
@@ -38,10 +45,6 @@ namespace JarlykMods.Umbrella
 
         public static GameObject BulletTimerPrefab { get; private set; }
 
-        public static UnityEngine.Object BulletTimerIcon { get; private set; }
-
         public static GameObject JestersDicePrefab { get; private set; }
-
-        public static UnityEngine.Object JestersDiceIcon { get; private set; }
     }
 }

@@ -4,10 +4,10 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using EliteSpawningOverhaul;
-using ItemLib;
 using Mono.Cecil;
 using Mono.Cecil.Cil;
 using MonoMod.Cil;
+using R2API;
 using R2API.Utils;
 using RoR2;
 using UnityEngine;
@@ -39,10 +39,39 @@ namespace JarlykMods.Hailstorm
         {
             _rng = new Xoroshiro128Plus((ulong) DateTime.Now.Ticks);
 
-            //Custom items should be registered now, so grab their indices
-            _eliteIndex = (EliteIndex)ItemLib.ItemLib.GetEliteId(EliteName);
-            _buffIndex = (BuffIndex)ItemLib.ItemLib.GetBuffId(BuffName);
-            _equipIndex = (EquipmentIndex)ItemLib.ItemLib.GetEquipmentId(EquipName);
+            var eliteDef = new EliteDef
+            {
+                modifierToken = EliteName,
+                color = new Color32(0, 0, 0, 255),
+            };
+            var equipDef = new EquipmentDef
+            {
+                cooldown = 10f,
+                pickupModelPath = "",
+                pickupIconPath = HailstormAssets.IconDarkElite,
+                nameToken = EquipName,
+                pickupToken = "Darkness",
+                descriptionToken = "Night-bringer",
+                canDrop = false,
+                enigmaCompatible = false
+            };
+            var buffDef = new BuffDef
+            {
+                buffColor = new Color32(255, 255, 255, 255),
+                iconPath = HailstormAssets.IconDarkElite,
+                canStack = false
+            };
+
+            var equip = new CustomEquipment(equipDef, new ItemDisplayRule[0]);
+            var buff = new CustomBuff(BuffName, buffDef);
+            var elite = new CustomElite(EliteName, eliteDef, equip, buff, 1);
+
+            _eliteIndex = (EliteIndex)ItemAPI.AddCustomElite(elite);
+            _buffIndex = (BuffIndex) ItemAPI.AddCustomBuff(buff);
+            _equipIndex = (EquipmentIndex) ItemAPI.AddCustomEquipment(equip);
+            eliteDef.eliteEquipmentIndex = _equipIndex;
+            equipDef.passiveBuff = _buffIndex;
+            buffDef.eliteIndex = _eliteIndex;
 
             //When the camera starts up, hook in our darkness effect
             On.RoR2.CameraRigController.Start += CameraRigControllerOnStart;
@@ -81,38 +110,6 @@ namespace JarlykMods.Hailstorm
         }
 
         public EliteAffixCard Card { get; }
-
-        public static CustomElite Build()
-        {
-            HailstormAssets.Init();
-
-            var eliteDef = new EliteDef
-            {
-                modifierToken = EliteName,
-                color = new Color32(0, 0, 0, 255),
-            };
-            var equipDef = new EquipmentDef
-            {
-                cooldown = 10f,
-                pickupModelPath = "",
-                pickupIconPath = "",
-                nameToken = EquipName,
-                pickupToken = "Darkness",
-                descriptionToken = "Night-bringer",
-                canDrop = false,
-                enigmaCompatible = false
-            };
-            var buffDef = new BuffDef
-            {
-                buffColor = new Color32(255, 255, 255, 255),
-                canStack = false
-            };
-
-            var equip = new CustomEquipment(equipDef, null, null, new ItemDisplayRule[0]);
-            var buff = new CustomBuff(BuffName, buffDef, HailstormAssets.IconDarkElite);
-            var elite = new CustomElite(EliteName, eliteDef, equip, buff, 1);
-            return elite;
-        }
 
         private void CharacterModelOnInstanceUpdate(On.RoR2.CharacterModel.orig_InstanceUpdate orig, CharacterModel self)
         {

@@ -60,7 +60,7 @@ namespace JarlykMods.Hailstorm
             {
                 if (mimic.BoundReward == self)
                 {
-                    PickupDropletController.CreatePickupDroplet(new PickupIndex(mimic.BoundItem), self.transform.position, 5f*Vector3.up);
+                    PickupDropletController.CreatePickupDroplet(PickupCatalog.FindPickupIndex(mimic.BoundItem), self.transform.position, 5f*Vector3.up);
                     _chestMimics.Remove(mimic);
                 }
             }

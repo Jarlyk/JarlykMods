@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Text;
 using BepInEx;
 using EliteSpawningOverhaul;
-using ItemLib;
 using JarlykMods.Hailstorm.Cataclysm;
 using RoR2;
 using UnityEngine;
@@ -13,9 +12,7 @@ namespace JarlykMods.Hailstorm
 {
     [BepInPlugin(PluginGuid, "Hailstorm", "0.3.2")]
     [BepInDependency(R2API.R2API.PluginGUID)]
-    [BepInDependency(AssetPlus.AssetPlus.modguid)]
     [BepInDependency(EsoPlugin.PluginGuid)]
-    [BepInDependency(ItemLibPlugin.ModGuid)]
     public sealed class HailstormPlugin : BaseUnityPlugin
     {
         public const string PluginGuid = "com.jarlyk.hailstorm";
@@ -45,11 +42,7 @@ namespace JarlykMods.Hailstorm
 
             _rng = new Xoroshiro128Plus((ulong) DateTime.Now.Ticks);
 
-            On.RoR2.Console.Awake += (orig, self) =>
-            {
-                CommandHelper.RegisterCommands(self);
-                orig(self);
-            };
+            R2API.Utils.CommandHelper.AddToConsoleWhenReady();
         }
 
         private void Awake()
@@ -67,26 +60,6 @@ namespace JarlykMods.Hailstorm
         {
             _darkElites?.Update();
             _barrierElites?.Update();
-        }
-
-        [Item(ItemAttribute.ItemType.Elite)]
-        public static CustomElite BuildDarkElite()
-        {
-            //NOTE: We always need to build it, as we can't actually load the Config yet
-            //This will reserve the slot, but it will still effectively be disabled if we never make it eligible for spawning with ESO
-            return DarkElitesManager.Build();
-        }
-
-        [Item(ItemAttribute.ItemType.Elite)]
-        public static CustomElite BuildBarrierElite()
-        {
-            return BarrierElitesManager.Build();
-        }
-
-        [Item(ItemAttribute.ItemType.Elite)]
-        public static CustomElite BuildStormElite()
-        {
-            return StormElitesManager.Build();
         }
 
         [ConCommand(commandName = "hs_cataclysm", flags = ConVarFlags.ExecuteOnServer,
@@ -168,18 +141,18 @@ namespace JarlykMods.Hailstorm
                 if (inv != null)
                 {
                     //Start by clearing existing inventory
-                    for (var item = ItemIndex.Syringe; item < (ItemIndex) ItemLib.ItemLib.TotalItemCount; item++)
+                    for (var item = ItemIndex.Syringe; item < (ItemIndex)ItemCatalog.itemCount; item++)
                     {
                         inv.RemoveItem(item, int.MaxValue);
                     }
 
                     //Grant items of each rarity
                     for (int i=0; i < whites; i++)
-                        inv.GiveItem(rng.NextElementUniform(Run.instance.availableTier1DropList).itemIndex);
+                        inv.GiveItem(PickupCatalog.GetPickupDef(rng.NextElementUniform(Run.instance.availableTier1DropList)).itemIndex);
                     for (int i = 0; i < greens; i++)
-                        inv.GiveItem(rng.NextElementUniform(Run.instance.availableTier2DropList).itemIndex);
+                        inv.GiveItem(PickupCatalog.GetPickupDef(rng.NextElementUniform(Run.instance.availableTier2DropList)).itemIndex);
                     for (int i = 0; i < reds; i++)
-                        inv.GiveItem(rng.NextElementUniform(Run.instance.availableTier3DropList).itemIndex);
+                        inv.GiveItem(PickupCatalog.GetPickupDef(rng.NextElementUniform(Run.instance.availableTier3DropList)).itemIndex);
                 }
             }
         }
