@@ -18,6 +18,7 @@ namespace JarlykMods.Umbrella
 
         public UmbrellaPlugin()
         {
+            UmbrellaAssets.Init();
             _bulletTimer = new BulletTimer();
             _jestersDice = new JestersDice();
 

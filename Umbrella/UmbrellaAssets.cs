@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Reflection;
 using System.Text;
+using AssetPlus;
 using R2API;
 using UnityEngine;
 
@@ -9,7 +10,7 @@ namespace JarlykMods.Umbrella
 {
     public static class UmbrellaAssets
     {
-        public static string Prefix = "@JarlykMods.Umbrella:";
+        public static string Prefix = "@JarlykModsUmbrella:";
 
         public static string PrefabBulletTimer = Prefix + "Assets/Import/bullet_timer/BulletTimer.prefab";
         public static string PrefabJestersDice = Prefix + "Assets/Prefabs/JestersDice.prefab";

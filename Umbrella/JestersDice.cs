@@ -54,6 +54,10 @@ namespace JarlykMods.Umbrella
         public void Awake()
         {
             _colliders = new Collider[20];
+        }
+
+        public void Start()
+        {
             BuildTexture();
         }
 

@@ -19,11 +19,13 @@ namespace JarlykMods.Hailstorm
         {
             var eliteDef = new EliteDef
             {
+                name = EliteName,
                 modifierToken = EliteName,
                 color = new Color32(162, 179, 241, 255)
             };
             var equipDef = new EquipmentDef
             {
+                name = EquipName,
                 cooldown = 10f,
                 pickupModelPath = "",
                 pickupIconPath = HailstormAssets.IconStormElite,
@@ -35,6 +37,7 @@ namespace JarlykMods.Hailstorm
             };
             var buffDef = new BuffDef
             {
+                name = BuffName,
                 buffColor = eliteDef.color,
                 iconPath = HailstormAssets.IconStormElite,
                 canStack = false

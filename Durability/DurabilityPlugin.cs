@@ -196,7 +196,7 @@ namespace JarlykMods.Durability
                 var newTracker = newObj.AddComponent<DurabilityTracker>();
                 newTracker.durability = tracker.durability;
             }
-            else if (controller.pickupIndex.equipmentIndex != EquipmentIndex.None)
+            else if (PickupCatalog.GetPickupDef(controller.pickupIndex).equipmentIndex != EquipmentIndex.None)
             {
                 var newTracker = newObj.AddComponent<DurabilityTracker>();
                 newTracker.durability = FullDurability;

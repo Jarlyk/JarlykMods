@@ -1,9 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Reflection;
 using System.Text;
 using BepInEx;
 using EliteSpawningOverhaul;
 using JarlykMods.Hailstorm.Cataclysm;
+using Mono.Cecil.Cil;
+using MonoMod.Cil;
+using R2API;
 using RoR2;
 using UnityEngine;
 using UnityEngine.Networking;
@@ -43,6 +47,24 @@ namespace JarlykMods.Hailstorm
             _rng = new Xoroshiro128Plus((ulong) DateTime.Now.Ticks);
 
             R2API.Utils.CommandHelper.AddToConsoleWhenReady();
+
+            IL.RoR2.EliteCatalog.cctor += EliteCatalogTypeInitializer;
+        }
+
+        private void EliteCatalogTypeInitializer(ILContext il)
+        {
+            var c = new ILCursor(il);
+            c.Index = 2;
+
+            //If modHelper is not null, skip creating it
+            c.Emit(OpCodes.Ldsfld,
+                   typeof(EliteCatalog).GetField("modHelper", BindingFlags.Static | BindingFlags.Public));
+            var skipCreate = c.DefineLabel();
+            c.Emit(OpCodes.Brtrue, skipCreate);
+
+            c.GotoNext(MoveType.After,
+                       i => i.MatchStsfld("RoR2.EliteCatalog", "modHelper"));
+            c.MarkLabel(skipCreate);
         }
 
         private void Awake()
@@ -53,6 +75,8 @@ namespace JarlykMods.Hailstorm
 
         public void Start()
         {
+            typeof(BuffCatalog).SetPropertyValue("buffCount", typeof(BuffCatalog).GetFieldValue<BuffDef[]>("buffDefs").Length);
+            typeof(EliteCatalog).TypeInitializer.Invoke(null, null);
             _barrierElites?.Start();
         }
 

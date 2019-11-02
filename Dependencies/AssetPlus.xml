@@ -1,0 +1,97 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>AssetPlus</name>
+    </assembly>
+    <members>
+        <member name="T:AssetPlus.AssetPlus">
+            <summary>
+            Where all the magic happens (not for you except AssetPlus.modguid)
+            </summary>
+        </member>
+        <member name="F:AssetPlus.AssetPlus.modguid">
+            <summary>
+            Use this in as the dependency string
+            </summary>
+        </member>
+        <member name="T:AssetPlus.Fonts">
+            <summary>
+            use this class to add fonts
+            </summary>
+        </member>
+        <member name="M:AssetPlus.Fonts.Add(System.String)">
+            <summary>
+            for adding an TMP_FontAsset inside an seperate assetbundle (.font is loaded automatically)
+            </summary>
+            <param name="path">absolute path to the assetbundle</param>
+        </member>
+        <member name="M:AssetPlus.Fonts.Add(System.Byte[])">
+            <summary>
+            for adding an TMP_FontAsset while it is still in an assetbundle
+            </summary>
+            <param name="fontFile">the assetbundle file</param>
+        </member>
+        <member name="M:AssetPlus.Fonts.Add(TMPro.TMP_FontAsset)">
+            <summary>
+            for adding an TMP_FontAsset directly
+            </summary>
+            <param name="fontAsset">The loaded fontasset</param>
+        </member>
+        <member name="T:AssetPlus.Languages">
+            <summary>
+            class for language files to load
+            </summary>
+        </member>
+        <member name="M:AssetPlus.Languages.AddPath(System.String)">
+            <summary>
+            adding an file via path (.language is added automatically )
+            </summary>
+            <param name="path">absolute path to file</param>
+        </member>
+        <member name="M:AssetPlus.Languages.AddToken(System.String,System.String)">
+            <summary>
+            Adds a single languagetoken and value
+            </summary>
+            <param name="key">Token the game asks</param>
+            <param name="value">Value it gives back</param>
+        </member>
+        <member name="M:AssetPlus.Languages.AddToken(System.String,System.String,System.String)">
+            <summary>
+            Adds a single languagetoken and value to a specific language
+            </summary>
+            <param name="key">Token the game asks</param>
+            <param name="value">Value it gives back</param>
+            <param name="language">Language you want to add this to</param>
+        </member>
+        <member name="M:AssetPlus.Languages.Add(System.String)">
+            <summary>
+            Adding an file which is read into an string
+            </summary>
+            <param name="file">entire file as string</param>
+        </member>
+        <member name="T:AssetPlus.SoundBanks">
+            <summary>
+            class for SoundBanks to load
+            </summary>
+        </member>
+        <member name="M:AssetPlus.SoundBanks.Add(System.Byte[])">
+            <summary>
+            Adds a soundbank to load, returns the ID used for unloading
+            </summary>
+            <param name="bank">byte array of the entire .bnk file</param>
+        </member>
+        <member name="M:AssetPlus.SoundBanks.Add(System.String)">
+            <summary>
+            Adds an external soundbank to load, returns the ID used for unloading (.sound files are loaded automatically)
+            </summary>
+            <param name="path">the absolute path to the file</param>
+        </member>
+        <member name="M:AssetPlus.SoundBanks.Remove(System.UInt32)">
+            <summary>
+            Unloads an bank using the ID (ID is returned at the Add() of the bank)
+            </summary>
+            <param name="ID">BankID</param>
+            <returns></returns>
+        </member>
+    </members>
+</doc>

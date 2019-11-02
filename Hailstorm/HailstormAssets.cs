@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
 using System.Text;
+using AssetPlus;
 using JarlykMods.Hailstorm.Cataclysm;
 using RoR2.Networking;
 using UnityEngine;
@@ -13,7 +14,7 @@ namespace JarlykMods.Hailstorm
 {
     public static class HailstormAssets
     {
-        public static string Prefix = "@JarlykMods.Hailstorm:";
+        public static string Prefix = "@JarlykModsHailstorm:";
 
         public static string IconBarrierElite = Prefix + "Assets/Icons/BarrierEliteIcon.png";
         public static string IconDarkElite = Prefix + "Assets/Icons/DarkEliteIcon.png";
