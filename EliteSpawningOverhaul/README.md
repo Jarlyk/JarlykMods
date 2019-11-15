@@ -17,6 +17,9 @@ This mod is released under the standard MIT license, which is a permissive licen
 
 ### Changelog
 
+0.3.0 | 2019-11-14
+- Updated for new BepInEx/R2API
+
 0.2.0 | 2019-09-20
 - Updated for RoR2 Skills 2.0 Release
 

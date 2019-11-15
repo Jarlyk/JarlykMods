@@ -34,6 +34,9 @@ This mod is released under the standard MIT license, which is a permissive licen
 
 ### Changelog
 
+0.4.0 | 2019-11-14
+- Updated for new BepInEx/R2API
+
 0.3.2 | 2019-09-25
 - Made tornadoes less deafening
 

@@ -1,4 +1,7 @@
 ﻿using BepInEx;
+using R2API;
+using R2API.AssetPlus;
+using R2API.Utils;
 using RoR2;
 using UnityEngine;
 using UnityEngine.Networking;
@@ -7,8 +10,9 @@ using UnityEngine.Networking;
 
 namespace JarlykMods.Umbrella
 {
-    [BepInPlugin(PluginGuid, "Umbrella", "0.2.2")]
+    [BepInPlugin(PluginGuid, "Umbrella", "0.3.0")]
     [BepInDependency(R2API.R2API.PluginGUID)]
+    [R2APISubmoduleDependency(nameof(AssetPlus),nameof(ItemAPI))]
     public class UmbrellaPlugin : BaseUnityPlugin
     {
         public const string PluginGuid = "com.jarlyk.umbrella";
@@ -24,11 +28,7 @@ namespace JarlykMods.Umbrella
 
             On.RoR2.EquipmentSlot.PerformEquipmentAction += EquipmentSlotOnPerformEquipmentAction;
 
-            On.RoR2.Console.Awake += (orig, self) =>
-            {
-                CommandHelper.RegisterCommands(self);
-                orig(self);
-            };
+            R2API.Utils.CommandHelper.AddToConsoleWhenReady();
         }
 
         private void Awake()

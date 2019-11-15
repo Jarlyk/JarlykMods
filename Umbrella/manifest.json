@@ -1,13 +1,11 @@
 {
   "name": "Umbrella",
-  "version_number": "0.2.2",
+  "version_number": "0.3.0",
   "website_url": "https://github.com/Jarlyk/JarlykMods",
   "description": "Equipment to help brave the storm",
   "dependencies": [
-    "bbepis-BepInExPack-2.0.0",
+    "bbepis-BepInExPack-3.0.0",
     "wildbook-MiniRpcLib-0.0.1",
-    "tristanmcpherson-R2API-2.1.16",
-    "mistername-AssetPlus-0.1.2",
-    "xiaoxiao921-ItemLib-0.1.2"
+    "tristanmcpherson-R2API-2.3.0"
   ]
 }

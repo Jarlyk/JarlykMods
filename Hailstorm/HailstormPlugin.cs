@@ -14,7 +14,7 @@ using UnityEngine.Networking;
 
 namespace JarlykMods.Hailstorm
 {
-    [BepInPlugin(PluginGuid, "Hailstorm", "0.3.2")]
+    [BepInPlugin(PluginGuid, "Hailstorm", "0.4.0")]
     [BepInDependency(R2API.R2API.PluginGUID)]
     [BepInDependency(EsoPlugin.PluginGuid)]
     public sealed class HailstormPlugin : BaseUnityPlugin
@@ -75,7 +75,7 @@ namespace JarlykMods.Hailstorm
 
         public void Start()
         {
-            typeof(BuffCatalog).SetPropertyValue("buffCount", typeof(BuffCatalog).GetFieldValue<BuffDef[]>("buffDefs").Length);
+            //typeof(BuffCatalog).SetPropertyValue("buffCount", typeof(BuffCatalog).GetFieldValue<BuffDef[]>("buffDefs").Length);
             typeof(EliteCatalog).TypeInitializer.Invoke(null, null);
             _barrierElites?.Start();
         }

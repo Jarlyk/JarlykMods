@@ -3,12 +3,12 @@ using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
 using System.Text;
-using AssetPlus;
 using JarlykMods.Hailstorm.Cataclysm;
 using RoR2.Networking;
 using UnityEngine;
 using UnityEngine.Networking;
 using R2API;
+using R2API.AssetPlus;
 
 namespace JarlykMods.Hailstorm
 {
