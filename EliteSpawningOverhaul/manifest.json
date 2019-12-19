@@ -1,6 +1,6 @@
 {
   "name": "EliteSpawningOverhaul",
-  "version_number": "0.3.0",
+  "version_number": "0.3.1",
   "website_url": "https://github.com/Jarlyk/JarlykMods",
   "description": "Overhauls the elite spawning system to allow for finer control by modders",
   "dependencies": [

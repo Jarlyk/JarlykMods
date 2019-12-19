@@ -1,13 +1,14 @@
 ﻿using System;
 using System.Linq;
 using BepInEx;
+using R2API.Utils;
 using RoR2;
 using TMPro;
 using UnityEngine;
 
 namespace EliteSpawningOverhaul
 {
-    [BepInPlugin(PluginGuid, "EliteSpawningOverhaul", "0.3.0")]
+    [BepInPlugin(PluginGuid, "EliteSpawningOverhaul", "0.3.1")]
     [BepInDependency(R2API.R2API.PluginGUID)]
     public sealed class EsoPlugin : BaseUnityPlugin
     {
