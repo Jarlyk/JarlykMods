@@ -183,7 +183,7 @@ namespace JarlykMods.Hailstorm.Cataclysm
             nodeGroup.nodeGraph.SetNodes(new ReadOnlyCollection<MapNode>(nodes),
                                          new ReadOnlyCollection<SerializableBitArray>(lineOfSightMasks));
             nodeGroup.nodeGraph.DebugDrawLinks(HullClassification.Human);
-            SceneInfo.instance.groundNodes = nodeGroup.nodeGraph;
+            SceneInfo.instance.SetFieldValue("groundNodes", nodeGroup.nodeGraph);
             SceneInfo.instance.groundNodeGroup = nodeGroup;
         }
 

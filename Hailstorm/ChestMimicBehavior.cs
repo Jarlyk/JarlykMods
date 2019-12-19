@@ -55,14 +55,13 @@ namespace JarlykMods.Hailstorm
                 Destroy(gameObject);
 
                 //Play the shrine effect to highlight that something momentous is happening
-                EffectManager instance = EffectManager.instance;
                 GameObject effectPrefab = Resources.Load<GameObject>("Prefabs/Effects/ShrineUseEffect");
                 EffectData effectData = new EffectData();
                 effectData.origin = position;
                 effectData.rotation = Quaternion.identity;
                 effectData.scale = 1f;
                 effectData.color = new Color32(255, 0, 0, 255);
-                instance.SpawnEffect(effectPrefab, effectData, true);
+                EffectManager.SpawnEffect(effectPrefab, effectData, true);
 
                 var monsterSelection = ClassicStageInfo.instance.monsterSelection;
                 var weightedSelection = new WeightedSelection<DirectorCard>(8);
