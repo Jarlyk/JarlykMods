@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using R2API.Utils;
 using RoR2;
 using UnityEngine;
 
@@ -18,7 +19,7 @@ namespace JarlykMods.Raincoat
 
             //If no players, nothing to do
             int participatingPlayerCount = R2API.ItemDropAPI.BossDropParticipatingPlayerCount ?? Run.instance.participatingPlayerCount;
-            if (participatingPlayerCount == 0)
+            if (participatingPlayerCount == 0 || !self.dropPosition)
                 return;
 
             //More items for more players and for more mountain shrines
@@ -43,8 +44,8 @@ namespace JarlykMods.Raincoat
 
                 //Determine where to place the shop (randomly relative to the drop position)
                 var placementRule = new DirectorPlacementRule();
-                placementRule.maxDistance = 60f;
-                placementRule.minDistance = 10f;
+                placementRule.maxDistance = 50f;
+                placementRule.minDistance = 5f;
                 placementRule.placementMode = DirectorPlacementRule.PlacementMode.Approximate;
                 placementRule.position = self.dropPosition.position;
                 placementRule.spawnOnTarget = self.dropPosition;

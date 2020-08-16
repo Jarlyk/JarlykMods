@@ -9,6 +9,7 @@ namespace JarlykMods.Hailstorm
 {
     public sealed class TwisterProjectileController : NetworkBehaviour
     {
+        private ProjectileController _projectileController;
         private Xoroshiro128Plus _rng;
         private ParticleSystemForceField _forceField;
         private int _ffSizeX;
@@ -24,11 +25,11 @@ namespace JarlykMods.Hailstorm
 
         public float forceScale = 4000.0f;
         public float damping = 0.8f;
-        public float windLife = 20f;
+        public float windLife = 10f;
         public Vector3 initialScale = new Vector3(1, 1, 1);
         public Vector3 finalScale = new Vector3(20, 25, 20);
 
-        public static float totalLife = 25f;
+        public static float totalLife = 15f;
 
         private void Awake()
         {
@@ -38,6 +39,8 @@ namespace JarlykMods.Hailstorm
             _ffSizeY = vField.height;
             _ffSizeZ = vField.depth;
             _vectorField = vField.GetPixels();
+
+            _projectileController = GetComponent<ProjectileController>();
         }
 
         private void Start()
@@ -61,8 +64,9 @@ namespace JarlykMods.Hailstorm
 
         private void FixedUpdate()
         {
+            //Tornado expires when it exceeds desired wind life or when original owner who launched it dies
             var aliveTime = Time.fixedTime - _startTime;
-            if (aliveTime > windLife)
+            if (aliveTime > windLife || !_projectileController.owner)
             {
                 if (_expiring)
                     return;
@@ -81,7 +85,7 @@ namespace JarlykMods.Hailstorm
             {
                 //Bias toward nearest player, with some randomization
                 var playerBodies = PlayerCharacterMasterController.instances.Select(p => p.master?.GetBody());
-                var nearestPlayer = playerBodies.Where(b => b != null)
+                var nearestPlayer = playerBodies.Where(b => b)
                                                 .Select(b => new { Delta = b.corePosition - transform.position, Body = b })
                                                 .Where(b => b.Delta.sqrMagnitude > 2f * transform.localScale.x * transform.localScale.x)
                                                 .OrderBy(b => b.Delta.sqrMagnitude)
@@ -108,7 +112,7 @@ namespace JarlykMods.Hailstorm
             foreach (var collider in colliders)
             {
                 var body = collider.GetComponent<CharacterBody>();
-                if (body == null)
+                if (!body)
                     continue;
 
                 //Can only act on player bodies if we have authority

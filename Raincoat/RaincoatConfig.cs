@@ -11,88 +11,88 @@ namespace JarlykMods.Raincoat
     {
         public static void Init(ConfigFile config)
         {
-            EnableRecentItemDropper = config.Wrap(
+            EnableRecentItemDropper = config.Bind(
                 "Settings",
                 "EnableRecentItemDropper",
-                "Whether to enable pressing a key to drop the recently picked up item",
-                true);
-            EnablePingImprovements = config.Wrap(
+                true,
+                "Whether to enable pressing a key to drop the recently picked up item");
+            EnablePingImprovements = config.Bind(
                 "Settings",
                 "EnablePingImprovements",
-                "Whether to enable various improvements to pinging",
-                true);
-            EnableTeamImprovements = config.Wrap(
+                true,
+                "Whether to enable various improvements to pinging");
+            EnableTeamImprovements = config.Bind(
                 "Settings",
                 "EnableTeamImprovements",
-                "Whether to enable various improvements to how allied teams are handled/displayed",
-                true);
-            EnableAllyCardImprovements = config.Wrap(
+                true,
+                "Whether to enable various improvements to how allied teams are handled/displayed");
+            EnableAllyCardImprovements = config.Bind(
                 "Settings",
                 "EnableAllyCardImprovements",
-                "Whether to enable improved highlighting of ally card notifications",
-                true);
-            EnableBossShopDropping = config.Wrap(
+                true,
+                "Whether to enable improved highlighting of ally card notifications");
+            EnableBossShopDropping = config.Bind(
                 "Settings",
                 "EnableBossShopDropping",
-                "Whether to enable dropping of shops after teleporter boss fights",
-                true);
-            EnableStarterPack = config.Wrap(
+                true,
+                "Whether to enable dropping of shops after teleporter boss fights");
+            EnableStarterPack = config.Bind(
                 "Settings",
                 "EnableStarterPack",
-                "Whether to enable optional granting of a 'starter pack' of items, to speed up the early game",
-                true);
+                true,
+                "Whether to enable optional granting of a 'starter pack' of items, to speed up the early game");
 
-            DropItemKey = config.Wrap(
+            DropItemKey = config.Bind(
                 "RecentItemDropper",
                 "DropItemKey",
-                "Key code for dropping recently picked up item",
-                KeyCode.G.ToString());
+                KeyCode.G.ToString(),
+                "Key code for dropping recently picked up item");
 
-            StarterPackKey = config.Wrap(
+            StarterPackKey = config.Bind(
                 "StarterPack",
                 "StarterPackKey",
-                "Key code for granting starter pack to all players in the game",
-                KeyCode.F1.ToString());
+                KeyCode.F1.ToString(),
+                "Key code for granting starter pack to all players in the game");
 
-            BossDropRedsMinStage = config.Wrap(
+            BossDropRedsMinStage = config.Bind(
                 "BossShopDropping",
                 "BossDropRedsMinStage",
-                "The first stage number at which red item shops can drop from bosses",
-                6);
+                6,
+                "The first stage number at which red item shops can drop from bosses");
 
-            BossDropRedsChancePerStage = config.Wrap(
+            BossDropRedsChancePerStage = config.Bind(
                 "BossShopDropping",
                 "BossDropRedsChancePerStage",
-                "The additive chance per stage, as a ratio;  0.02 would be a 2% chance",
-                0.02f);
+                0.02f,
+                "The additive chance per stage, as a ratio;  0.02 would be a 2% chance");
 
-            BossDropRedsMaxChance = config.Wrap(
+            BossDropRedsMaxChance = config.Bind(
                 "BossShopDropping",
                 "BossDropRedsMaxChance",
-                "The maximum chance of a red shop dropping on any stage, as a ratio; 0.2 would be a 20% chance",
-                0.2f);
+                0.2f,
+                "The maximum chance of a red shop dropping on any stage, as a ratio; 0.2 would be a 20% chance");
         }
 
-        public static ConfigWrapper<bool> EnableRecentItemDropper;
+        public static ConfigEntry<bool> EnableRecentItemDropper;
 
-        public static ConfigWrapper<bool> EnablePingImprovements;
+        public static ConfigEntry<bool> EnablePingImprovements;
 
-        public static ConfigWrapper<bool> EnableTeamImprovements;
+        public static ConfigEntry<bool> EnableTeamImprovements;
 
-        public static ConfigWrapper<bool> EnableAllyCardImprovements;
+        public static ConfigEntry<bool> EnableAllyCardImprovements;
 
-        public static ConfigWrapper<bool> EnableBossShopDropping;
+        public static ConfigEntry<bool> EnableBossShopDropping;
 
-        public static ConfigWrapper<bool> EnableStarterPack;
+        public static ConfigEntry<bool> EnableStarterPack;
 
-        public static ConfigWrapper<string> DropItemKey;
+        public static ConfigEntry<string> DropItemKey;
 
-        public static ConfigWrapper<string> StarterPackKey;
+        public static ConfigEntry<string> StarterPackKey;
 
-        public static ConfigWrapper<int> BossDropRedsMinStage;
+        public static ConfigEntry<int> BossDropRedsMinStage;
 
-        public static ConfigWrapper<float> BossDropRedsChancePerStage;
+        public static ConfigEntry<float> BossDropRedsChancePerStage;
 
-        public static ConfigWrapper<float> BossDropRedsMaxChance;
+        public static ConfigEntry<float> BossDropRedsMaxChance;
     }
 }

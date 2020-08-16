@@ -17,6 +17,9 @@ This mod is released under the standard MIT license, which is a permissive licen
 
 ### Changelog
 
+1.0.0 | 2020-08-15
+- Updated for RoR2 v1.0 Release
+
 0.3.1 | 2019-12-18
 - Fixed build issues with December Content Update
 

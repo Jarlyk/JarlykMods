@@ -7,6 +7,7 @@ using UnityEngine.Networking;
 using RoR2;
 using RoR2.UI;
 using UnityEngine.UI;
+using Console = RoR2.Console;
 
 namespace JarlykMods.Durability
 {
@@ -29,10 +30,17 @@ namespace JarlykMods.Durability
 
         private IEnumerator DelayedAdd()
         {
-            yield return new WaitForSecondsRealtime(0.2f);
+            yield return new WaitForSecondsRealtime(0.4f);
             var equipIcon = GetComponent<EquipmentIcon>();
-            if (equipIcon != null)
+            if (equipIcon)
             {
+                if (!equipIcon.displayRoot)
+                {
+                    Debug.LogError("Equipment icon displayRoot not yet set in DurabilityFeedback.DelayedAdd");
+                    enabled = false;
+                    yield break;
+                }
+
                 _bar = Instantiate(DurabilityAssets.DurabilityBarPrefab, equipIcon.displayRoot.transform);
                 _barImage = _bar.transform.GetChild(1).gameObject;
                 var rectTrans = (RectTransform) _barImage.transform;

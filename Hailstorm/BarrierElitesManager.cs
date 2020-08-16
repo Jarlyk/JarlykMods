@@ -29,12 +29,6 @@ namespace JarlykMods.Hailstorm
 
         public BarrierElitesManager()
         {
-            var eliteDef = new EliteDef
-            {
-                name = EliteName,
-                modifierToken = BarrierElitesManager.EliteName,
-                color = new Color32(162, 179, 241, 255)
-            };
             var equipDef = new EquipmentDef
             {
                 name = EquipName,
@@ -47,21 +41,29 @@ namespace JarlykMods.Hailstorm
                 canDrop = false,
                 enigmaCompatible = false
             };
+            var equip = new CustomEquipment(equipDef, new ItemDisplayRule[0]);
+
             var buffDef = new BuffDef
             {
                 name = BuffName,
-                buffColor = eliteDef.color,
+                buffColor =  new Color32(162, 179, 241, 255),
                 iconPath = HailstormAssets.IconBarrierElite,
                 canStack = false
             };
+            var buff = new CustomBuff(buffDef);
 
-            var equip = new CustomEquipment(equipDef, new ItemDisplayRule[0]);
-            var buff = new CustomBuff(BuffName, buffDef);
-            var elite = new CustomElite(EliteName, eliteDef, equip, buff, 1);
+            var eliteDef = new EliteDef
+            {
+                name = EliteName,
+                modifierToken = BarrierElitesManager.EliteName,
+                color = buffDef.buffColor,
+                eliteEquipmentIndex = _equipIndex
+            };
+            var elite = new CustomElite(eliteDef, 1);
 
-            _eliteIndex = (EliteIndex)ItemAPI.AddCustomElite(elite);
-            _buffIndex = (BuffIndex) ItemAPI.AddCustomBuff(buff);
-            _equipIndex = (EquipmentIndex) ItemAPI.AddCustomEquipment(equip);
+            _eliteIndex = EliteAPI.Add(elite);
+            _buffIndex = BuffAPI.Add(buff);
+            _equipIndex = ItemAPI.Add(equip);
             eliteDef.eliteEquipmentIndex = _equipIndex;
             equipDef.passiveBuff = _buffIndex;
             buffDef.eliteIndex = _eliteIndex;
@@ -74,6 +76,7 @@ namespace JarlykMods.Hailstorm
                 costMultiplier = 10.0f,
                 damageBoostCoeff = 1.0f,
                 healthBoostCoeff = 10.0f,
+                eliteOnlyScaling = 0.5f,
                 eliteType = _eliteIndex
             };
 
@@ -93,37 +96,37 @@ namespace JarlykMods.Hailstorm
 
         public void Start()
         {
-            var tetherPrefab = Object.Instantiate(Resources.Load<GameObject>("Prefabs/Effects/gravspheretether"));
-            //var tetherPrefab = new GameObject("BarrierTether");
-            tetherPrefab.SetActive(false);
+            //var tetherPrefab = Object.Instantiate(Resources.Load<GameObject>("Prefabs/Effects/gravspheretether"));
+            ////var tetherPrefab = new GameObject("BarrierTether");
+            //tetherPrefab.SetActive(false);
 
-            var lineRenderer = tetherPrefab.GetComponent<LineRenderer>();
-            lineRenderer.startColor = new Color32(212, 175, 55, 200);
-            lineRenderer.endColor = new Color32(212, 175, 55, 200);
-            lineRenderer.widthMultiplier = 0.8f;
-            lineRenderer.startWidth = 1;
-            lineRenderer.endWidth = 1;
-            lineRenderer.numCapVertices = 12;
-            lineRenderer.numCornerVertices = 6;
-            lineRenderer.textureMode = LineTextureMode.Tile;
-            lineRenderer.alignment = LineAlignment.View;
-            lineRenderer.material = _barrierMaterial;
-            lineRenderer.positionCount = 10;
-            lineRenderer.enabled = true;
+            //var lineRenderer = tetherPrefab.GetComponent<LineRenderer>();
+            //lineRenderer.startColor = new Color32(212, 175, 55, 200);
+            //lineRenderer.endColor = new Color32(212, 175, 55, 200);
+            //lineRenderer.widthMultiplier = 0.8f;
+            //lineRenderer.startWidth = 1;
+            //lineRenderer.endWidth = 1;
+            //lineRenderer.numCapVertices = 12;
+            //lineRenderer.numCornerVertices = 6;
+            //lineRenderer.textureMode = LineTextureMode.Tile;
+            //lineRenderer.alignment = LineAlignment.View;
+            //lineRenderer.material = _barrierMaterial;
+            //lineRenderer.positionCount = 10;
+            //lineRenderer.enabled = true;
 
-            var tetherEffect = tetherPrefab.GetComponent<TetherEffect>();
-            tetherEffect.enabled = true;
+            //var tetherEffect = tetherPrefab.GetComponent<TetherVfx>();
+            //tetherEffect.enabled = true;
 
-            var curve = tetherPrefab.GetComponent<BezierCurveLine>();
-            curve.enabled = true;
-            curve.windFrequency = new Vector3(0.2f, 0.2f, 0.2f);
-            curve.windMagnitude = new Vector3(1, 1, 1);
-            curve.animateBezierWind = true;
+            //var curve = tetherPrefab.GetComponent<BezierCurveLine>();
+            //curve.enabled = true;
+            //curve.windFrequency = new Vector3(0.2f, 0.2f, 0.2f);
+            //curve.windMagnitude = new Vector3(1, 1, 1);
+            //curve.animateBezierWind = true;
 
-            //tetherPrefab.GetComponent<AkEvent>().enabled = false;
-            Object.DontDestroyOnLoad(tetherPrefab);
-            _tetherPrefab = tetherPrefab;
-            Debug.Log("Tether prefab constructed");
+            ////tetherPrefab.GetComponent<AkEvent>().enabled = false;
+            //Object.DontDestroyOnLoad(tetherPrefab);
+            //_tetherPrefab = tetherPrefab;
+            //Debug.Log("Tether prefab constructed");
         }
 
         public void Update()
@@ -176,10 +179,6 @@ namespace JarlykMods.Hailstorm
 
                 if (NetworkServer.active)
                 {
-                    if (tetherMaster.TetherPrefab == null)
-                    {
-                        Debug.Log("tetherPrefab is null!");
-                    }
                     foreach (var obj in tetherMaster.GetTetheredObjects())
                     {
                         var healthComponent = obj.GetComponent<HealthComponent>();

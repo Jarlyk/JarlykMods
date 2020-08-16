@@ -1,0 +1,12 @@
+{
+  "name": "Hailstorm",
+  "version_number": "0.4.1",
+  "website_url": "https://github.com/Jarlyk/JarlykMods",
+  "description": "Face the darkness: new elite types and mechanics",
+  "dependencies": [
+    "bbepis-BepInExPack-3.0.0",
+    "tristanmcpherson-R2API-2.3.0",
+    "wildbook-MiniRpcLib-0.0.1",
+    "Jarlyk-EliteSpawningOverhaul-0.3.0"
+  ]
+}

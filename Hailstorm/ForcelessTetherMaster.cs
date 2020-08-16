@@ -10,6 +10,7 @@ namespace JarlykMods.Hailstorm
 {
     public sealed class ForcelessTetherMaster : MonoBehaviour
     {
+        private List<GameObject> _newTethered = new List<GameObject>();
         private List<GameObject> _tetheredObjects = new List<GameObject>();
         private TeamComponent _teamComponent;
         private Collider[] _colliders;
@@ -30,19 +31,23 @@ namespace JarlykMods.Hailstorm
 
         private void AddToList(GameObject affectedObject)
         {
-            var tetherObj = Instantiate(TetherPrefab, affectedObject.transform);
-            tetherObj.SetActive(true);
+            if (TetherPrefab != null)
+            {
+                var tetherObj = Instantiate(TetherPrefab, affectedObject.transform);
+                tetherObj.SetActive(true);
 
-            var component = tetherObj.GetComponent<TetherEffect>();
-            component.tetherEndTransform = transform;
-            component.tetherMaxDistance = Radius + 1.5f;
+                var component = tetherObj.GetComponent<TetherVfx>();
+                component.tetherEndTransform = transform;
+                //component.tetherMaxDistance = Radius + 1.5f;
+            }
+
             _tetheredObjects.Add(affectedObject);
         }
 
         private void FixedUpdate()
         {
             int colliderCount = Physics.OverlapSphereNonAlloc(transform.position, Radius, _colliders, LayerIndex.defaultLayer.mask);
-            var newTethered = new List<GameObject>();
+            _newTethered.Clear();
             for (var i = 0; i < colliderCount; i++)
             {
                 var collider = _colliders[i];
@@ -56,19 +61,20 @@ namespace JarlykMods.Hailstorm
 
                 if (canTether)
                 {
-                    newTethered.Add(colliderObj);
+                    _newTethered.Add(colliderObj);
                 }
             }
 
             //Any new objects should have a tether constructed
-            foreach (var tethered in newTethered)
+            foreach (var tethered in _newTethered)
             {
                 if (!_tetheredObjects.Contains(tethered))
                     AddToList(tethered);
             }
 
             //Replace the list so it only shows what's currently in-range and thus tethered
-            _tetheredObjects = newTethered;
+            _tetheredObjects.Clear();
+            _tetheredObjects.AddRange(_newTethered);
         }
     }
 }

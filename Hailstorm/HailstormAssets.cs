@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
 using System.Text;
-using JarlykMods.Hailstorm.Cataclysm;
 using RoR2.Networking;
 using UnityEngine;
 using UnityEngine.Networking;
@@ -44,21 +43,6 @@ namespace JarlykMods.Hailstorm
 
                 BarrierMaterial = Resources.Load<GameObject>("Prefabs/TemporaryVisualEffects/barriereffect")
                                            .GetComponentInChildren<MeshRenderer>().material;
-
-                CataclysmPlatformPrefab = bundle.LoadAsset<GameObject>("Assets/Prefabs/CataclysmPlatform.prefab");
-                CataclysmPlatformPrefab.AddComponent<MobilePlatform>();
-
-                CataclysmSkyboxMaterial = bundle.LoadAsset<Material>("Assets/SpaceSkies Free/Skybox_3/Purple_4K_Resolution.mat");
-                CataclysmArenaPrefab = bundle.LoadAsset<GameObject>("Assets/Prefabs/CataclysmArena.prefab");
-
-                GravBombPrefab = bundle.LoadAsset<GameObject>("Assets/Prefabs/GravBomb.prefab");
-                GravBombEffect.AugmentPrefab(GravBombPrefab);
-
-                AsteroidProjectilePrefab = bundle.LoadAsset<GameObject>("Assets/Prefabs/AsteroidProjectile.prefab");
-                AsteroidProjectileController.AugmentPrefab(AsteroidProjectilePrefab);
-
-                LaserChargerPrefab = bundle.LoadAsset<GameObject>("Assets/Prefabs/LaserCharger.prefab");
-                LaserChargerInteraction.AugmentPrefab(LaserChargerPrefab);
             }
 
             using (var bankStream = execAssembly.GetManifestResourceStream("JarlykMods.Hailstorm.Hailstorm.bnk"))
@@ -85,24 +69,10 @@ namespace JarlykMods.Hailstorm
 
         public static GameObject TwisterPrefab { get; private set; }
 
-        public static GameObject CataclysmPlatformPrefab { get; private set; }
-
-        public static Material CataclysmSkyboxMaterial { get; private set; }
-
-        public static GameObject CataclysmArenaPrefab { get; private set; }
-
-        public static GameObject GravBombPrefab { get; private set; }
-
-        public static GameObject AsteroidProjectilePrefab { get; private set; }
-
-        public static GameObject LaserChargerPrefab { get; private set; }
-
         private static void GameNetworkManager_OnStartClient(On.RoR2.Networking.GameNetworkManager.orig_OnStartClient orig, GameNetworkManager self, NetworkClient newClient)
         {
             orig(self, newClient);
             ClientScene.RegisterPrefab(TwisterPrefab, NetworkHash128.Parse("9725011d8b662d98"));
-            ClientScene.RegisterPrefab(GravBombPrefab, NetworkHash128.Parse("6d803141bb60b3f7"));
-            ClientScene.RegisterPrefab(AsteroidProjectilePrefab, NetworkHash128.Parse("34eddec13b017082"));
 
             //For convenience: pre-generated random IDs that can be used later
             //164497abc3b46e41

@@ -37,6 +37,11 @@ namespace EliteSpawningOverhaul
         public float healthBoostCoeff = 1.0f;
 
         /// <summary>
+        /// Scaling to apply to cost, damage and health when EliteOnlyArtifact is enabled
+        /// </summary>
+        public float eliteOnlyScaling = 1.0f;
+
+        /// <summary>
         /// Delegate that evaluates whether this elite type can be spawned currently; for example, checking Run.instance.loopClearCount
         /// </summary>
         public Func<bool> isAvailable = () => true;

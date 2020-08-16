@@ -21,6 +21,7 @@ namespace JarlykMods.Umbrella
                 cooldown = 40f,
                 pickupModelPath = UmbrellaAssets.PrefabBulletTimer,
                 pickupIconPath = UmbrellaAssets.IconBulletTimer,
+                name = EquipNames.BulletTimer,
                 nameToken = EquipNames.BulletTimer,
                 descriptionToken = "Bullet Timer",
                 pickupToken = "Bullet Timer",
@@ -39,7 +40,7 @@ namespace JarlykMods.Umbrella
             };
 
             var equip = new CustomEquipment(equipDef, new[] { rule });
-            EquipIndex = (EquipmentIndex)ItemAPI.AddCustomEquipment(equip);
+            EquipIndex = ItemAPI.Add(equip);
 
             IL.RoR2.Projectile.ProjectileManager.FireProjectileServer += ProjectileManagerOnFireProjectileServer;
             _startTime = float.NaN;

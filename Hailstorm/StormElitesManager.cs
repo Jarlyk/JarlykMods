@@ -13,7 +13,7 @@ namespace JarlykMods.Hailstorm
     {
         public const string EliteName = "Storm";
         public const string BuffName = "Affix_Storm";
-        public const string EquipName = "Storm Bringer";
+        public const string EquipName = "StormBringer";
 
         public StormElitesManager()
         {
@@ -30,8 +30,8 @@ namespace JarlykMods.Hailstorm
                 pickupModelPath = "",
                 pickupIconPath = HailstormAssets.IconStormElite,
                 nameToken = EquipName,
-                pickupToken = "Storm Bringer",
-                descriptionToken = "Storm Bringer",
+                pickupToken = "StormBringer",
+                descriptionToken = "StormBringer",
                 canDrop = false,
                 enigmaCompatible = false
             };
@@ -44,12 +44,12 @@ namespace JarlykMods.Hailstorm
             };
 
             var equip = new CustomEquipment(equipDef, new ItemDisplayRule[0]);
-            var buff = new CustomBuff(BuffName, buffDef);
-            var elite = new CustomElite(EliteName, eliteDef, equip, buff, 1);
+            var buff = new CustomBuff(buffDef);
+            var elite = new CustomElite(eliteDef, 1);
 
-            EliteIndex = (EliteIndex)ItemAPI.AddCustomElite(elite);
-            BuffIndex = (BuffIndex) ItemAPI.AddCustomBuff(buff);
-            EquipIndex = (EquipmentIndex) ItemAPI.AddCustomEquipment(equip);
+            EliteIndex = EliteAPI.Add(elite);
+            BuffIndex = BuffAPI.Add(buff);
+            EquipIndex = ItemAPI.Add(equip);
             eliteDef.eliteEquipmentIndex = EquipIndex;
             equipDef.passiveBuff = BuffIndex;
             buffDef.eliteIndex = EliteIndex;

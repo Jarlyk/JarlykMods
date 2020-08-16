@@ -34,6 +34,12 @@ This mod is released under the standard MIT license, which is a permissive licen
 
 ### Changelog
 
+1.0.0 | 2020-08-15
+- Updated for RoR2 v1.0 Release
+- Reduced duration of tornadoes from storm elites
+- When storm elites are killed, their tornadoes despawn
+- Split out Cataclysm into a separate mod project (since the incomplete content was bloating the size of this mod)
+
 0.4.1 | 2019-12-18
 - Fixed build issues with December Content Update
 

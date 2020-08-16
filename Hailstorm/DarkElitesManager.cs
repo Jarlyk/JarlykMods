@@ -66,12 +66,12 @@ namespace JarlykMods.Hailstorm
             };
 
             var equip = new CustomEquipment(equipDef, new ItemDisplayRule[0]);
-            var buff = new CustomBuff(BuffName, buffDef);
-            var elite = new CustomElite(EliteName, eliteDef, equip, buff, 1);
+            var buff = new CustomBuff(buffDef);
+            var elite = new CustomElite(eliteDef, 1);
 
-            _eliteIndex = (EliteIndex)ItemAPI.AddCustomElite(elite);
-            _buffIndex = (BuffIndex) ItemAPI.AddCustomBuff(buff);
-            _equipIndex = (EquipmentIndex) ItemAPI.AddCustomEquipment(equip);
+            _eliteIndex = EliteAPI.Add(elite);
+            _buffIndex = BuffAPI.Add(buff);
+            _equipIndex = ItemAPI.Add(equip);
             eliteDef.eliteEquipmentIndex = _equipIndex;
             equipDef.passiveBuff = _buffIndex;
             buffDef.eliteIndex = _eliteIndex;
@@ -89,6 +89,7 @@ namespace JarlykMods.Hailstorm
                 costMultiplier = 10.0f,
                 damageBoostCoeff = 2.0f,
                 healthBoostCoeff = 6.0f,
+                eliteOnlyScaling = 0.5f,
                 eliteType = _eliteIndex
             };
             

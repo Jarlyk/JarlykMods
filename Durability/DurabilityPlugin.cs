@@ -7,6 +7,7 @@ using MiniRpcLib;
 using MiniRpcLib.Action;
 using Mono.Cecil.Cil;
 using MonoMod.Cil;
+using R2API;
 using R2API.Utils;
 using RoR2;
 using RoR2.UI;
@@ -17,6 +18,7 @@ namespace JarlykMods.Durability
 {
     [BepInPlugin(PluginGuid, "EquipmentDurability", "0.1.1")]
     [BepInDependency(R2API.R2API.PluginGUID)]
+    [R2APISubmoduleDependency(nameof(CommandHelper))]
     public sealed class DurabilityPlugin : BaseUnityPlugin
     {
         public const string PluginGuid = "com.jarlyk.durability";
@@ -37,16 +39,12 @@ namespace JarlykMods.Durability
 
             On.RoR2.EquipmentSlot.ExecuteIfReady += EquipmentSlotOnExecuteIfReady;
             On.RoR2.GenericPickupController.GrantEquipment += GenericPickupControllerOnGrantEquipment;
-            IL.RoR2.PickupDropletController.CreatePickupDroplet += PickupDropletControllerOnCreatePickupDroplet;
+            IL.RoR2.GenericPickupController.CreatePickup += GenericPickupControllerOnCreatePickup;
             IL.RoR2.PickupDropletController.OnCollisionEnter += PickupDropletControllerOnOnCollisionEnter;
 
             On.RoR2.UI.EquipmentIcon.Update += EquipmentIconOnUpdate;
 
-            On.RoR2.Console.Awake += (orig, self) =>
-            {
-                CommandHelper.RegisterCommands(self);
-                orig(self);
-            };
+            CommandHelper.AddToConsoleWhenReady();
         }
 
         private void Awake()
@@ -152,7 +150,7 @@ namespace JarlykMods.Durability
             }
         }
 
-        private void PickupDropletControllerOnCreatePickupDroplet(ILContext il)
+        private void GenericPickupControllerOnCreatePickup(ILContext il)
         {
             var c = new ILCursor(il);
 
@@ -178,18 +176,19 @@ namespace JarlykMods.Durability
         {
             var c = new ILCursor(il);
 
-            c.GotoNext(i => i.MatchCall("UnityEngine.Networking.NetworkServer", "Spawn"));
+            c.GotoNext(i => i.MatchCall("RoR2.GenericPickupController", "CreatePickup"));
             c.Emit(OpCodes.Dup);
             c.Index++;
             c.Emit(OpCodes.Ldarg_0);
-            c.EmitDelegate<Action<GameObject, PickupDropletController>>(TransferTracker);
+            c.EmitDelegate<Action<GenericPickupController, PickupDropletController>>(TransferTracker);
         }
 
-        private void TransferTracker(GameObject newObj, PickupDropletController controller)
+        private void TransferTracker(GenericPickupController newController, PickupDropletController controller)
         {
-            if (newObj == null || controller == null || !NetworkServer.active)
+            if (!newController || !controller || !NetworkServer.active)
                 return;
 
+            var newObj = newController.gameObject;
             var tracker = controller.GetComponent<DurabilityTracker>();
             if (tracker != null)
             {

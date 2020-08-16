@@ -6,6 +6,7 @@ using BepInEx;
 using BepInEx.Configuration;
 using JarlykMods.Raincoat.ItemDropper;
 using MiniRpcLib;
+using RoR2.UI;
 using RoR2;
 using UnityEngine;
 using UnityEngine.Networking;
@@ -29,6 +30,7 @@ namespace JarlykMods.Raincoat
         private readonly BossShopDropper _bossShopDropper;
         private readonly KeyCode? _dropItemKey;
         private readonly KeyCode? _starterPackKey;
+        private bool _inChatBox;
 
         public RaincoatPlugin()
         {
@@ -56,9 +58,22 @@ namespace JarlykMods.Raincoat
             _starterPackKey = GetKey(RaincoatConfig.StarterPackKey);
             if (_starterPackKey == null)
                 Debug.LogError("Invalid key code specified for StarterPackKey");
+
+            On.RoR2.UI.ChatBox.FocusInputField += OnFocusInputField;
+            On.RoR2.UI.ChatBox.UnfocusInputField += OnUnfocusInputField;
         }
 
-        private KeyCode? GetKey(ConfigWrapper<string> param)
+        private void OnUnfocusInputField(On.RoR2.UI.ChatBox.orig_UnfocusInputField orig, ChatBox self)
+        {
+            _inChatBox = false;
+        }
+
+        private void OnFocusInputField(On.RoR2.UI.ChatBox.orig_FocusInputField orig, ChatBox self)
+        {
+            _inChatBox = true;
+        }
+
+        private KeyCode? GetKey(ConfigEntry<string> param)
         {
             if (!Enum.TryParse(param.Value, out KeyCode result))
                 return null;
@@ -68,6 +83,9 @@ namespace JarlykMods.Raincoat
 
         public void Update()
         {
+            if (_inChatBox || !Stage.instance || Stage.instance.sceneDef.sceneType != SceneType.Stage)
+                return;
+
             if (_recentItemDroppper != null && _dropItemKey != null && Input.GetKeyDown(_dropItemKey.Value))
                 _recentItemDroppper.DropRecentItem();
 

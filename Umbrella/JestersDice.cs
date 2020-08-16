@@ -27,6 +27,7 @@ namespace JarlykMods.Umbrella
                 pickupModelPath = UmbrellaAssets.PrefabJestersDice,
                 pickupIconPath = UmbrellaAssets.IconJestersDice,
                 pickupToken = "Jester's Dice",
+                name = EquipNames.JestersDice,
                 nameToken = EquipNames.JestersDice,
                 descriptionToken = "Jester's Dice",
                 canDrop = true,
@@ -46,7 +47,7 @@ namespace JarlykMods.Umbrella
             };
 
             var equip = new CustomEquipment(equipDef, new[] { rule });
-            EquipIndex = (EquipmentIndex)ItemAPI.AddCustomEquipment(equip);
+            EquipIndex = ItemAPI.Add(equip);
         }
 
         public static EquipmentIndex EquipIndex { get; private set; }

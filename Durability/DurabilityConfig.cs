@@ -9,21 +9,21 @@ namespace JarlykMods.Durability
     {
         public static void Init(ConfigFile config)
         {
-            RegEquipLifetime = config.Wrap(
+            RegEquipLifetime = config.Bind(
                 "Settings",
                 "RegEquipLifetime",
-                "Target lifetime of regular equipment, if using constantly, in seconds",
-                720f);
+                1200f,
+                "Target lifetime of regular equipment, if using constantly, in seconds");
 
-            LunarEquipLifetime = config.Wrap(
+            LunarEquipLifetime = config.Bind(
                 "Settings",
                 "LunarEquipLifetime",
-                "Target lifetime of lunar equipment, if using constantly, in seconds",
-                1440f);
+                2400f,
+                "Target lifetime of lunar equipment, if using constantly, in seconds");
         }
 
-        public static ConfigWrapper<float> RegEquipLifetime;
+        public static ConfigEntry<float> RegEquipLifetime;
 
-        public static ConfigWrapper<float> LunarEquipLifetime;
+        public static ConfigEntry<float> LunarEquipLifetime;
     }
 }
