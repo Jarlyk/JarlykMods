@@ -22,6 +22,7 @@
     <None Remove="icon.png" />
     <None Remove="License.txt" />
     <None Remove="manifest.json" />
+    <None Remove="raincoat.assets" />
     <None Remove="README.md" />
   </ItemGroup>
 
@@ -41,6 +42,10 @@
     <Content Include="README.md">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="raincoat.assets" />
   </ItemGroup>
 
   <ItemGroup>
@@ -83,6 +88,9 @@
     <Reference Include="UnityEngine">
       <HintPath>..\Dependencies\UnityEngine.dll</HintPath>
       <Private>false</Private>
+    </Reference>
+    <Reference Include="UnityEngine.AssetBundleModule">
+      <HintPath>..\Dependencies\UnityEngine.AssetBundleModule.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.CoreModule">
       <HintPath>..\Dependencies\UnityEngine.CoreModule.dll</HintPath>

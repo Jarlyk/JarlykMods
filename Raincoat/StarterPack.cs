@@ -52,6 +52,9 @@ namespace JarlykMods.Raincoat
                 case "LoaderBody":
                     GrantStarterLoader(master);
                     break;
+                default:
+                    GrantStarterGeneral(master);
+                    break;
             }
         }
 
@@ -126,6 +129,14 @@ namespace JarlykMods.Raincoat
         }
 
         public static void GrantStarterLoader(CharacterMaster master)
+        {
+            var inv = master.inventory;
+            inv.GiveItem(ItemIndex.Syringe, 3);
+            inv.GiveItem(ItemIndex.CritGlasses, 1);
+            inv.GiveItem(ItemIndex.HealOnCrit, 1);
+        }
+
+        public static void GrantStarterGeneral(CharacterMaster master)
         {
             var inv = master.inventory;
             inv.GiveItem(ItemIndex.Syringe, 3);

@@ -8,7 +8,7 @@ using UnityEngine;
 
 namespace EliteSpawningOverhaul
 {
-    [BepInPlugin(PluginGuid, "EliteSpawningOverhaul", "0.3.1")]
+    [BepInPlugin(PluginGuid, "EliteSpawningOverhaul", "1.0.0")]
     [BepInDependency(R2API.R2API.PluginGUID)]
     public sealed class EsoPlugin : BaseUnityPlugin
     {

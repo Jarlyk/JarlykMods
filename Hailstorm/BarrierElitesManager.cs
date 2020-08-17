@@ -8,6 +8,7 @@ using Mono.Cecil.Cil;
 using MonoMod.Cil;
 using R2API;
 using RoR2;
+using RoR2.Projectile;
 using UnityEngine;
 using UnityEngine.Networking;
 using Object = UnityEngine.Object;
@@ -55,7 +56,7 @@ namespace JarlykMods.Hailstorm
             var eliteDef = new EliteDef
             {
                 name = EliteName,
-                modifierToken = BarrierElitesManager.EliteName,
+                modifierToken = "ELITE_MODIFIER_BARRIER",
                 color = buffDef.buffColor,
                 eliteEquipmentIndex = _equipIndex
             };
@@ -73,16 +74,21 @@ namespace JarlykMods.Hailstorm
             var card = new EliteAffixCard
             {
                 spawnWeight = 0.5f,
-                costMultiplier = 10.0f,
+                costMultiplier = 10f,
                 damageBoostCoeff = 1.0f,
                 healthBoostCoeff = 10.0f,
                 eliteOnlyScaling = 0.5f,
-                eliteType = _eliteIndex
+                eliteType = _eliteIndex,
+                onSpawned = OnSpawned
             };
 
             //Register the card for spawning if ESO is enabled
             EsoLib.Cards.Add(card);
             Card = card;
+
+            //Description of elite in UI when boss
+            LanguageAPI.Add(eliteDef.modifierToken, "Barrier {0}");
+            //eliteDef.modifierToken = "Barrier {0}";
         }
 
         public EliteAffixCard Card { get; }
@@ -187,6 +193,14 @@ namespace JarlykMods.Hailstorm
                     }
                 }
             }
+        }
+
+        private static void OnSpawned(CharacterMaster master)
+        {
+            var bodyObj = master.GetBodyObject();
+            var decor = UnityEngine.Object.Instantiate(HailstormAssets.DistortionQuad, bodyObj.transform);
+            decor.transform.localScale = new Vector3(1f, 1f, 1f);
+            decor.transform.localPosition = new Vector3(0, 0.2f, 0);
         }
     }
 }

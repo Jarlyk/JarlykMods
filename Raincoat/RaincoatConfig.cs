@@ -54,6 +54,12 @@ namespace JarlykMods.Raincoat
                 KeyCode.F1.ToString(),
                 "Key code for granting starter pack to all players in the game");
 
+            BossDropUseArtifact = config.Bind(
+                "BossShopDropping",
+                "BossDropUseArtifact",
+                true,
+                "If enabled, whether to use an artifact to enable/disable the actual dropping on a per-run basis");
+
             BossDropRedsMinStage = config.Bind(
                 "BossShopDropping",
                 "BossDropRedsMinStage",
@@ -89,6 +95,8 @@ namespace JarlykMods.Raincoat
 
         public static ConfigEntry<string> StarterPackKey;
 
+        public static ConfigEntry<bool> BossDropUseArtifact;
+        
         public static ConfigEntry<int> BossDropRedsMinStage;
 
         public static ConfigEntry<float> BossDropRedsChancePerStage;

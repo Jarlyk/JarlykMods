@@ -22,6 +22,7 @@ As Engi, you always want to know whether your turrets are still alive.  They sho
 
 #### Boss Shop Dropping [H]
 When it comes to creating a character build, you're often at the mercy of RNG, particularly in single player.  This offers a bit more choice by replacing boss drops with free green item shops instead.  'Special' boss drop items are mixed into the shops at the usual drop rate, just in case you _really_ want a Beetle Gland.  There's also a small chance at later stages of the shops spawning as red item shops.  These changes are a pretty substantial buff to the player, so consider mixing with other mods to up the difficulty to compensate.  Or just have fun wrecking things.
+As of release v1.0, this now also has the option of being toggled as the Artifact of Merch.  By default it will use the artifact; if you want to have it on permanently without the artifact, that can be configured.
 
 #### Starter Pack [H]
 Early game is kinda slow, both in terms of DPS and lacking speed items.  If you have this enabled, the host can press 'F1' to give everybody a starter pack of items to help get things rolling.  This is a pretty large advantage, but helps alleviate some of the early game boredom.  Key is configurable.
@@ -39,6 +40,17 @@ You can reach me via Github or can find me on the modding Discord at https://dis
 This mod is released under the standard MIT license, which is a permissive license that allows for free use, while disclaiming liability.  The text of this is included in the release archive in License.txt.
 
 ### Changelog
+
+1.0.2 | 2020-08-16
+- Fixed incorrect MiniRpc dependency reference (for correct version this time)
+
+1.0.1 | 2020-08-16
+- Fixed incorrect MiniRpc dependency reference
+
+1.0.0 | 2020-08-16
+- Fixes for RoR2 v1.0 Release
+- Added Artifact of Merch
+- Fixed starter kit to include items for non-standard characters
 
 0.2.2 | 2019-10-22
 - Fixed broken item dropping and starter pack (broken in last game patch)

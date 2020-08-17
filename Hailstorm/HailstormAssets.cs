@@ -8,6 +8,7 @@ using UnityEngine;
 using UnityEngine.Networking;
 using R2API;
 using R2API.AssetPlus;
+using RoR2;
 
 namespace JarlykMods.Hailstorm
 {
@@ -43,6 +44,8 @@ namespace JarlykMods.Hailstorm
 
                 BarrierMaterial = Resources.Load<GameObject>("Prefabs/TemporaryVisualEffects/barriereffect")
                                            .GetComponentInChildren<MeshRenderer>().material;
+
+                DistortionQuad = bundle.LoadAsset<GameObject>("Assets/Prefabs/DistortionQuad.prefab");
             }
 
             using (var bankStream = execAssembly.GetManifestResourceStream("JarlykMods.Hailstorm.Hailstorm.bnk"))
@@ -68,6 +71,8 @@ namespace JarlykMods.Hailstorm
         public static GameObject TwisterVisualPrefab { get; private set; }
 
         public static GameObject TwisterPrefab { get; private set; }
+
+        public static GameObject DistortionQuad { get; private set; }
 
         private static void GameNetworkManager_OnStartClient(On.RoR2.Networking.GameNetworkManager.orig_OnStartClient orig, GameNetworkManager self, NetworkClient newClient)
         {

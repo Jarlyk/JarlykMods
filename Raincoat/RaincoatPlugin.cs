@@ -6,6 +6,8 @@ using BepInEx;
 using BepInEx.Configuration;
 using JarlykMods.Raincoat.ItemDropper;
 using MiniRpcLib;
+using R2API;
+using R2API.Utils;
 using RoR2.UI;
 using RoR2;
 using UnityEngine;
@@ -15,8 +17,10 @@ using UnityEngine.Networking;
 
 namespace JarlykMods.Raincoat
 {
-    [BepInPlugin(PluginGuid, "Raincoat", "0.2.2")]
+    [BepInPlugin(PluginGuid, "Raincoat", "1.0.2")]
     [BepInDependency(R2API.R2API.PluginGUID)]
+    [BepInDependency("dev.wildbook.libminirpc")]
+    [R2APISubmoduleDependency(nameof(LanguageAPI))]
     public class RaincoatPlugin : BaseUnityPlugin
     {
         public const string PluginGuid = "com.jarlyk.raincoat";
@@ -35,6 +39,8 @@ namespace JarlykMods.Raincoat
         public RaincoatPlugin()
         {
             RaincoatConfig.Init(Config);
+            RaincoatAssets.Init();
+
             var miniRpc = MiniRpc.CreateInstance(ModRpcId);
 
             if (RaincoatConfig.EnableRecentItemDropper.Value)

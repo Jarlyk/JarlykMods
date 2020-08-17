@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using R2API;
 using R2API.Utils;
 using RoR2;
 using UnityEngine;
@@ -8,17 +9,45 @@ namespace JarlykMods.Raincoat
 {
     public sealed class BossShopDropper
     {
+        private ArtifactDef _artifactDef;
+
+        private const string ArtifactNameToken = "ARTIFACT_MERCH_NAME";
+        private const string ArtifactDescToken = "ARTIFACT_MERCH_DESC";
+
         public BossShopDropper()
         {
             On.RoR2.BossGroup.DropRewards += BossGroupDropRewards;
+
+            if (RaincoatConfig.BossDropUseArtifact.Value)
+            {
+                ArtifactCatalog.getAdditionalEntries += (list) =>
+                {
+                    _artifactDef = ScriptableObject.CreateInstance<ArtifactDef>();
+                    _artifactDef.nameToken = ArtifactNameToken;
+                    _artifactDef.descriptionToken = ArtifactDescToken;
+                    _artifactDef.smallIconDeselectedSprite = RaincoatAssets.ArtifactMerchInactiveIcon;
+                    _artifactDef.smallIconSelectedSprite = RaincoatAssets.ArtifactMerchActiveIcon;
+                    list.Add(_artifactDef);
+                };
+
+                LanguageAPI.Add(ArtifactNameToken, "Artifact of Merch");
+                LanguageAPI.Add(ArtifactDescToken, "When bosses die, they drop shops instead of items");
+
+                Debug.Log("Raincoat: Added Artifact of Merch");
+            }
         }
 
         private void BossGroupDropRewards(On.RoR2.BossGroup.orig_DropRewards orig, BossGroup self)
         {
-            //NOTE: We're overwriting the behavior entirely here, so no need to call back to orig
+            //If we're using an artifact and it's not enabled, just use the default handler
+            if (RaincoatConfig.BossDropUseArtifact.Value && !RunArtifactManager.instance.IsArtifactEnabled(_artifactDef))
+            {
+                orig(self);
+                return;
+            }
 
             //If no players, nothing to do
-            int participatingPlayerCount = R2API.ItemDropAPI.BossDropParticipatingPlayerCount ?? Run.instance.participatingPlayerCount;
+            int participatingPlayerCount = ItemDropAPI.BossDropParticipatingPlayerCount ?? Run.instance.participatingPlayerCount;
             if (participatingPlayerCount == 0 || !self.dropPosition)
                 return;
 

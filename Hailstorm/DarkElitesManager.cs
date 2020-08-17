@@ -42,7 +42,7 @@ namespace JarlykMods.Hailstorm
             var eliteDef = new EliteDef
             {
                 name = EliteName,
-                modifierToken = EliteName,
+                modifierToken = "ELITE_MODIFIER_DARK",
                 color = new Color32(0, 0, 0, 255),
             };
             var equipDef = new EquipmentDef
@@ -53,7 +53,7 @@ namespace JarlykMods.Hailstorm
                 pickupIconPath = HailstormAssets.IconDarkElite,
                 nameToken = EquipName,
                 pickupToken = "Darkness",
-                descriptionToken = "Night-bringer",
+                descriptionToken = "Darkness",
                 canDrop = false,
                 enigmaCompatible = false
             };
@@ -83,14 +83,16 @@ namespace JarlykMods.Hailstorm
             On.RoR2.CharacterModel.InstanceUpdate += CharacterModelOnInstanceUpdate;
 
             //Dark elites spawn much less frequently, but are only slightly stronger/costlier than tier 1s
+            //NOTE: Dark elites on the moon are extremely annoying, so we special case not spawning them there
             var card = new EliteAffixCard
             {
-                spawnWeight = 0.3f,
+                spawnWeight = 0.3f, 
                 costMultiplier = 10.0f,
                 damageBoostCoeff = 2.0f,
                 healthBoostCoeff = 6.0f,
                 eliteOnlyScaling = 0.5f,
-                eliteType = _eliteIndex
+                eliteType = _eliteIndex,
+                isAvailable = () => SceneManager.GetActiveScene().name != "moon"
             };
             
             //Register the card for spawning if ESO is enabled
@@ -111,6 +113,10 @@ namespace JarlykMods.Hailstorm
 
             //Whenever scene changes, stop the breathing sound
             SceneManager.sceneUnloaded += s => AkSoundEngine.PostEvent(SoundEvents.StopLargeBreathing, null);
+
+            //Description of elite in UI when boss
+            LanguageAPI.Add(eliteDef.modifierToken, "Dark {0}");
+            //eliteDef.modifierToken = "Dark {0}";
         }
 
         public EliteAffixCard Card { get; }

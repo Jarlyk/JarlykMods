@@ -20,7 +20,7 @@ namespace JarlykMods.Hailstorm
             var eliteDef = new EliteDef
             {
                 name = EliteName,
-                modifierToken = EliteName,
+                modifierToken = "ELITE_MODIFIER_STORM",
                 color = new Color32(162, 179, 241, 255)
             };
             var equipDef = new EquipmentDef
@@ -74,6 +74,10 @@ namespace JarlykMods.Hailstorm
             //Register the card for spawning if ESO is enabled
             EsoLib.Cards.Add(card);
             Card = card;
+
+            //Description of elite in UI when boss
+            LanguageAPI.Add(eliteDef.modifierToken, "StormBringer {0}");
+            //eliteDef.modifierToken = "StormBringer {0}";
         }
 
         public EliteIndex EliteIndex { get; }
