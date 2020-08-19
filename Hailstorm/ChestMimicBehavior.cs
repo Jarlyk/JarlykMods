@@ -1,8 +1,10 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using System.Reflection;
 using EliteSpawningOverhaul;
 using R2API.Utils;
 using RoR2;
+using RoR2.Navigation;
 using UnityEngine;
 using UnityEngine.Networking;
 
@@ -54,6 +56,11 @@ namespace JarlykMods.Hailstorm
                 var position = transform.position;
                 Destroy(gameObject);
 
+                //We also want to remove the node where we spawned from the occupied nodes list
+                //This allows the mimic monster to spawn in the same location
+                var node = SceneInfo.instance.groundNodes.FindClosestNode(position, HullClassification.Human);
+                RemoveNode(DirectorCore.instance, node);
+
                 //Play the shrine effect to highlight that something momentous is happening
                 GameObject effectPrefab = Resources.Load<GameObject>("Prefabs/Effects/ShrineUseEffect");
                 EffectData effectData = new EffectData();
@@ -63,18 +70,7 @@ namespace JarlykMods.Hailstorm
                 effectData.color = new Color32(255, 0, 0, 255);
                 EffectManager.SpawnEffect(effectPrefab, effectData, true);
 
-                var monsterSelection = ClassicStageInfo.instance.monsterSelection;
-                var weightedSelection = new WeightedSelection<DirectorCard>(8);
-                float eliteCostMultiplier = CombatDirector.highestEliteCostMultiplier;
-                for (int index = 0; index < monsterSelection.Count; ++index)
-                {
-                    DirectorCard directorCard = monsterSelection.choices[index].value;
-                    var noElites = ((CharacterSpawnCard) directorCard.spawnCard).noElites;
-                    float highestCost = (float) (directorCard.cost*(noElites ? 1.0 : eliteCostMultiplier));
-                    if (directorCard.CardIsValid() && directorCard.cost <= monsterCredit && highestCost/2.0 > monsterCredit)
-                        weightedSelection.AddChoice(directorCard, monsterSelection.choices[index].weight);
-                }
-
+                var weightedSelection = Util.CreateReasonableDirectorCardSpawnList(monsterCredit, 6, 1);
                 if (weightedSelection.Count != 0)
                 {
                     var chosenDirectorCard = weightedSelection.Evaluate(_rng.nextNormalizedFloat);
@@ -83,17 +79,18 @@ namespace JarlykMods.Hailstorm
 
                     var placement = new DirectorPlacementRule
                     {
-                        placementMode = DirectorPlacementRule.PlacementMode.Approximate,
+                        placementMode = DirectorPlacementRule.PlacementMode.Direct,
                         preventOverhead = chosenDirectorCard.preventOverhead,
                         minDistance = 0,
                         maxDistance = 50,
                         spawnOnTarget = transform
                     };
+                    placement.spawnOnTarget.Translate(0, 0.5f, 0);
 
                     var spawned = EsoLib.TrySpawnElite((CharacterSpawnCard)chosenDirectorCard.spawnCard, eliteAffix, placement, _rng);
                     if (spawned == null)
                     {
-                        Debug.LogWarning("Failed to spawn monster for Mimic!");
+                        Debug.LogWarning("Failed to spawn monster for Mimic due to insufficient spawn area!");
 
                         //This ideally shouldn't happen, but for now we'll at least drop the item
                         PickupDropletController.CreatePickupDroplet(PickupCatalog.FindPickupIndex(dropItem), position, 10f*Vector3.up);
@@ -107,6 +104,45 @@ namespace JarlykMods.Hailstorm
                     BoundReward.expReward = (uint)(chosenDirectorCard.cost*0.2*Run.instance.compensatedDifficultyCoefficient);
                     BoundItem = dropItem;
                 }
+                else
+                {
+                    Debug.LogWarning("Failed to spawn monster for Mimic due to unable to find a monster type!");
+
+                    //This ideally shouldn't happen, but for now we'll at least drop the item
+                    PickupDropletController.CreatePickupDroplet(PickupCatalog.FindPickupIndex(dropItem), position, 10f*Vector3.up);
+                    return;
+                }
+            }
+        }
+
+        private static void RemoveNode(DirectorCore directorCore, NodeGraph.NodeIndex node)
+        {
+            var arrField = typeof(DirectorCore).GetField("occupiedNodes", BindingFlags.Instance | BindingFlags.NonPublic);
+            var nodeRefType = typeof(DirectorCore).GetNestedType("NodeReference", BindingFlags.NonPublic);
+            var nodeIndexField = nodeRefType.GetField("nodeIndex", BindingFlags.Instance | BindingFlags.Public);
+
+            var arr = (Array)arrField.GetValue(directorCore);
+            int removalIndex = -1;
+            for (int i = 0; i < arr.Length; i++)
+            {
+                var nodeRef = arr.GetValue(i);
+                var occupiedNode = (NodeGraph.NodeIndex)nodeIndexField.GetValue(nodeRef);
+                if (occupiedNode.nodeIndex == node.nodeIndex)
+                {
+                    removalIndex = i;
+                    break;
+                }
+            }
+
+            if (removalIndex > -1)
+            {
+                var newArr = Array.CreateInstance(nodeRefType, arr.Length - 1);
+                if (removalIndex > 0)
+                    Array.Copy(arr, 0, newArr, 0, removalIndex);
+                if (removalIndex < arr.Length - 1)
+                    Array.Copy(arr, removalIndex+1, newArr, removalIndex, newArr.Length - removalIndex);
+
+                arrField.SetValue(directorCore, newArr);
             }
         }
 

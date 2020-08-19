@@ -16,8 +16,9 @@ using UnityEngine.Networking;
 
 namespace JarlykMods.Durability
 {
-    [BepInPlugin(PluginGuid, "EquipmentDurability", "0.1.1")]
+    [BepInPlugin(PluginGuid, "EquipmentDurability", "1.0.0")]
     [BepInDependency(R2API.R2API.PluginGUID)]
+    [BepInDependency("dev.wildbook.libminirpc")]
     [R2APISubmoduleDependency(nameof(CommandHelper))]
     public sealed class DurabilityPlugin : BaseUnityPlugin
     {

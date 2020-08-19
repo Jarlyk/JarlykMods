@@ -12,17 +12,21 @@ namespace JarlykMods.Hailstorm
 
         public AnimatedFloat Distance { get; private set; }
 
-        public void SetDarkTarget(float target)
+        public AnimatedFloat Intensity { get; private set; }
+
+        public void SetDarkTarget(float dist, float intensity)
         {
             enabled = true;
-            _darkStartBase = target;
-            Distance.MaxSpeed = target > Distance.Position ? 20 : 50;
+            _darkStartBase = dist;
+            Distance.MaxSpeed = dist > Distance.Position ? 20 : 50;
+            Intensity.Setpoint = intensity;
         }
 
         public void Banish()
         {
             _darkStartBase = 120;
             Distance.MaxSpeed = 50;
+            Intensity.Setpoint = 0;
         }
 
         public void SyncBreathingStart()
@@ -33,11 +37,19 @@ namespace JarlykMods.Hailstorm
         private void Awake()
         {
             _material = new Material(HailstormAssets.DarknessShader);
+
             Distance = new AnimatedFloat();
             Distance.Accel = 20;
             Distance.MaxSpeed = 50;
             Distance.Setpoint = 80;
             Distance.Position = 80;
+
+            Intensity = new AnimatedFloat();
+            Intensity.Accel = 2f;
+            Intensity.MaxSpeed = 0.3f;
+            Intensity.Setpoint = 0f;
+            Intensity.Position = 0f;
+
             _breathTimeRef = Time.time;
         }
         
@@ -55,12 +67,14 @@ namespace JarlykMods.Hailstorm
             var x = (float)Math.Cos(t);
             Distance.Setpoint = _darkStartBase + 0.7f*x;
             Distance.Update(Time.deltaTime);
+            Intensity.Update(Time.deltaTime);
 
             _material.SetFloat("_DarkStart", Distance.Position);
             _material.SetFloat("_DarkEnd", Distance.Position+20);
+            _material.SetFloat("_Intensity", Intensity.Position);
 
             //If the darkness has been banished, stop the effect
-            if (Distance.Position > 119 && Distance.Setpoint > 119)
+            if (Distance.Position > 119 && Distance.Setpoint > 119 && Intensity.Position < 0.05f)
             {
                 enabled = false;
             }

@@ -20,6 +20,10 @@ This mod is released under the standard MIT license, which is a permissive licen
 
 ### Changelog
 
+1.0.0 | 2020-08-17
+- Updated for RoR2 v1.0 Release
+- Increased nominal durability to 20/40 minutes
+
 0.1.1 | 2019-10-01
 - Fixed issue where durability wouldn't persist between stages
 - Fixed issue where using an item with no effect (like Aspect or Royal Cap with no target) would still deduct durability

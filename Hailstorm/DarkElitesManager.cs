@@ -275,6 +275,13 @@ namespace JarlykMods.Hailstorm
             if (rigs.Count == 0)
                 return;
 
+            if (NetworkUser.readOnlyLocalPlayersList == null || NetworkUser.readOnlyLocalPlayersList.Count == 0)
+                return;
+
+            var mainBody = NetworkUser.readOnlyLocalPlayersList[0].master?.GetBody();
+            if (!mainBody)
+                return;
+
             var camera = rigs[0]?.sceneCam;
             var bodies = CharacterBody.readOnlyInstancesList;
             if (camera == null || _darknessEffect == null || bodies == null)
@@ -283,36 +290,45 @@ namespace JarlykMods.Hailstorm
             bool canSeeDarkElite = false;
             int darkEliteCount = 0;
             var minX = 0.5f;
+            float closestDistSq = float.MaxValue;
             foreach (var body in bodies)
             {
                 if (body.isPlayerControlled || !body.HasBuff(_buffIndex) || body.teamComponent?.teamIndex != TeamIndex.Monster)
                     continue;
 
                 darkEliteCount++;
-                var posView = camera.WorldToViewportPoint(body.corePosition);
-                if (posView.x > 0 && posView.x < 1 && posView.y > 0 && posView.y < 1 && posView.z > 0)
-                {
-                    canSeeDarkElite = true;
-                    minX = Math.Min(minX, Math.Abs(posView.x - 0.5f));
-                    if (!_darknessSeen)
-                    {
-                        AkSoundEngine.PostEvent(SoundEvents.PlayLargeBreathing, camera.gameObject);
-                        _darknessEffect.SyncBreathingStart();
-                        _darknessSeen = true;
-                    }
+                var distSq = (body.corePosition - mainBody.transform.position).sqrMagnitude;
+                closestDistSq = Mathf.Min(distSq, closestDistSq);
 
-                    AkSoundEngine.PostEvent(SoundEvents.PlayHorrorAmbiance, body.gameObject);
-                    break;
+                if (!canSeeDarkElite)
+                {
+                    var posView = camera.WorldToViewportPoint(body.corePosition);
+                    if (posView.x > 0 && posView.x < 1 && posView.y > 0 && posView.y < 1 && posView.z > 0)
+                    {
+                        canSeeDarkElite = true;
+                        minX = Math.Min(minX, Math.Abs(posView.x - 0.5f));
+                        if (!_darknessSeen)
+                        {
+                            AkSoundEngine.PostEvent(SoundEvents.PlayLargeBreathing, camera.gameObject);
+                            _darknessEffect.SyncBreathingStart();
+                            _darknessSeen = true;
+                        }
+
+                        AkSoundEngine.PostEvent(SoundEvents.PlayHorrorAmbiance, body.gameObject);
+                    }
                 }
             }
 
+            var closestDist = Mathf.Sqrt(closestDistSq);
+            var scale = Mathf.Lerp(0, 1, (closestDist-30)/100);
+            var intensity = Mathf.Clamp(1 - (closestDist - 40)/110, 0, 1);
             if (canSeeDarkElite)
             {
-                _darknessEffect.SetDarkTarget(5.0f + 20f*minX);
+                _darknessEffect.SetDarkTarget(5.0f + 15f*minX + 50f*scale*scale*scale, intensity);
             }
             else if (darkEliteCount > 0)
             {
-                _darknessEffect.SetDarkTarget(80f);
+                _darknessEffect.SetDarkTarget(60f + 40f*scale*scale*scale, intensity);
             }
             else if (_darknessEffect.enabled)
             {

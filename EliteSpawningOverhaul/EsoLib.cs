@@ -305,6 +305,8 @@ namespace EliteSpawningOverhaul
                     finalCost = scaledCost;
                     return affix.eliteType;
                 }
+
+                ChosenAffix[self] = null;
             }
             else
             {

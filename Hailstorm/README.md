@@ -34,6 +34,11 @@ This mod is released under the standard MIT license, which is a permissive licen
 
 ### Changelog
 
+1.1.0 | 2020-08-17
+- Fixed boss descriptions when affixed as Hailstorm elites
+- Dark elites no longer spawn on the moon
+- Added new visual effect for barrier elites
+
 1.0.0 | 2020-08-15
 - Updated for RoR2 v1.0 Release
 - Reduced duration of tornadoes from storm elites
