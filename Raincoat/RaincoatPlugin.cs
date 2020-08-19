@@ -17,7 +17,7 @@ using UnityEngine.Networking;
 
 namespace JarlykMods.Raincoat
 {
-    [BepInPlugin(PluginGuid, "Raincoat", "1.0.2")]
+    [BepInPlugin(PluginGuid, "Raincoat", "1.0.3")]
     [BepInDependency(R2API.R2API.PluginGUID)]
     [BepInDependency("dev.wildbook.libminirpc")]
     [R2APISubmoduleDependency(nameof(LanguageAPI))]
@@ -71,11 +71,13 @@ namespace JarlykMods.Raincoat
 
         private void OnUnfocusInputField(On.RoR2.UI.ChatBox.orig_UnfocusInputField orig, ChatBox self)
         {
+            orig(self);
             _inChatBox = false;
         }
 
         private void OnFocusInputField(On.RoR2.UI.ChatBox.orig_FocusInputField orig, ChatBox self)
         {
+            orig(self);
             _inChatBox = true;
         }
 

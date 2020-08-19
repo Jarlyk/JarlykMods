@@ -34,6 +34,9 @@ This mod is released under the standard MIT license, which is a permissive licen
 
 ### Changelog
 
+1.2.1 | 2020-08-19
+- Fixed missing LanguageAPI attribute
+
 1.2.0 | 2020-08-18
 - Toned down barrier visual effect significantly, as it was causing significant hits to frame rates on some systems
 - Improved Darkness shader to have smoother state transitions

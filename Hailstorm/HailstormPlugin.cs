@@ -15,7 +15,7 @@ using UnityEngine.Networking;
 
 namespace JarlykMods.Hailstorm
 {
-    [BepInPlugin(PluginGuid, "Hailstorm", "1.2.0")]
+    [BepInPlugin(PluginGuid, "Hailstorm", "1.2.1")]
     [BepInDependency(R2API.R2API.PluginGUID)]
     [BepInDependency(EsoPlugin.PluginGuid)]
     [R2APISubmoduleDependency(nameof(EliteAPI))]
@@ -23,6 +23,7 @@ namespace JarlykMods.Hailstorm
     [R2APISubmoduleDependency(nameof(ItemAPI))]
     [R2APISubmoduleDependency(nameof(CommandHelper))]
     [R2APISubmoduleDependency(nameof(ResourcesAPI))]
+    [R2APISubmoduleDependency(nameof(LanguageAPI))]
     public sealed class HailstormPlugin : BaseUnityPlugin
     {
         public const string PluginGuid = "com.jarlyk.hailstorm";

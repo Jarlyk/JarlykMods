@@ -1,11 +1,11 @@
 {
   "name": "Hailstorm",
-  "version_number": "1.2.0",
+  "version_number": "1.2.1",
   "website_url": "https://github.com/Jarlyk/JarlykMods",
   "description": "Face the darkness: new elite types and mechanics",
   "dependencies": [
     "bbepis-BepInExPack-5.3.1",
     "tristanmcpherson-R2API-2.5.4",
-    "Jarlyk-EliteSpawningOverhaul-1.0.0"
+    "Jarlyk-EliteSpawningOverhaul-1.0.1"
   ]
 }

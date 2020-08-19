@@ -41,6 +41,9 @@ This mod is released under the standard MIT license, which is a permissive licen
 
 ### Changelog
 
+1.0.3 | 2020-08-19
+- Fixed issue where chat was broken
+
 1.0.2 | 2020-08-16
 - Fixed incorrect MiniRpc dependency reference (for correct version this time)
 
