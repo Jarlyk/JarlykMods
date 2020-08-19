@@ -34,6 +34,14 @@ This mod is released under the standard MIT license, which is a permissive licen
 
 ### Changelog
 
+1.2.0 | 2020-08-18
+- Toned down barrier visual effect significantly, as it was causing significant hits to frame rates on some systems
+- Improved Darkness shader to have smoother state transitions
+- Darkness is now significantly reduced in intensity when the Dark elite is far away from you
+- Fixed issue where mimics would sometimes not spawn
+- Fixed issue where fallback from failed mimic spawning wasn't working, causing no item to be dropped
+- Mimics now spawn at the location of the chest
+
 1.1.0 | 2020-08-17
 - Fixed boss descriptions when affixed as Hailstorm elites
 - Dark elites no longer spawn on the moon

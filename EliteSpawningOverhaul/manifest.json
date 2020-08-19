@@ -1,10 +1,10 @@
 {
   "name": "EliteSpawningOverhaul",
-  "version_number": "1.0.0",
+  "version_number": "1.0.1",
   "website_url": "https://github.com/Jarlyk/JarlykMods",
   "description": "Overhauls the elite spawning system to allow for finer control by modders",
   "dependencies": [
     "bbepis-BepInExPack-5.3.1",
-    "tristanmcpherson-R2API-2.5.0"
+    "tristanmcpherson-R2API-2.5.4"
   ]
 }

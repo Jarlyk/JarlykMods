@@ -17,6 +17,9 @@ This mod is released under the standard MIT license, which is a permissive licen
 
 ### Changelog
 
+1.0.1 | 2020-08-18
+- Fixed bug where often non-elites would spawn with elite hp/dmg
+
 1.0.0 | 2020-08-15
 - Updated for RoR2 v1.0 Release
 
