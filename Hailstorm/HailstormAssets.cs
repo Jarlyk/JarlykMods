@@ -7,7 +7,6 @@ using RoR2.Networking;
 using UnityEngine;
 using UnityEngine.Networking;
 using R2API;
-using R2API.AssetPlus;
 using RoR2;
 
 namespace JarlykMods.Hailstorm
@@ -46,13 +45,22 @@ namespace JarlykMods.Hailstorm
                                            .GetComponentInChildren<MeshRenderer>().material;
 
                 DistortionQuad = bundle.LoadAsset<GameObject>("Assets/Prefabs/DistortionQuad.prefab");
+
+            }
+
+            using (var stream = execAssembly.GetManifestResourceStream("JarlykMods.Hailstorm.mimic.assets"))
+            {
+                var bundle = AssetBundle.LoadFromStream(stream);
+                MimicModel = bundle.LoadAsset<GameObject>("mdlMimic");
+                MimicMaterial = bundle.LoadAsset<Material>("matMimic");
+
             }
 
             using (var bankStream = execAssembly.GetManifestResourceStream("JarlykMods.Hailstorm.Hailstorm.bnk"))
             {
                 var bytes = new byte[bankStream.Length];
                 bankStream.Read(bytes, 0, bytes.Length);
-                SoundBanks.Add(bytes);
+                SoundAPI.SoundBanks.Add(bytes);
             }
 
             On.RoR2.Networking.GameNetworkManager.OnStartClient += GameNetworkManager_OnStartClient;
@@ -73,6 +81,10 @@ namespace JarlykMods.Hailstorm
         public static GameObject TwisterPrefab { get; private set; }
 
         public static GameObject DistortionQuad { get; private set; }
+
+        public static GameObject MimicModel { get; private set; }
+
+        public static Material MimicMaterial { get; private set; }
 
         private static void GameNetworkManager_OnStartClient(On.RoR2.Networking.GameNetworkManager.orig_OnStartClient orig, GameNetworkManager self, NetworkClient newClient)
         {

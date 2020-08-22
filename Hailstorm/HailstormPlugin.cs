@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using System.Text;
 using BepInEx;
@@ -10,6 +11,7 @@ using R2API;
 using R2API.Networking;
 using R2API.Utils;
 using RoR2;
+using RoR2.Navigation;
 using UnityEngine;
 using UnityEngine.Networking;
 
@@ -24,6 +26,10 @@ namespace JarlykMods.Hailstorm
     [R2APISubmoduleDependency(nameof(CommandHelper))]
     [R2APISubmoduleDependency(nameof(ResourcesAPI))]
     [R2APISubmoduleDependency(nameof(LanguageAPI))]
+    [R2APISubmoduleDependency(nameof(PrefabAPI))]
+    [R2APISubmoduleDependency(nameof(LoadoutAPI))]
+    [R2APISubmoduleDependency(nameof(SurvivorAPI))]
+    [NetworkCompatibility(CompatibilityLevel.EveryoneMustHaveMod)]
     public sealed class HailstormPlugin : BaseUnityPlugin
     {
         public const string PluginGuid = "com.jarlyk.hailstorm";
@@ -31,8 +37,8 @@ namespace JarlykMods.Hailstorm
         private readonly DarkElitesManager _darkElites;
         private readonly BarrierElitesManager _barrierElites;
         private readonly StormElitesManager _stormElites;
-        private readonly Mimics _mimics;
-        private readonly Xoroshiro128Plus _rng;
+        private static Mimics _mimics;
+        private static Xoroshiro128Plus _rng;
 
         public HailstormPlugin()
         {
@@ -60,6 +66,7 @@ namespace JarlykMods.Hailstorm
         {
             _darkElites?.Awake();
             _barrierElites?.Awake();
+            _mimics?.Awake();
         }
 
         public void Start()
@@ -71,6 +78,35 @@ namespace JarlykMods.Hailstorm
         {
             _darkElites?.Update();
             _barrierElites?.Update();
+        }
+
+        [ConCommand(commandName = "hs_testmimic", flags = ConVarFlags.ExecuteOnServer,
+                    helpText = "Test Mimic")]
+        private static void TestMimic(ConCommandArgs args)
+        {
+            var spawnCard = ScriptableObject.CreateInstance<CharacterSpawnCard>();
+            spawnCard.hullSize = HullClassification.Human;
+            spawnCard.name = "Mimic";
+            spawnCard.nodeGraphType = MapNodeGroup.GraphType.Ground;
+            spawnCard.prefab = Mimics.MasterPrefab;
+
+            var user = LocalUserManager.GetFirstLocalUser();
+            var body = user.cachedBody;
+            if (body?.master == null)
+            {
+                Debug.LogError("Cannot find local user body!");
+                return;
+            }
+
+            var placement = new DirectorPlacementRule
+            {
+                spawnOnTarget = body.transform,
+                maxDistance = 40,
+                placementMode = DirectorPlacementRule.PlacementMode.Approximate,
+                preventOverhead = false
+            };
+
+            EsoLib.TrySpawnElite(spawnCard, null, placement, _rng);
         }
     }
 }

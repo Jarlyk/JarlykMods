@@ -8,7 +8,6 @@ using MonoMod.Cil;
 using R2API.Utils;
 using RoR2;
 using UnityEngine;
-using Console = RoR2.Console;
 
 namespace EliteSpawningOverhaul
 {
@@ -39,6 +38,8 @@ namespace EliteSpawningOverhaul
             //We also need to hook the private compiler method used to implement the submethod used for the delegate in AttemptSpawnOnTarget now
             var subMethod = _helperClass.GetMethod("<AttemptSpawnOnTarget>g__OnCardSpawned|0", BindingFlags.NonPublic | BindingFlags.Instance);
             MonoMod.RuntimeDetour.HookGen.HookEndpointManager.Modify(subMethod, (Action<ILContext>)CombatDirectorHelperOnCardSpawned);
+
+            On.RoR2.CharacterModel.UpdateMaterials += CharacterModelOnUpdateMaterials;
 
             //Create default cards for vanilla elites
             Cards.Add(new EliteAffixCard
@@ -86,6 +87,28 @@ namespace EliteSpawningOverhaul
                 eliteType = EliteIndex.Haunted,
                 isAvailable = () => Run.instance.loopClearCount > 0
             });
+        }
+
+        private static void CharacterModelOnUpdateMaterials(On.RoR2.CharacterModel.orig_UpdateMaterials orig, CharacterModel self)
+        {
+            orig(self);
+
+            //Vanilla elites aren't adjusted
+            var eliteIndex = self.GetFieldValue<EliteIndex>("myEliteIndex");
+            if (eliteIndex < EliteIndex.Count)
+                return;
+
+            var eliteDef = EliteCatalog.GetEliteDef(eliteIndex);
+            var rendererInfos = self.baseRendererInfos;
+            var propertyStorage = self.GetFieldValue<MaterialPropertyBlock>("propertyStorage");
+            for (int i = rendererInfos.Length - 1; i >= 0; --i)
+            {
+                var baseRendererInfo = rendererInfos[i];
+                Renderer renderer = baseRendererInfo.renderer;
+                renderer.GetPropertyBlock(propertyStorage);
+                propertyStorage.SetColor("_Color", eliteDef.color);
+                renderer.SetPropertyBlock(propertyStorage);
+            }
         }
 
         /// <summary>

@@ -12,6 +12,7 @@ using RoR2.UI;
 using RoR2;
 using UnityEngine;
 using UnityEngine.Networking;
+using UnityEngine.SceneManagement;
 
 // ReSharper disable UnusedMember.Local
 
@@ -21,6 +22,7 @@ namespace JarlykMods.Raincoat
     [BepInDependency(R2API.R2API.PluginGUID)]
     [BepInDependency("dev.wildbook.libminirpc")]
     [R2APISubmoduleDependency(nameof(LanguageAPI))]
+    [NetworkCompatibility(CompatibilityLevel.EveryoneMustHaveMod)]
     public class RaincoatPlugin : BaseUnityPlugin
     {
         public const string PluginGuid = "com.jarlyk.raincoat";

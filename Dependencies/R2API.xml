@@ -109,103 +109,103 @@
             Loads the sprite
             </summary>
         </member>
-        <member name="T:R2API.ModdedUnlockable`1">
+        <member name="T:R2API.ModdedUnlockableAndAchievement`1">
             <summary>
             A base class that can be used to conveinently supply all the required info for a modded achievement
             </summary>
             <typeparam name="TSpriteProvider">The type of sprite provider being used for this achievement</typeparam>
         </member>
-        <member name="P:R2API.ModdedUnlockable`1.SpritePath">
+        <member name="P:R2API.ModdedUnlockableAndAchievement`1.SpritePath">
             <summary>
             The path that will be passed to Resources.Load to get the sprite
             </summary>
         </member>
-        <member name="M:R2API.ModdedUnlockable`1.Revoke">
+        <member name="M:R2API.ModdedUnlockableAndAchievement`1.Revoke">
             <summary>
             Removes this achievement from the current profile.
             </summary>
         </member>
-        <member name="P:R2API.ModdedUnlockable`1.SpriteProvider">
+        <member name="P:R2API.ModdedUnlockableAndAchievement`1.SpriteProvider">
             <summary>
             This should return the sprite provider for this achievement
             </summary>
         </member>
-        <member name="P:R2API.ModdedUnlockable`1.AchievementIdentifier">
+        <member name="P:R2API.ModdedUnlockableAndAchievement`1.AchievementIdentifier">
             <summary>
             The identifier of the achievement being added
             Should be unique
             </summary>
         </member>
-        <member name="P:R2API.ModdedUnlockable`1.UnlockableIdentifier">
+        <member name="P:R2API.ModdedUnlockableAndAchievement`1.UnlockableIdentifier">
             <summary>
             The identifier of the unlockable granted when the achievement is completed
             Should be unique
             This is what is used when specifying an unlock condition for various things in the game
             </summary>
         </member>
-        <member name="P:R2API.ModdedUnlockable`1.PrerequisiteUnlockableIdentifier">
+        <member name="P:R2API.ModdedUnlockableAndAchievement`1.PrerequisiteUnlockableIdentifier">
             <summary>
             The unlockableIdentifier of a prerequisite
             Should be used for skill unlocks for a custom character if the character has an unlock condition
             Multiple prereqs are not supported (as far as I can tell)
             </summary>
         </member>
-        <member name="P:R2API.ModdedUnlockable`1.AchievementNameToken">
+        <member name="P:R2API.ModdedUnlockableAndAchievement`1.AchievementNameToken">
             <summary>
             The language token for the name to be shown in logbook for this achievement
             </summary>
         </member>
-        <member name="P:R2API.ModdedUnlockable`1.AchievementDescToken">
+        <member name="P:R2API.ModdedUnlockableAndAchievement`1.AchievementDescToken">
             <summary>
             The language token for the description to be shown in logbook for this achievement
             Also used to create the 'How to unlock' text
             </summary>
         </member>
-        <member name="P:R2API.ModdedUnlockable`1.UnlockableNameToken">
+        <member name="P:R2API.ModdedUnlockableAndAchievement`1.UnlockableNameToken">
             <summary>
             The language token for the unlockable
             Not 100% sure where this is shown in game
             </summary>
         </member>
-        <member name="M:R2API.ModdedUnlockable`1.OnGranted">
+        <member name="M:R2API.ModdedUnlockableAndAchievement`1.OnGranted">
             <summary>
             Called when this achievement is granted
             </summary>
         </member>
-        <member name="M:R2API.ModdedUnlockable`1.OnInstall">
+        <member name="M:R2API.ModdedUnlockableAndAchievement`1.OnInstall">
             <summary>
             This should be used to register to an event or apply a hook in order to detect when the achievement conditions are met
             When you detect that the conditions are met, call `base.Grant` inside the method
             </summary>
         </member>
-        <member name="M:R2API.ModdedUnlockable`1.OnUninstall">
+        <member name="M:R2API.ModdedUnlockableAndAchievement`1.OnUninstall">
             <summary>
             This should unregister whatever was registered in OnInstall
             </summary>
         </member>
-        <member name="M:R2API.ModdedUnlockable`1.ProgressForAchievement">
+        <member name="M:R2API.ModdedUnlockableAndAchievement`1.ProgressForAchievement">
             <summary>
             TODO
             </summary>
             <returns>TODO</returns>
         </member>
-        <member name="M:R2API.ModdedUnlockable`1.LookUpRequiredBodyIndex">
+        <member name="M:R2API.ModdedUnlockableAndAchievement`1.LookUpRequiredBodyIndex">
             <summary>
             Used to specify if this achievement is limited to a certain character
             </summary>
             <returns>The index of the character that is needed to unlock this achievement</returns>
         </member>
-        <member name="M:R2API.ModdedUnlockable`1.OnBodyRequirementBroken">
+        <member name="M:R2API.ModdedUnlockableAndAchievement`1.OnBodyRequirementBroken">
             <summary>
             Called when the body changes to a body that does not meet the requirements for this achievement
             </summary>
         </member>
-        <member name="M:R2API.ModdedUnlockable`1.OnBodyRequirementMet">
+        <member name="M:R2API.ModdedUnlockableAndAchievement`1.OnBodyRequirementMet">
             <summary>
             Called when the body changes to a body that meets the requirements for this acheivement
             </summary>
         </member>
-        <member name="P:R2API.ModdedUnlockable`1.wantsBodyCallbacks">
+        <member name="P:R2API.ModdedUnlockableAndAchievement`1.wantsBodyCallbacks">
             <summary>
             This actually does nothing in vanilla, it is here in case that changes in future updates.
             </summary>
@@ -228,6 +228,11 @@
         <member name="P:R2API.AssetAPI.MasterCatalog">
             <summary>
             List of all character masters, including both vanilla and modded ones.
+            </summary>
+        </member>
+        <member name="P:R2API.AssetAPI.Loaded">
+            <summary>
+            Return true if the submodule is loaded.
             </summary>
         </member>
         <member name="F:R2API.AssetAPI.BodyCatalog">
@@ -503,6 +508,11 @@
             API for adding difficulties like Drizzle, Rainstorm, and Monsoon to the game. Does not cover "very easy, easy, ..., HAHAHAHA".
             </summary>
         </member>
+        <member name="P:R2API.DifficultyAPI.Loaded">
+            <summary>
+            Return true if the submodule is loaded.
+            </summary>
+        </member>
         <member name="E:R2API.DifficultyAPI.difficultyCatalogReady">
             <summary>
             <see cref="E:R2API.DifficultyAPI.DifficultyCatalogReady"/>
@@ -515,7 +525,7 @@
         </member>
         <member name="F:R2API.DifficultyAPI.difficultyDefinitions">
             <summary>
-            An observable collection of ALL difficulty definitions. This includes both the vanilla ones and the ones added by R2API.
+            A dictionairy with ALL difficulty definitions. Post start, this includes both the vanilla ones and the ones added by R2API. Not all indexes are promised to be populated. Iterate over the keyset instead.
             </summary>
         </member>
         <member name="M:R2API.DifficultyAPI.AddDifficulty(RoR2.DifficultyDef)">
@@ -525,7 +535,18 @@
             You'll get your new index returned that you can work with for comparing to Run.Instance.selectedDifficulty.
             If this is called after the DifficultyCatalog inits then this will return -1/DifficultyIndex.Invalid and ignore the difficulty
             </summary>
-            <param name="difficulty">The difficulty to add.</param>
+            <param name="difficulty">The difficulty definition to add.</param>
+            <returns>DifficultyIndex.Invalid if it fails. Your index otherwise.</returns>
+        </member>
+        <member name="M:R2API.DifficultyAPI.AddDifficulty(RoR2.DifficultyDef,System.Boolean)">
+            <summary>
+            Add a DifficultyDef to the list of available difficulties.
+            This must be called before the DifficultyCatalog inits, so before plugin.Start()
+            You'll get your new index returned that you can work with for comparing to Run.Instance.selectedDifficulty.
+            If this is called after the DifficultyCatalog inits then this will return -1/DifficultyIndex.Invalid and ignore the difficulty
+            </summary>
+            <param name="difficulty">The difficulty definition to add.</param>
+            <param name="preferPositive">If you prefer to be appended to the array. In game version 1.0.0.X this means you will get all Eclipse modifiers as well when your difficulty is selected. </param>
             <returns>DifficultyIndex.Invalid if it fails. Your index otherwise.</returns>
         </member>
         <member name="T:R2API.DirectorAPI">
@@ -994,6 +1015,11 @@
             <param name="effect">The EffectDef to addZ</param>
             <returns>False if the EffectDef was null</returns>
         </member>
+        <member name="P:R2API.EliteAPI.Loaded">
+            <summary>
+            Return true if the submodule is loaded.
+            </summary>
+        </member>
         <member name="M:R2API.EliteAPI.Add(R2API.CustomElite)">
             <summary>
             Add a custom elite to the list of available elites.
@@ -1087,6 +1113,16 @@
             </summary>
             <param name="fontAsset">The loaded fontasset</param>
         </member>
+        <member name="P:R2API.InventoryAPI.Loaded">
+            <summary>
+            Return true if the submodule is loaded.
+            </summary>
+        </member>
+        <member name="P:R2API.ItemAPI.Loaded">
+            <summary>
+            Return true if the submodule is loaded.
+            </summary>
+        </member>
         <member name="M:R2API.ItemAPI.Add(R2API.CustomItem)">
             <summary>
             Add a custom item to the list of available items.
@@ -1120,6 +1156,11 @@
             <param name="itemDisplayRules">The specific rules for this model, or if false is returned, the default rules.</param>
             <returns></returns>
         </member>
+        <member name="P:R2API.ItemDropAPI.Loaded">
+            <summary>
+            Return true if the submodule is loaded.
+            </summary>
+        </member>
         <member name="T:R2API.LanguageAPI">
             <summary>
             class for language files to load
@@ -1127,7 +1168,7 @@
         </member>
         <member name="M:R2API.LanguageAPI.Add(System.String,System.String)">
             <summary>
-            Adds a single languagetoken and value
+            Adds a single languagetoken and its associated value to all languages
             </summary>
             <param name="key">Token the game asks</param>
             <param name="value">Value it gives back</param>
@@ -1184,6 +1225,14 @@
             </summary>
             <param name="t">The type to add</param>
             <returns>True if succesfully added</returns>
+        </member>
+        <member name="M:R2API.LoadoutAPI.StateTypeOf``1">
+            <summary>
+            Creates a SerializableEntityStateType with a much simpler syntax
+            Effectively the same as new SerializableEntityStateType(typeof(T))
+            </summary>
+            <typeparam name="T">The state type</typeparam>
+            <returns>The created SerializableEntityStateType</returns>
         </member>
         <member name="M:R2API.LoadoutAPI.AddSkillDef(RoR2.Skills.SkillDef)">
             <summary>
@@ -1256,6 +1305,11 @@
             <param name="bodyPrefab">The body to add the skin to</param>
             <param name="skin">The SkinDef to add</param>
             <returns>True if successful</returns>
+        </member>
+        <member name="P:R2API.LobbyConfigAPI.Loaded">
+            <summary>
+            Return true if the submodule is loaded.
+            </summary>
         </member>
         <member name="M:R2API.LobbyConfigAPI.LobbyCategory.#ctor(System.String,UnityEngine.Color,System.String)">
             <summary>
@@ -1352,164 +1406,16 @@
             <param name="rule">The rule to add.</param>
             <typeparam name="T">The type of value this rule holds.</typeparam>
         </member>
-        <member name="T:R2API.ModListAPI">
+        <member name="M:R2API.MiscHelpers.KeyValuePairExtensions.Deconstruct``2(System.Collections.Generic.KeyValuePair{``0,``1},``0@,``1@)">
             <summary>
-            An API for sending and retreiving a list of mods (and config settings) in multiplayer.
+            Extension to allow tuple style deconstruction of keys and values when enumerating a dictionary.
+            Example: foreach(var (key, value) in myDictionary)
             </summary>
-        </member>
-        <member name="F:R2API.ModListAPI.MessageIndex">
-            <summary>
-            The constant index used by the networkMessages
-            </summary>
-        </member>
-        <member name="F:R2API.ModListAPI.MessageWaitTimeServer">
-            <summary>
-            The amount of time that the server waits to receive a message before assuming a client is vanilla.
-            </summary>
-        </member>
-        <member name="F:R2API.ModListAPI.MessageWaitTimeClient">
-            <summary>
-            The amount of time a client waits to receive a message before assuming a server is vanilla.
-            </summary>
-        </member>
-        <member name="P:R2API.ModListAPI.Loaded">
-            <summary>
-            Is ModListAPI loaded and working?
-            </summary>
-        </member>
-        <member name="P:R2API.ModListAPI.CurrentServerMods">
-            <summary>
-            The ModList from the current server. null if not connected to a server.
-            </summary>
-        </member>
-        <member name="P:R2API.ModListAPI.ConnectedClientMods">
-            <summary>
-            A dictionary of ModLists for every connected player (and players who have been connected) by NetworkConnection. null if server inactive.
-            </summary>
-        </member>
-        <member name="E:R2API.ModListAPI.ModListReceivedFromServer">
-            <summary>
-            An event invoked whenever a server sends its ModList.
-            </summary>
-        </member>
-        <member name="E:R2API.ModListAPI.ModListReceivedFromClient">
-            <summary>
-            An event invoked whenever a client sends its ModList to server.
-            </summary>
-        </member>
-        <member name="M:R2API.ModListAPI.RebuildModList">
-            <summary>
-            Must be called any time config values are changed and if (somehow) mods are installed runtime.
-            </summary>
-        </member>
-        <member name="M:R2API.ModListAPI.ModListMessage.#ctor">
-            <summary>
-            Do not use, must be public for Unity to access.
-            </summary>
-        </member>
-        <member name="M:R2API.ModListAPI.ModListMessage.Serialize(UnityEngine.Networking.NetworkWriter)">
-            <summary>
-            Do not use, must be public for Unity to access.
-            </summary>
-            <param name="writer"></param>
-        </member>
-        <member name="M:R2API.ModListAPI.ModListMessage.Deserialize(UnityEngine.Networking.NetworkReader)">
-            <summary>
-            Do not use, must be public for Unity to access.
-            </summary>
-            <param name="reader"></param>
-        </member>
-        <member name="T:R2API.ModListAPI.ModList">
-            <summary>
-            A list of mods.
-            </summary>
-        </member>
-        <member name="P:R2API.ModListAPI.ModList.Mods">
-            <summary>
-            A readonly collection of ModInfos.
-            </summary>
-        </member>
-        <member name="P:R2API.ModListAPI.ModList.IsVanilla">
-            <summary>
-            Is this modlist empty?
-            </summary>
-        </member>
-        <member name="P:R2API.ModListAPI.ModList.Vanilla">
-            <summary>
-            An empty modlist
-            </summary>
-        </member>
-        <member name="M:R2API.ModListAPI.ModList.TextRepresentation">
-            <summary>
-            Get a string of all the mods contained in the list.
-            </summary>
-            <returns>the string with each mod on its own line</returns>
-        </member>
-        <member name="T:R2API.ModListAPI.ModInfo">
-            <summary>
-            An entry in a list of mods, represents a single mod.
-            </summary>
-        </member>
-        <member name="P:R2API.ModListAPI.ModInfo.Guid">
-            <summary>
-            The (hopefully unique) GUID of the mod as a string.
-            </summary>
-        </member>
-        <member name="P:R2API.ModListAPI.ModInfo.Version">
-            <summary>
-            The version of the Mod
-            </summary>
-        </member>
-        <member name="P:R2API.ModListAPI.ModInfo.HasConfig">
-            <summary>
-            Does this ModInfo have a config?
-            </summary>
-        </member>
-        <member name="M:R2API.ModListAPI.ModInfo.MatchMod(R2API.ModListAPI.ModInfo)">
-            <summary>
-            Check if two mods are the same
-            </summary>
-            <param name="mod">The other mod</param>
-            <returns>true if they are the same</returns>
-        </member>
-        <member name="M:R2API.ModListAPI.ModInfo.MatchVersion(R2API.ModListAPI.ModInfo)">
-            <summary>
-            Checks if two mods are the same, and are the same version
-            </summary>
-            <param name="mod">The other mod</param>
-            <returns>true if both mod and version are the same</returns>
-        </member>
-        <member name="M:R2API.ModListAPI.ModInfo.MatchConfig(R2API.ModListAPI.ModInfo)">
-            <summary>
-            Checks if two mods are the same, are the same version, and have the same config settings
-            </summary>
-            <param name="mod">The other mod</param>
-            <returns>true if mod, version, and config are the same</returns>
-        </member>
-        <member name="M:R2API.ModListAPI.ModInfo.GetConfigValue``1(BepInEx.Configuration.ConfigEntry{``0})">
-            <summary>
-            Gets a value in the mod's config from the ConfigEntry used to bind it.
-            </summary>
-            <typeparam name="T">The Type of the value to get</typeparam>
-            <param name="configEntry">The ConfigEntry that was used to bind it.</param>
-            <returns>The value from the config</returns>
-        </member>
-        <member name="M:R2API.ModListAPI.ModInfo.GetConfigValue``1(System.String,System.String)">
-            <summary>
-            Gets a value in the mod's config from the key and section of the setting.
-            </summary>
-            <typeparam name="T"></typeparam>
-            <param name="key">The key of the setting</param>
-            <param name="section">The section the setting is in</param>
-            <returns>The value from the config</returns>
-        </member>
-        <member name="M:R2API.ModListAPI.ModInfo.GetConfigValue(System.String,System.String)">
-            <summary>
-            Gets a value in the mod's config from the key and section of the setting as System.Object.
-            </summary>
-            <param name="key">The key of the setting</param>
-            <param name="section">The section the setting is in</param>
-            <returns>The value from the config as System.Object</returns>
+            <typeparam name="TKey"></typeparam>
+            <typeparam name="TValue"></typeparam>
+            <param name="kvp"></param>
+            <param name="key"></param>
+            <param name="value"></param>
         </member>
         <member name="P:R2API.Networking.NetworkingAPI.Loaded">
             <summary>
@@ -1577,6 +1483,11 @@
         <member name="T:R2API.ResourcesAPI">
             <summary>
             Allow to register AssetBundles for Mod Makers.
+            </summary>
+        </member>
+        <member name="P:R2API.ResourcesAPI.Loaded">
+            <summary>
+            Return true if the submodule is loaded.
             </summary>
         </member>
         <member name="M:R2API.ResourcesAPI.AddProvider(R2API.IResourceProvider)">
@@ -1752,6 +1663,15 @@
             <typeparam name="TUnlockable">The type that represents the achievement</typeparam>
             <param name="serverTracked">True if the achievement tracking is host side, false if client side</param>
         </member>
+        <member name="M:R2API.UnlockablesAPI.AddUnlockableOnly(System.String,System.Boolean,System.String,System.String)">
+            <summary>
+            Adds an unlockable without a corresponding achievement. Generally useful for adding behind the scenes unlockables similar to finding all newt altars and eclipse tracking
+            </summary>
+            <param name="identifier"></param>
+            <param name="hidden"></param>
+            <param name="nameToken"></param>
+            <param name="displayModelPath"></param>
+        </member>
         <member name="T:R2API.Utils.R2APISubmoduleDependency">
             <summary>
             Attribute to have at the top of your BaseUnityPlugin class if you want to load a specific R2API Submodule.
@@ -1791,6 +1711,11 @@
             </summary>
             <param name="message"></param>
             <param name="messageFrom"></param>
+        </member>
+        <member name="P:R2API.Utils.CommandHelper.Loaded">
+            <summary>
+            Return true if the submodule is loaded.
+            </summary>
         </member>
         <member name="M:R2API.Utils.CommandHelper.AddToConsoleWhenReady">
             <summary>
@@ -1842,6 +1767,44 @@
             </summary>
             <param name="message">The message to send</param>
             <param name="connection">The network connection to send to.</param>
+        </member>
+        <member name="T:R2API.Utils.CompatibilityLevel">
+            <summary>
+            Enum used for telling whether or not the mod should be needed by everyone in multiplayer games.
+            Also can specify if the mod does not work in multiplayer.
+            </summary>
+        </member>
+        <member name="T:R2API.Utils.VersionStrictness">
+            <summary>
+            Enum used for telling whether or not the same mod version should be used by both the server and the clients.
+            This enum is only useful if CompatibilityLevel.EveryoneMustHaveMod was chosen.
+            </summary>
+        </member>
+        <member name="T:R2API.Utils.NetworkCompatibility">
+            <summary>
+            Attribute to have at the top of your BaseUnityPlugin class if
+            you want to specify if the mod should be installed by everyone in multiplayer games or not.
+            If the mod is required to be installed by everyone, you'll need to also specify if the same mod version should be used by everyone or not.
+            By default, it's supposed that everyone needs the mod and the same version.
+            e.g: [NetworkCompatibility(CompatibilityLevel.NoNeedForSync)]
+            </summary>
+        </member>
+        <member name="P:R2API.Utils.NetworkCompatibility.CompatibilityLevel">
+            <summary>
+            Used for telling whether or not the mod should be needed by everyone in multiplayer games.
+            </summary>
+        </member>
+        <member name="P:R2API.Utils.NetworkCompatibility.VersionStrictness">
+            <summary>
+            Enum used for telling whether or not the same mod version should be used by both the server and the clients.
+            This enum is only useful if CompatibilityLevel.EveryoneMustHaveMod was chosen.
+            </summary>
+        </member>
+        <member name="T:R2API.Utils.ManualNetworkRegistrationAttribute">
+            <summary>
+            Forward declare this attribute in your plugin assembly
+            and use this one instead if you are already registering your plugin yourself
+            </summary>
         </member>
         <member name="M:R2API.Utils.Reflection.GetFieldCached``1(System.String)">
             <summary>

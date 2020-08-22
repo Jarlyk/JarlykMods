@@ -20,6 +20,7 @@ namespace JarlykMods.Durability
     [BepInDependency(R2API.R2API.PluginGUID)]
     [BepInDependency("dev.wildbook.libminirpc")]
     [R2APISubmoduleDependency(nameof(CommandHelper))]
+    [NetworkCompatibility(CompatibilityLevel.EveryoneMustHaveMod)]
     public sealed class DurabilityPlugin : BaseUnityPlugin
     {
         public const string PluginGuid = "com.jarlyk.durability";

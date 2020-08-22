@@ -1,1 +1,2 @@
 *.assets filter=lfs diff=lfs merge=lfs -text
+mimic.assets filter=lfs diff=lfs merge=lfs -text

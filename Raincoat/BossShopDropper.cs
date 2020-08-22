@@ -81,10 +81,21 @@ namespace JarlykMods.Raincoat
 
                 var spawnRequest = new DirectorSpawnRequest(spawnCard, placementRule, rng);
 
+                GameObject spawnedObj;
                 var oldBaseCost = controller.baseCost;
+                var oldSkipSpawn = spawnCard.skipSpawnWhenSacrificeArtifactEnabled;
                 controller.baseCost = 0;
-                var spawnedObj = DirectorCore.instance.TrySpawnObject(spawnRequest);
-                controller.baseCost = oldBaseCost;
+                spawnCard.skipSpawnWhenSacrificeArtifactEnabled = false;
+                try
+                { 
+                    spawnedObj = DirectorCore.instance.TrySpawnObject(spawnRequest);
+                }
+                finally
+                {
+                    controller.baseCost = oldBaseCost;
+                    spawnCard.skipSpawnWhenSacrificeArtifactEnabled = oldSkipSpawn;
+                }
+
                 if (spawnedObj != null)
                 {
                     //Replace first terminal with special boss item, if applicable

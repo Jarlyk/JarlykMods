@@ -10,6 +10,7 @@ namespace EliteSpawningOverhaul
 {
     [BepInPlugin(PluginGuid, "EliteSpawningOverhaul", "1.0.1")]
     [BepInDependency(R2API.R2API.PluginGUID)]
+    [NetworkCompatibility(CompatibilityLevel.NoNeedForSync)]
     public sealed class EsoPlugin : BaseUnityPlugin
     {
         public const string PluginGuid = "com.jarlyk.eso";

@@ -20,6 +20,7 @@
     <None Remove="icon.png" />
     <None Remove="License.txt" />
     <None Remove="manifest.json" />
+    <None Remove="mimic.assets" />
     <None Remove="README.md" />
   </ItemGroup>
 
@@ -41,6 +42,7 @@
   <ItemGroup>
     <EmbeddedResource Include="hailstorm.assets" />
     <EmbeddedResource Include="Hailstorm.bnk" />
+    <EmbeddedResource Include="mimic.assets" />
   </ItemGroup>
 
   <ItemGroup>
