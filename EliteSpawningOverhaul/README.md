@@ -17,6 +17,9 @@ This mod is released under the standard MIT license, which is a permissive licen
 
 ### Changelog
 
+1.1.0 | 2020-08-22
+- Custom elites are now given a material coloration matching their eliteDef by default
+
 1.0.1 | 2020-08-18
 - Fixed bug where often non-elites would spawn with elite hp/dmg
 

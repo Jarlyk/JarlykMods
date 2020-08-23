@@ -41,6 +41,9 @@ This mod is released under the standard MIT license, which is a permissive licen
 
 ### Changelog
 
+1.0.4 | 2020-08-21
+- Fixed issue where boss shop dropping (Artifact of Merch) wouldn't drop shops with Artifact of Sacrifice
+
 1.0.3 | 2020-08-19
 - Fixed issue where chat was broken
 

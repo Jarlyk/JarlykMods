@@ -21,7 +21,7 @@ namespace JarlykMods.Hailstorm
             {
                 name = EliteName,
                 modifierToken = "ELITE_MODIFIER_STORM",
-                color = new Color32(162, 179, 241, 255)
+                color = new Color32(210, 180, 140, 255)
             };
             var equipDef = new EquipmentDef
             {

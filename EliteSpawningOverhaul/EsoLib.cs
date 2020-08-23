@@ -107,6 +107,7 @@ namespace EliteSpawningOverhaul
                 Renderer renderer = baseRendererInfo.renderer;
                 renderer.GetPropertyBlock(propertyStorage);
                 propertyStorage.SetColor("_Color", eliteDef.color);
+                propertyStorage.SetFloat("_EliteIndex", 0);
                 renderer.SetPropertyBlock(propertyStorage);
             }
         }

@@ -2,8 +2,11 @@
 using System.Linq;
 using System.Reflection;
 using EliteSpawningOverhaul;
+using JarlykMods.Hailstorm.MimicStates;
+using KinematicCharacterController;
 using R2API.Utils;
 using RoR2;
+using RoR2.CharacterAI;
 using RoR2.Navigation;
 using UnityEngine;
 using UnityEngine.Networking;
@@ -54,8 +57,8 @@ namespace JarlykMods.Hailstorm
                     return;
 
                 //Get biases for the splat map from the current chest
-                var model = GetComponent<ModelLocator>().modelTransform.gameObject;
-                var renderer = model.GetComponentInChildren<SkinnedMeshRenderer>();
+                var origModel = GetComponent<ModelLocator>().modelTransform.gameObject;
+                var renderer = origModel.GetComponentInChildren<SkinnedMeshRenderer>();
                 if (!renderer)
                     Debug.Log("Couldn't find renderer");
 
@@ -67,17 +70,28 @@ namespace JarlykMods.Hailstorm
 
                 //We're not really a chest, so remove it, noting where we were located
                 var origTransform = gameObject.transform;
-                Destroy(gameObject);
+                Destroy(gameObject, Time.fixedDeltaTime);
 
                 //Create mimic in its place
-                var spawnCard = ScriptableObject.CreateInstance<SpawnCard>();
-                spawnCard.prefab = Mimics.BodyPrefab;
+                var spawnCard = ScriptableObject.CreateInstance<CharacterSpawnCard>();
+                spawnCard.prefab = Mimics.MasterPrefab;
                 spawnCard.nodeGraphType = MapNodeGroup.GraphType.Ground;
                 spawnCard.occupyPosition = false;
                 spawnCard.name = "Mimic";
-                var spawnReq = new DirectorSpawnRequest(spawnCard, null, null);
-                var spawnResult = spawnCard.DoSpawn(origTransform.position + origTransform.rotation*new Vector3(0, 1.4f, 0), origTransform.rotation, spawnReq);
-                var mimic = spawnResult.spawnedInstance;
+                //var spawnReq = new DirectorSpawnRequest(spawnCard, null, null);
+                //var spawnResult = spawnCard.DoSpawn(origTransform.position + origTransform.rotation*new Vector3(0, 1.4f, 0), origTransform.rotation, spawnReq);
+                //var mimic = spawnResult.spawnedInstance;
+
+                var placement = new DirectorPlacementRule();
+                placement.spawnOnTarget = origTransform;
+                placement.placementMode = DirectorPlacementRule.PlacementMode.Direct;
+
+                var mimicMaster = EsoLib.TrySpawnElite(spawnCard, null, placement, _rng);
+                var mimic = mimicMaster.GetBody();
+
+                var context = mimic.gameObject.AddComponent<MimicContext>();
+                context.initialRotation = placement.spawnOnTarget.rotation;
+                context.target = collider.gameObject;
 
                 var mimicModel = mimic.GetComponent<ModelLocator>().modelTransform.gameObject;
                 var mimicRenderer = mimicModel.GetComponentInChildren<SkinnedMeshRenderer>();
@@ -91,8 +105,33 @@ namespace JarlykMods.Hailstorm
                 propBlock.SetFloat("_BlueChannelBias", biasB);
                 mimicRenderer.SetPropertyBlock(propBlock);
 
-                mimic.GetComponent<CharacterMotor>().enabled = false;
-                mimic.GetComponent<CharacterDirection>().enabled = false;
+                //Initially the mimic can't set its direction; we need this to allow the surprise attack to adjust into orientation
+                var dir = mimic.GetComponent<CharacterDirection>();
+                dir.enabled = false;
+
+                var motor = mimic.GetComponent<CharacterMotor>();
+                motor.enabled = false;
+                mimic.GetComponent<Rigidbody>().detectCollisions = false;
+
+                var kinMotor = mimic.GetComponent<KinematicCharacterMotor>();
+                kinMotor.enabled = false;
+
+                var ai = mimicMaster.GetComponent<BaseAI>();
+                ai.customTarget.gameObject = collider.gameObject;
+
+                var heldItemRoot = mimicModel.transform.Find("Armature/chestArmature/Base/HeldItem");
+                if (!heldItemRoot)
+                    Debug.Log("Failed to locate held item root for Mimic");
+
+                var pickupInfo = new GenericPickupController.CreatePickupInfo();
+                pickupInfo.pickupIndex = chestDrop;
+                pickupInfo.position = heldItemRoot.position;
+                var pickup = GenericPickupController.CreatePickup(pickupInfo);
+                Destroy(pickup.GetComponent<Rigidbody>());
+                Destroy(pickup.GetComponent<SphereCollider>());
+                pickup.transform.SetParent(mimicModel.gameObject.transform);
+                pickup.transform.localPosition -= new Vector3(0, 0.3f, 0);
+                pickup.transform.localScale = new Vector3(0.7f, 0.7f, 0.7f);
 
                 ////We also want to remove the node where we spawned from the occupied nodes list
                 ////This allows the mimic monster to spawn in the same location

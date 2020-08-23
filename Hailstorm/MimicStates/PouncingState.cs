@@ -13,31 +13,43 @@ namespace JarlykMods.Hailstorm.MimicStates
         public override void OnEnter()
         {
             base.OnEnter();
-            const float baseDuration = 1.0f;
-            duration = baseDuration / attackSpeedStat;
+            Debug.Log("Entering Mimic|PouncingState");
+            duration = 1.0f;
             startTime = Time.fixedTime;
 
-            //PlayCrossfade("Gesture", "FireSpit", "FireSpit.playbackRate", duration, 0.1f);
-            aimRay = base.GetAimRay();
+            //Start the leaping animation
+            PlayAnimation("FullBody, Override", "LeapLoop");
+
+            //aimRay = GetAimRay();
             float speed = pounceSpeed;
-            Ray ray = this.aimRay;
-            ray.origin = this.aimRay.GetPoint(6f);
-            RaycastHit raycastHit;
-            if (Util.CharacterRaycast(base.gameObject, ray, out raycastHit, float.PositiveInfinity, LayerIndex.world.mask | LayerIndex.entityPrecise.mask, QueryTriggerInteraction.Ignore))
-            {
-                var v = speed;
-                Vector3 vCollision = raycastHit.point - this.aimRay.origin;
-                Vector2 vxz = new Vector2(vCollision.x, vCollision.z);
-                float groundDist = vxz.magnitude;
-                float y = Trajectory.CalculateInitialYSpeed(groundDist/v, vCollision.y);
-                Vector3 a = new Vector3(vxz.x/groundDist*v, y, vxz.y/groundDist*v);
-                speed = a.magnitude;
-                aimRay.direction = a / speed;
-            }
+
+            //var ray = aimRay;
+            //ray.origin = this.aimRay.GetPoint(6f);
+            //RaycastHit raycastHit;
+            //if (Util.CharacterRaycast(base.gameObject, ray, out raycastHit, float.PositiveInfinity, LayerIndex.world.mask | LayerIndex.entityPrecise.mask, QueryTriggerInteraction.Ignore))
+            //{
+            //    var v = speed;
+            //    Vector3 vCollision = raycastHit.point - this.aimRay.origin;
+            //    Vector2 vxz = new Vector2(vCollision.x, vCollision.z);
+            //    float groundDist = vxz.magnitude;
+            //    float y = Trajectory.CalculateInitialYSpeed(groundDist / v, vCollision.y);
+            //    Vector3 a = new Vector3(vxz.x / groundDist * v, y, vxz.y / groundDist * v);
+            //    speed = a.magnitude;
+            //    aimRay.direction = a / speed;
+            //}
 
             if (isAuthority)
             {
-                characterMotor.velocity = speed*aimRay.direction;
+                var target = characterBody.GetComponent<MimicContext>().target;
+                if (target != null)
+                {
+                    characterMotor.velocity = speed*(target.transform.position - characterBody.transform.position).normalized + new Vector3(0, 16f, 0);
+                }
+                else
+                {
+                    aimRay = GetAimRay();
+                    characterMotor.velocity = speed*aimRay.direction + new Vector3(0, 16f, 0);
+                }
                 characterMotor.disableAirControlUntilCollision = true;
                 characterMotor.Motor.ForceUnground();
             }
@@ -54,12 +66,20 @@ namespace JarlykMods.Hailstorm.MimicStates
             }
         }
 
-        public static float pounceSpeed = 8.0f;
+        public override void OnExit()
+        {
+            Debug.Log("Exiting Mimic|PouncingState");
+            base.OnExit();
+        }
+
+        public static float pounceSpeed = 30.0f;
 
         public float duration;
 
         public float startTime;
 
         public Ray aimRay;
+
+        public override InterruptPriority GetMinimumInterruptPriority() => InterruptPriority.Death;
     }
 }

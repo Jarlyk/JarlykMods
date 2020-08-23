@@ -3,11 +3,13 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using BepInEx;
 using EntityStates;
+using JarlykMods.Hailstorm.MimicStates;
 using Mono.Cecil.Cil;
 using MonoMod.Cil;
 using R2API;
 using R2API.Utils;
 using RoR2;
+using RoR2.CharacterAI;
 using RoR2.Skills;
 using UnityEngine;
 using UnityEngine.Networking;
@@ -262,7 +264,7 @@ namespace JarlykMods.Hailstorm
             HitBoxGroup hitBoxGroup = model.AddComponent<HitBoxGroup>();
 
             GameObject chompHitbox = childLocator.FindChild("ChompHitbox").gameObject;
-            chompHitbox.transform.localScale = new Vector3(8f, 8f, 8f);
+            chompHitbox.transform.localScale = new Vector3(3f/180.0f, 3f/180.0f, 3f/180.0f);
 
             HitBox hitBox = chompHitbox.AddComponent<HitBox>();
             chompHitbox.layer = LayerIndex.projectile.intVal;
@@ -286,12 +288,18 @@ namespace JarlykMods.Hailstorm
             aimAnimator.directionComponent = characterDirection;
             aimAnimator.pitchRangeMax = 60f;
             aimAnimator.pitchRangeMin = -60f;
-            aimAnimator.yawRangeMin = -90f;
-            aimAnimator.yawRangeMax = 90f;
-            aimAnimator.pitchGiveupRange = 30f;
-            aimAnimator.yawGiveupRange = 10f;
-            aimAnimator.giveupDuration = 3f;
+            aimAnimator.yawRangeMin = -180f;
+            aimAnimator.yawRangeMax = 180f;
+            aimAnimator.pitchGiveupRange = 60f;
+            aimAnimator.yawGiveupRange = 180f;
+            aimAnimator.giveupDuration = 0.5f;
+            aimAnimator.aimType = AimAnimator.AimType.Smart;
+            aimAnimator.smoothTime = 0.1f;
             aimAnimator.inputBank = BodyPrefab.GetComponent<InputBankTest>();
+
+            //Set up initial state
+            var esm = BodyPrefab.GetComponent<EntityStateMachine>();
+            esm.initialStateType = new SerializableEntityStateType(typeof(OrientToTargetState));
 
             //Add body to catalog
             BodyCatalog.getAdditionalEntries += delegate (List<GameObject> list)
@@ -329,11 +337,9 @@ namespace JarlykMods.Hailstorm
 
         private void PrimarySetup()
         {
-            //register whatever skillstates are being used
-            //LoadoutAPI.AddSkill(typeof());
-
-            SkillDef mySkillDef = ScriptableObject.CreateInstance<SkillDef>();
-            mySkillDef.activationState = new SerializableEntityStateType(typeof(EntityStates.LemurianMonster.ChargeFireball));
+            var mySkillDef = ScriptableObject.CreateInstance<SkillDef>();
+            mySkillDef.skillNameToken = "MIMIC_MELEE";
+            mySkillDef.activationState = new SerializableEntityStateType(typeof(MeleeAttackState));
             mySkillDef.activationStateMachineName = "Body";
             mySkillDef.baseMaxStock = 1;
             mySkillDef.baseRechargeInterval = 0f;
@@ -372,14 +378,15 @@ namespace JarlykMods.Hailstorm
             //LoadoutAPI.AddSkill(typeof());
 
             SkillDef mySkillDef = ScriptableObject.CreateInstance<SkillDef>();
-            mySkillDef.activationState = new SerializableEntityStateType(typeof(EntityStates.Croco.ChainableLeap));
+            mySkillDef.skillNameToken = "MIMIC_POUNCE";
+            mySkillDef.activationState = new SerializableEntityStateType(typeof(PreparePounceState));
             mySkillDef.activationStateMachineName = "Body";
             mySkillDef.baseMaxStock = 1;
-            mySkillDef.baseRechargeInterval = 16f;
+            mySkillDef.baseRechargeInterval = 8f;
             mySkillDef.beginSkillCooldownOnSkillEnd = false;
             mySkillDef.canceledFromSprinting = false;
             mySkillDef.fullRestockOnAssign = true;
-            mySkillDef.interruptPriority = InterruptPriority.Any;
+            mySkillDef.interruptPriority = InterruptPriority.Frozen;
             mySkillDef.isBullets = false;
             mySkillDef.isCombatSkill = true;
             mySkillDef.mustKeyPress = false;
@@ -407,6 +414,59 @@ namespace JarlykMods.Hailstorm
         }
         private void SetupMaster()
         {
+            MasterPrefab = PrefabAPI.InstantiateClone(Resources.Load<GameObject>("Prefabs/CharacterMasters/BeetleMaster"), "MimicMaster");
+
+            var master = MasterPrefab.GetComponent<CharacterMaster>();
+            master.bodyPrefab = BodyPrefab;
+
+            var baseAI = MasterPrefab.GetComponent<BaseAI>();
+            baseAI.enemyAttentionDuration = 60;
+            baseAI.aimVectorMaxSpeed = 300;
+            baseAI.aimVectorDampTime = 0.05f;
+
+            var skillDrivers = MasterPrefab.GetComponents<AISkillDriver>();
+            foreach (var oldDriver in skillDrivers)
+                Object.Destroy(oldDriver);
+
+            var meleeDriver = MasterPrefab.AddComponent<AISkillDriver>();
+            meleeDriver.minDistance = 0;
+            meleeDriver.maxDistance = 1;
+            meleeDriver.customName = "Melee";
+            meleeDriver.skillSlot = SkillSlot.Primary;
+            meleeDriver.aimType = AISkillDriver.AimType.AtCurrentEnemy;
+            meleeDriver.ignoreNodeGraph = true;
+            meleeDriver.selectionRequiresTargetLoS = true;
+            meleeDriver.activationRequiresAimConfirmation = true;
+            meleeDriver.noRepeat = true;
+            meleeDriver.moveTargetType = AISkillDriver.TargetType.CurrentEnemy;
+
+            var pounceDriver = MasterPrefab.AddComponent<AISkillDriver>();
+            pounceDriver.minDistance = 5;
+            pounceDriver.maxDistance = 30;
+            pounceDriver.customName = "Pounce";
+            pounceDriver.skillSlot = SkillSlot.Utility;
+            pounceDriver.aimType = AISkillDriver.AimType.AtCurrentEnemy;
+            pounceDriver.ignoreNodeGraph = true;
+            pounceDriver.selectionRequiresTargetLoS = true;
+            pounceDriver.moveTargetType = AISkillDriver.TargetType.CurrentEnemy;
+            pounceDriver.noRepeat = true;
+            pounceDriver.requireSkillReady = true;
+
+            var walkDriver = MasterPrefab.AddComponent<AISkillDriver>();
+            walkDriver.minDistance = 0;
+            walkDriver.maxDistance = 10;
+            walkDriver.aimType = AISkillDriver.AimType.AtCurrentEnemy;
+            walkDriver.ignoreNodeGraph = true;
+            walkDriver.moveTargetType = AISkillDriver.TargetType.CurrentEnemy;
+            walkDriver.shouldSprint = true;
+
+            var routeDriver = MasterPrefab.AddComponent<AISkillDriver>();
+            routeDriver.minDistance = 0;
+            routeDriver.maxDistance = 100;
+            routeDriver.aimType = AISkillDriver.AimType.AtCurrentEnemy;
+            routeDriver.ignoreNodeGraph = false;
+            routeDriver.moveTargetType = AISkillDriver.TargetType.CurrentEnemy;
+            routeDriver.shouldSprint = true;
         }
     }
 }

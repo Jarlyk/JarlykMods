@@ -18,7 +18,7 @@ using UnityEngine.SceneManagement;
 
 namespace JarlykMods.Raincoat
 {
-    [BepInPlugin(PluginGuid, "Raincoat", "1.0.3")]
+    [BepInPlugin(PluginGuid, "Raincoat", "1.0.4")]
     [BepInDependency(R2API.R2API.PluginGUID)]
     [BepInDependency("dev.wildbook.libminirpc")]
     [R2APISubmoduleDependency(nameof(LanguageAPI))]
