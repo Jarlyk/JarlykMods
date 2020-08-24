@@ -336,6 +336,12 @@ namespace JarlykMods.Hailstorm
                 _darknessSeen = false;
                 AkSoundEngine.PostEvent(SoundEvents.StopLargeBreathing, null);
             }
+
+            if (darkEliteCount > 0)
+            {
+                var volumeAttenuation = Mathf.Clamp(closestDist, 0, 100);
+                AkSoundEngine.SetRTPCValue("DarknessVolumeDistance", volumeAttenuation);
+            }
         }
 
         private void CameraRigControllerOnStart(On.RoR2.CameraRigController.orig_Start orig, CameraRigController self)
