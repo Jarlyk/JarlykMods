@@ -55,141 +55,156 @@ namespace JarlykMods.Hailstorm
                 var dropItem = PickupCatalog.GetPickupDef(chestDrop).itemIndex;
                 if (dropItem == ItemIndex.None)
                     return;
-
-                //Get biases for the splat map from the current chest
-                var origModel = GetComponent<ModelLocator>().modelTransform.gameObject;
-                var renderer = origModel.GetComponentInChildren<SkinnedMeshRenderer>();
-                if (!renderer)
-                    Debug.Log("Couldn't find renderer");
-
-                var propBlock = new MaterialPropertyBlock();
-                renderer.GetPropertyBlock(propBlock);
-                var biasR = propBlock.GetFloat("_RedChannelBias");
-                var biasG = propBlock.GetFloat("_GreenChannelBias");
-                var biasB = propBlock.GetFloat("_BlueChannelBias");
-
-                //We're not really a chest, so remove it, noting where we were located
-                var origTransform = gameObject.transform;
-                Destroy(gameObject, Time.fixedDeltaTime);
-
-                //Create mimic in its place
-                var spawnCard = ScriptableObject.CreateInstance<CharacterSpawnCard>();
-                spawnCard.prefab = Mimics.MasterPrefab;
-                spawnCard.nodeGraphType = MapNodeGroup.GraphType.Ground;
-                spawnCard.occupyPosition = false;
-                spawnCard.name = "Mimic";
-                //var spawnReq = new DirectorSpawnRequest(spawnCard, null, null);
-                //var spawnResult = spawnCard.DoSpawn(origTransform.position + origTransform.rotation*new Vector3(0, 1.4f, 0), origTransform.rotation, spawnReq);
-                //var mimic = spawnResult.spawnedInstance;
-
-                var placement = new DirectorPlacementRule();
-                placement.spawnOnTarget = origTransform;
-                placement.placementMode = DirectorPlacementRule.PlacementMode.Direct;
-
-                var mimicMaster = EsoLib.TrySpawnElite(spawnCard, null, placement, _rng);
-                var mimic = mimicMaster.GetBody();
-
-                var context = mimic.gameObject.AddComponent<MimicContext>();
-                context.initialRotation = placement.spawnOnTarget.rotation;
-                context.target = collider.gameObject;
-
-                var mimicModel = mimic.GetComponent<ModelLocator>().modelTransform.gameObject;
-                var mimicRenderer = mimicModel.GetComponentInChildren<SkinnedMeshRenderer>();
-                if (!mimicRenderer)
-                    Debug.Log("Couldn't find mimic renderer");
-
-                propBlock = new MaterialPropertyBlock();
-                mimicRenderer.GetPropertyBlock(propBlock);
-                propBlock.SetFloat("_RedChannelBias", biasR);
-                propBlock.SetFloat("_GreenChannelBias", biasG);
-                propBlock.SetFloat("_BlueChannelBias", biasB);
-                mimicRenderer.SetPropertyBlock(propBlock);
-
-                //Initially the mimic can't set its direction; we need this to allow the surprise attack to adjust into orientation
-                var dir = mimic.GetComponent<CharacterDirection>();
-                dir.enabled = false;
-
-                var motor = mimic.GetComponent<CharacterMotor>();
-                motor.enabled = false;
-                mimic.GetComponent<Rigidbody>().detectCollisions = false;
-
-                var kinMotor = mimic.GetComponent<KinematicCharacterMotor>();
-                kinMotor.enabled = false;
-
-                var ai = mimicMaster.GetComponent<BaseAI>();
-                ai.customTarget.gameObject = collider.gameObject;
-
-                var heldItemRoot = mimicModel.transform.Find("Armature/chestArmature/Base/HeldItem");
-                if (!heldItemRoot)
-                    Debug.Log("Failed to locate held item root for Mimic");
-
-                var pickupInfo = new GenericPickupController.CreatePickupInfo();
-                pickupInfo.pickupIndex = chestDrop;
-                pickupInfo.position = heldItemRoot.position;
-                var pickup = GenericPickupController.CreatePickup(pickupInfo);
-                Destroy(pickup.GetComponent<Rigidbody>());
-                Destroy(pickup.GetComponent<SphereCollider>());
-                pickup.transform.SetParent(mimicModel.gameObject.transform);
-                pickup.transform.localPosition -= new Vector3(0, 0.3f, 0);
-                pickup.transform.localScale = new Vector3(0.7f, 0.7f, 0.7f);
-
-                ////We also want to remove the node where we spawned from the occupied nodes list
-                ////This allows the mimic monster to spawn in the same location
-                //var node = SceneInfo.instance.groundNodes.FindClosestNode(position, HullClassification.Human);
-                //RemoveNode(DirectorCore.instance, node);
-
-                ////Play the shrine effect to highlight that something momentous is happening
-                //GameObject effectPrefab = Resources.Load<GameObject>("Prefabs/Effects/ShrineUseEffect");
-                //EffectData effectData = new EffectData();
-                //effectData.origin = position;
-                //effectData.rotation = Quaternion.identity;
-                //effectData.scale = 1f;
-                //effectData.color = new Color32(255, 0, 0, 255);
-                //EffectManager.SpawnEffect(effectPrefab, effectData, true);
-
-                //var weightedSelection = Util.CreateReasonableDirectorCardSpawnList(monsterCredit, 6, 1);
-                //if (weightedSelection.Count != 0)
-                //{
-                //    var chosenDirectorCard = weightedSelection.Evaluate(_rng.nextNormalizedFloat);
-
-                //    var eliteAffix = EsoLib.ChooseEliteAffix(chosenDirectorCard, monsterCredit, _rng);
-
-                //    var placement = new DirectorPlacementRule
-                //    {
-                //        placementMode = DirectorPlacementRule.PlacementMode.Direct,
-                //        preventOverhead = chosenDirectorCard.preventOverhead,
-                //        minDistance = 0,
-                //        maxDistance = 50,
-                //        spawnOnTarget = transform
-                //    };
-                //    placement.spawnOnTarget.Translate(0, 0.5f, 0);
-
-                //    var spawned = EsoLib.TrySpawnElite((CharacterSpawnCard)chosenDirectorCard.spawnCard, eliteAffix, placement, _rng);
-                //    if (spawned == null)
-                //    {
-                //        Debug.LogWarning("Failed to spawn monster for Mimic due to insufficient spawn area!");
-
-                //        //This ideally shouldn't happen, but for now we'll at least drop the item
-                //        PickupDropletController.CreatePickupDroplet(PickupCatalog.FindPickupIndex(dropItem), position, 10f*Vector3.up);
-                //        return;
-                //    }
-
-                //    //This monster carries the item that would've been in the chest and only gives xp, no gold
-                //    var spawnedMaster = spawned.GetComponent<CharacterMaster>();
-                //    spawnedMaster.inventory.GiveItem(dropItem);
-                //    BoundReward = spawnedMaster.GetBody().GetComponent<DeathRewards>();
-                //    BoundReward.expReward = (uint)(chosenDirectorCard.cost*0.2*Run.instance.compensatedDifficultyCoefficient);
-                //    BoundItem = dropItem;
-                //}
-                //else
-                //{
-                //    Debug.LogWarning("Failed to spawn monster for Mimic due to unable to find a monster type!");
-
-                //    //This ideally shouldn't happen, but for now we'll at least drop the item
-                //    PickupDropletController.CreatePickupDroplet(PickupCatalog.FindPickupIndex(dropItem), position, 10f*Vector3.up);
-                //    return;
-                //}
+                
+                SpawnNewMimic(collider, chestDrop);
+                //SpawnLegacyMimic(dropItem);
             }
+        }
+
+        private void SpawnLegacyMimic(ItemIndex dropItem)
+        {
+            //We're not really a chest, so remove it, noting where we were located
+            var position = gameObject.transform.position;
+            Destroy(gameObject, Time.fixedDeltaTime);
+
+            //We also want to remove the node where we spawned from the occupied nodes list
+            //This allows the mimic monster to spawn in the same location
+            var node = SceneInfo.instance.groundNodes.FindClosestNode(position, HullClassification.Human);
+            RemoveNode(DirectorCore.instance, node);
+
+            //Play the shrine effect to highlight that something momentous is happening
+            GameObject effectPrefab = Resources.Load<GameObject>("Prefabs/Effects/ShrineUseEffect");
+            EffectData effectData = new EffectData();
+            effectData.origin = position;
+            effectData.rotation = Quaternion.identity;
+            effectData.scale = 1f;
+            effectData.color = new Color32(255, 0, 0, 255);
+            EffectManager.SpawnEffect(effectPrefab, effectData, true);
+
+            var weightedSelection = Util.CreateReasonableDirectorCardSpawnList(monsterCredit, 6, 1);
+            if (weightedSelection.Count != 0)
+            {
+                var chosenDirectorCard = weightedSelection.Evaluate(_rng.nextNormalizedFloat);
+
+                var eliteAffix = EsoLib.ChooseEliteAffix(chosenDirectorCard, monsterCredit, _rng);
+
+                var placement = new DirectorPlacementRule
+                {
+                    placementMode = DirectorPlacementRule.PlacementMode.Direct,
+                    preventOverhead = chosenDirectorCard.preventOverhead,
+                    minDistance = 0,
+                    maxDistance = 50,
+                    spawnOnTarget = transform
+                };
+                placement.spawnOnTarget.Translate(0, 0.5f, 0);
+
+                var spawned = EsoLib.TrySpawnElite((CharacterSpawnCard) chosenDirectorCard.spawnCard, eliteAffix, placement,
+                                                   _rng);
+                if (spawned == null)
+                {
+                    Debug.LogWarning("Failed to spawn monster for Mimic due to insufficient spawn area!");
+
+                    //This ideally shouldn't happen, but for now we'll at least drop the item
+                    PickupDropletController.CreatePickupDroplet(PickupCatalog.FindPickupIndex(dropItem), position,
+                                                                10f*Vector3.up);
+                    return;
+                }
+
+                //This monster carries the item that would've been in the chest and only gives xp, no gold
+                var spawnedMaster = spawned.GetComponent<CharacterMaster>();
+                spawnedMaster.inventory.GiveItem(dropItem);
+                BoundReward = spawnedMaster.GetBody().GetComponent<DeathRewards>();
+                BoundReward.expReward = (uint) (chosenDirectorCard.cost*0.2*Run.instance.compensatedDifficultyCoefficient);
+                BoundItem = dropItem;
+            }
+            else
+            {
+                Debug.LogWarning("Failed to spawn monster for Mimic due to unable to find a monster type!");
+
+                //This ideally shouldn't happen, but for now we'll at least drop the item
+                PickupDropletController.CreatePickupDroplet(PickupCatalog.FindPickupIndex(dropItem), position, 10f*Vector3.up);
+                return;
+            }
+        }
+
+        private void SpawnNewMimic(Collider collider, PickupIndex chestDrop)
+        {
+            //Get biases for the splat map from the current chest
+            var origModel = GetComponent<ModelLocator>().modelTransform.gameObject;
+            var renderer = origModel.GetComponentInChildren<SkinnedMeshRenderer>();
+            if (!renderer)
+                Debug.Log("Couldn't find renderer");
+
+            var propBlock = new MaterialPropertyBlock();
+            renderer.GetPropertyBlock(propBlock);
+            var biasR = propBlock.GetFloat("_RedChannelBias");
+            var biasG = propBlock.GetFloat("_GreenChannelBias");
+            var biasB = propBlock.GetFloat("_BlueChannelBias");
+
+            //We're not really a chest, so remove it, noting where we were located
+            var origTransform = gameObject.transform;
+            Destroy(gameObject, Time.fixedDeltaTime);
+
+            //Create mimic in its place
+            var spawnCard = ScriptableObject.CreateInstance<CharacterSpawnCard>();
+            spawnCard.prefab = Mimics.MasterPrefab;
+            spawnCard.nodeGraphType = MapNodeGroup.GraphType.Ground;
+            spawnCard.occupyPosition = false;
+            spawnCard.name = "Mimic";
+            //var spawnReq = new DirectorSpawnRequest(spawnCard, null, null);
+            //var spawnResult = spawnCard.DoSpawn(origTransform.position + origTransform.rotation*new Vector3(0, 1.4f, 0), origTransform.rotation, spawnReq);
+            //var mimic = spawnResult.spawnedInstance;
+
+            var placement = new DirectorPlacementRule();
+            placement.spawnOnTarget = origTransform;
+            placement.placementMode = DirectorPlacementRule.PlacementMode.Direct;
+
+            var mimicMaster = EsoLib.TrySpawnElite(spawnCard, null, placement, _rng);
+            var mimic = mimicMaster.GetBody();
+
+            var context = mimic.gameObject.AddComponent<MimicContext>();
+            context.initialRotation = placement.spawnOnTarget.rotation;
+            context.target = collider.gameObject;
+
+            var mimicModel = mimic.GetComponent<ModelLocator>().modelTransform.gameObject;
+            var mimicRenderer = mimicModel.GetComponentInChildren<SkinnedMeshRenderer>();
+            if (!mimicRenderer)
+                Debug.Log("Couldn't find mimic renderer");
+
+            propBlock = new MaterialPropertyBlock();
+            mimicRenderer.GetPropertyBlock(propBlock);
+            propBlock.SetFloat("_RedChannelBias", biasR);
+            propBlock.SetFloat("_GreenChannelBias", biasG);
+            propBlock.SetFloat("_BlueChannelBias", biasB);
+            mimicRenderer.SetPropertyBlock(propBlock);
+
+            //Initially the mimic can't set its direction; we need this to allow the surprise attack to adjust into orientation
+            var dir = mimic.GetComponent<CharacterDirection>();
+            dir.enabled = false;
+
+            var motor = mimic.GetComponent<CharacterMotor>();
+            motor.enabled = false;
+            mimic.GetComponent<Rigidbody>().detectCollisions = false;
+
+            var kinMotor = mimic.GetComponent<KinematicCharacterMotor>();
+            kinMotor.enabled = false;
+
+            var ai = mimicMaster.GetComponent<BaseAI>();
+            ai.customTarget.gameObject = collider.gameObject;
+
+            var heldItemRoot = mimicModel.transform.Find("Armature/chestArmature/Base/HeldItem");
+            if (!heldItemRoot)
+                Debug.Log("Failed to locate held item root for Mimic");
+
+            var pickupInfo = new GenericPickupController.CreatePickupInfo();
+            pickupInfo.pickupIndex = chestDrop;
+            pickupInfo.position = heldItemRoot.position;
+            var pickup = GenericPickupController.CreatePickup(pickupInfo);
+            Destroy(pickup.GetComponent<Rigidbody>());
+            Destroy(pickup.GetComponent<SphereCollider>());
+            pickup.transform.SetParent(mimicModel.gameObject.transform);
+            pickup.transform.localPosition -= new Vector3(0, 0.3f, 0);
+            pickup.transform.localScale = new Vector3(0.7f, 0.7f, 0.7f);
         }
 
         private static void RemoveNode(DirectorCore directorCore, NodeGraph.NodeIndex node)

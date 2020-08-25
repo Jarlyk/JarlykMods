@@ -6,9 +6,8 @@ namespace JarlykMods.Hailstorm.MimicStates
 {
     public sealed class MeleeAttackState : BaseState
     {
-        public static float baseDuration = 1.5f;
-        public static float damage = 15f;
-        public static float forceMagnitude = 100f;
+        public static float baseDuration = 1.0f;
+        public static float forceMagnitude = 1000f;
 
         private OverlapAttack _attack;
         private Animator _modelAnimator;
@@ -18,7 +17,6 @@ namespace JarlykMods.Hailstorm.MimicStates
         {
             base.OnEnter();
             Debug.Log("Entering Mimic|MeleeAttackState");
-            Debug.Log($"body.radius = {characterBody.radius}");
 
             _duration = baseDuration/attackSpeedStat;
             _modelAnimator = GetModelAnimator();
@@ -26,7 +24,7 @@ namespace JarlykMods.Hailstorm.MimicStates
             _attack.attacker = gameObject;
             _attack.inflictor = gameObject;
             _attack.teamIndex = TeamComponent.GetObjectTeam(gameObject);
-            _attack.damage = damage;
+            _attack.damage = damageStat;
             _attack.hitBoxGroup = GetModelTransform().GetComponent<HitBoxGroup>();
             
             //TODO: Play melee start animation
@@ -41,7 +39,10 @@ namespace JarlykMods.Hailstorm.MimicStates
             {
                 _attack.forceVector = Vector3.zero;
                 if (characterDirection)
-                    _attack.forceVector = characterDirection.forward*forceMagnitude;
+                {
+                    _attack.forceVector = characterDirection.forward;
+                    _attack.pushAwayForce = forceMagnitude;
+                }
 
                 //TODO: tie to animation
                 //if (_modelAnimator && _modelAnimator.GetFloat("Melee1.hitBoxActive") > 0.5)
@@ -50,7 +51,7 @@ namespace JarlykMods.Hailstorm.MimicStates
                     _attack.Fire();
                 }
 
-                //TODO: Play melee strike effect
+                //TODO: Play melee strike visual effect
             }
 
             if (fixedAge < _duration || !isAuthority)

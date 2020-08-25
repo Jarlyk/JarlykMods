@@ -58,6 +58,8 @@ namespace JarlykMods.Hailstorm.MimicStates
             _orientT.Accel = 10.0f;
             _orientT.MaxSpeed = 3.0f;
             _orientT.Setpoint = 1.0f;
+
+            GetModelAnimator().SetLayerWeight(1, 1);
         }
 
         public override void FixedUpdate()

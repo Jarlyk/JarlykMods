@@ -76,7 +76,7 @@ namespace JarlykMods.Hailstorm
                 spawnWeight = 0.5f,
                 costMultiplier = 10f,
                 damageBoostCoeff = 1.0f,
-                healthBoostCoeff = 10.0f,
+                healthBoostCoeff = 7.0f,
                 eliteOnlyScaling = 0.5f,
                 eliteType = _eliteIndex,
                 onSpawned = OnSpawned

@@ -63,9 +63,9 @@ namespace JarlykMods.Hailstorm
             var card = new EliteAffixCard
             {
                 spawnWeight = 1.0f,
-                costMultiplier = 30.0f,
+                costMultiplier = 36.0f,
                 damageBoostCoeff = 6.0f,
-                healthBoostCoeff = 20.0f,
+                healthBoostCoeff = 18.0f,
                 eliteType = EliteIndex,
                 isAvailable = () => Run.instance.loopClearCount > 0,
                 onSpawned = OnSpawned

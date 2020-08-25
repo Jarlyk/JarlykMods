@@ -134,25 +134,25 @@ namespace JarlykMods.Hailstorm
             bodyComponent.subtitleNameToken = "NULL_SUBTITLE";
             bodyComponent.rootMotionInMainState = false;
             bodyComponent.mainRootSpeed = 0;
-            bodyComponent.baseMaxHealth = 300;
-            bodyComponent.levelMaxHealth = 100;
+            bodyComponent.baseMaxHealth = 450;
+            bodyComponent.levelMaxHealth = 120;
             bodyComponent.baseRegen = 0f;
             bodyComponent.levelRegen = 0f;
             bodyComponent.baseMaxShield = 0;
             bodyComponent.levelMaxShield = 0;
             bodyComponent.baseMoveSpeed = 7;
-            bodyComponent.levelMoveSpeed = 0;
+            bodyComponent.levelMoveSpeed = 0.1f;
             bodyComponent.baseAcceleration = 80;
-            bodyComponent.baseJumpPower = 15;
+            bodyComponent.baseJumpPower = 40;
             bodyComponent.levelJumpPower = 0;
-            bodyComponent.baseDamage = 12;
-            bodyComponent.levelDamage = 2.4f;
+            bodyComponent.baseDamage = 20;
+            bodyComponent.levelDamage = 3.5f;
             bodyComponent.baseAttackSpeed = 1;
             bodyComponent.levelAttackSpeed = 0;
             bodyComponent.baseCrit = 0;
             bodyComponent.levelCrit = 0;
             bodyComponent.baseArmor = 0;
-            bodyComponent.levelArmor = 0;
+            bodyComponent.levelArmor = 0f;
             bodyComponent.baseJumpCount = 1;
             bodyComponent.sprintingSpeedMultiplier = 1.55f;
             bodyComponent.hideCrosshair = false;
@@ -217,7 +217,7 @@ namespace JarlykMods.Hailstorm
             }
 
             //now replace the material on our model
-            characterModel.baseRendererInfos = array;            //mainrenderer is needed for skin stuff
+            characterModel.baseRendererInfos = array;            
             characterModel.SetFieldValue("mainSkinnedMeshRenderer", characterModel.baseRendererInfos[0].renderer.gameObject.GetComponent<SkinnedMeshRenderer>());
 
             TeamComponent teamComponent = null;
@@ -259,12 +259,15 @@ namespace JarlykMods.Hailstorm
             mainHurtbox.damageModifier = HurtBox.DamageModifier.Normal;
             mainHurtbox.hurtBoxGroup = hurtBoxGroup;
             mainHurtbox.indexInGroup = 0;
+            hurtBoxGroup.hurtBoxes = new[] {mainHurtbox};
+            hurtBoxGroup.OnValidate();
 
             //make a hitbox for the chomp
             HitBoxGroup hitBoxGroup = model.AddComponent<HitBoxGroup>();
+            
 
             GameObject chompHitbox = childLocator.FindChild("ChompHitbox").gameObject;
-            chompHitbox.transform.localScale = new Vector3(3f/180.0f, 3f/180.0f, 3f/180.0f);
+            chompHitbox.transform.localScale = new Vector3(18f/180.0f, 18f/180.0f, 18f/180.0f);
 
             HitBox hitBox = chompHitbox.AddComponent<HitBox>();
             chompHitbox.layer = LayerIndex.projectile.intVal;
@@ -420,7 +423,7 @@ namespace JarlykMods.Hailstorm
             master.bodyPrefab = BodyPrefab;
 
             var baseAI = MasterPrefab.GetComponent<BaseAI>();
-            baseAI.enemyAttentionDuration = 60;
+            baseAI.enemyAttentionDuration = 6000;
             baseAI.aimVectorMaxSpeed = 300;
             baseAI.aimVectorDampTime = 0.05f;
 
@@ -430,19 +433,21 @@ namespace JarlykMods.Hailstorm
 
             var meleeDriver = MasterPrefab.AddComponent<AISkillDriver>();
             meleeDriver.minDistance = 0;
-            meleeDriver.maxDistance = 1;
+            meleeDriver.maxDistance = 5;
             meleeDriver.customName = "Melee";
             meleeDriver.skillSlot = SkillSlot.Primary;
             meleeDriver.aimType = AISkillDriver.AimType.AtCurrentEnemy;
+            meleeDriver.moveInputScale = 1.0f;
             meleeDriver.ignoreNodeGraph = true;
             meleeDriver.selectionRequiresTargetLoS = true;
-            meleeDriver.activationRequiresAimConfirmation = true;
-            meleeDriver.noRepeat = true;
             meleeDriver.moveTargetType = AISkillDriver.TargetType.CurrentEnemy;
+            meleeDriver.requireSkillReady = true;
+            meleeDriver.driverUpdateTimerOverride = -1;
+            meleeDriver.movementType = AISkillDriver.MovementType.Stop;
 
             var pounceDriver = MasterPrefab.AddComponent<AISkillDriver>();
-            pounceDriver.minDistance = 5;
-            pounceDriver.maxDistance = 30;
+            pounceDriver.minDistance = 10;
+            pounceDriver.maxDistance = 60;
             pounceDriver.customName = "Pounce";
             pounceDriver.skillSlot = SkillSlot.Utility;
             pounceDriver.aimType = AISkillDriver.AimType.AtCurrentEnemy;
@@ -451,22 +456,31 @@ namespace JarlykMods.Hailstorm
             pounceDriver.moveTargetType = AISkillDriver.TargetType.CurrentEnemy;
             pounceDriver.noRepeat = true;
             pounceDriver.requireSkillReady = true;
+            pounceDriver.driverUpdateTimerOverride = -1;
 
             var walkDriver = MasterPrefab.AddComponent<AISkillDriver>();
-            walkDriver.minDistance = 0;
-            walkDriver.maxDistance = 10;
+            walkDriver.minDistance = 5;
+            walkDriver.maxDistance = 20;
             walkDriver.aimType = AISkillDriver.AimType.AtCurrentEnemy;
             walkDriver.ignoreNodeGraph = true;
             walkDriver.moveTargetType = AISkillDriver.TargetType.CurrentEnemy;
             walkDriver.shouldSprint = true;
+            walkDriver.movementType = AISkillDriver.MovementType.ChaseMoveTarget;
+            walkDriver.moveInputScale = 1.0f;
+            walkDriver.driverUpdateTimerOverride = -1;
+            walkDriver.skillSlot = SkillSlot.None;
 
             var routeDriver = MasterPrefab.AddComponent<AISkillDriver>();
-            routeDriver.minDistance = 0;
-            routeDriver.maxDistance = 100;
+            routeDriver.minDistance = 20;
+            routeDriver.maxDistance = 150;
             routeDriver.aimType = AISkillDriver.AimType.AtCurrentEnemy;
             routeDriver.ignoreNodeGraph = false;
             routeDriver.moveTargetType = AISkillDriver.TargetType.CurrentEnemy;
             routeDriver.shouldSprint = true;
+            routeDriver.movementType = AISkillDriver.MovementType.ChaseMoveTarget;
+            routeDriver.moveInputScale = 1.0f;
+            routeDriver.driverUpdateTimerOverride = -1;
+            routeDriver.skillSlot = SkillSlot.None;
         }
     }
 }

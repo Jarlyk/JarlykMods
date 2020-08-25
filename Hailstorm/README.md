@@ -34,6 +34,9 @@ This mod is released under the standard MIT license, which is a permissive licen
 
 ### Changelog
 
+1.2.2 | 2020-08-23
+- Darkness background breathing sound now attenuates significantly with distance from the nearest Dark elite
+
 1.2.1 | 2020-08-19
 - Fixed missing LanguageAPI attribute
 

@@ -5,7 +5,7 @@ namespace JarlykMods.Hailstorm.MimicStates
 {
     public sealed class PreparePounceState : BaseState
     {
-        public float baseDuration = 3.0f;
+        public float baseDuration = 1.2f;
 
         private Animator _modelAnimator;
         private float _duration;
