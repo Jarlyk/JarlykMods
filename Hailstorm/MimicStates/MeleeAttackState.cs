@@ -12,6 +12,7 @@ namespace JarlykMods.Hailstorm.MimicStates
         private OverlapAttack _attack;
         private Animator _modelAnimator;
         private float _duration;
+        private GameObject _muzzleBone;
 
         public override void OnEnter()
         {
@@ -29,6 +30,7 @@ namespace JarlykMods.Hailstorm.MimicStates
             
             //TODO: Play melee start animation
             AkSoundEngine.PostEvent(SoundEvents.PlayChomp1, gameObject);
+            PlayAnimation("FullBody, Override", "Bite", "Bite.playbackRate", _duration);
         }
 
         public override void FixedUpdate()
@@ -49,6 +51,7 @@ namespace JarlykMods.Hailstorm.MimicStates
                 if (fixedAge > 0.5*_duration)
                 {
                     _attack.Fire();
+                    EffectManager.SimpleMuzzleFlash(HailstormAssets.MimicBiteEffect, gameObject, "BiteMuzzle", true);
                 }
 
                 //TODO: Play melee strike visual effect

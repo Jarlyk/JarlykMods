@@ -53,7 +53,7 @@ namespace JarlykMods.Hailstorm
                 var bundle = AssetBundle.LoadFromStream(stream);
                 MimicModel = bundle.LoadAsset<GameObject>("mdlMimic");
                 MimicMaterial = bundle.LoadAsset<Material>("matMimic");
-
+                MimicBiteEffect = bundle.LoadAsset<GameObject>("MimicBiteEffect");
             }
 
             using (var bankStream = execAssembly.GetManifestResourceStream("JarlykMods.Hailstorm.Hailstorm.bnk"))
@@ -85,6 +85,8 @@ namespace JarlykMods.Hailstorm
         public static GameObject MimicModel { get; private set; }
 
         public static Material MimicMaterial { get; private set; }
+
+        public static GameObject MimicBiteEffect { get; private set; }
 
         private static void GameNetworkManager_OnStartClient(On.RoR2.Networking.GameNetworkManager.orig_OnStartClient orig, GameNetworkManager self, NetworkClient newClient)
         {

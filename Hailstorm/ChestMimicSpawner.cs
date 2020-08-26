@@ -192,20 +192,49 @@ namespace JarlykMods.Hailstorm
             var ai = mimicMaster.GetComponent<BaseAI>();
             ai.customTarget.gameObject = collider.gameObject;
 
+            //Find the location where the item will be located
             var heldItemRoot = mimicModel.transform.Find("Armature/chestArmature/Base/HeldItem");
             if (!heldItemRoot)
                 Debug.Log("Failed to locate held item root for Mimic");
 
+            //Anchor the item to the location
             var pickupInfo = new GenericPickupController.CreatePickupInfo();
             pickupInfo.pickupIndex = chestDrop;
-            pickupInfo.position = heldItemRoot.position;
+            pickupInfo.position = Vector3.zero;
             var pickup = GenericPickupController.CreatePickup(pickupInfo);
             Destroy(pickup.GetComponent<Rigidbody>());
             Destroy(pickup.GetComponent<SphereCollider>());
-            pickup.transform.SetParent(mimicModel.gameObject.transform);
-            pickup.transform.localPosition -= new Vector3(0, 0.3f, 0);
-            pickup.transform.localScale = new Vector3(0.7f, 0.7f, 0.7f);
+            pickup.transform.SetParent(heldItemRoot);
+            pickup.transform.localPosition = Vector3.zero;
+
+            //Note all pickup item meshes are the same size
+            //As such, we scale based on the mesh size and some hand-tuned adjustments
+
+            //First, we get the pickup model for the item
+            var pickupDef = PickupCatalog.GetPickupDef(chestDrop);
+            var scaleAdj = 0.75f;
+            var translation = Vector3.zero;
+            if (pickupDef != null)
+            {
+                var bounds = new Bounds(Vector3.zero, Vector3.zero);
+                foreach (var pickupRenderer in pickupDef.displayPrefab.GetComponentsInChildren<Renderer>())
+                {
+                    bounds.Encapsulate(pickupRenderer.bounds);
+                }
+
+                var scaleY = bounds.extents.y;
+                scaleAdj *= 1.0f/scaleY;
+                translation = -1*bounds.center;
+            }
+
+            //pickup.transform.localPosition -= new Vector3(0, 0, 0);
+            pickup.transform.localScale = new Vector3(1f, 1f, 1f);
+            pickup.transform.localScale = scaleAdj*new Vector3(1.0f/pickup.transform.lossyScale.x,
+                                                               1.0f/pickup.transform.lossyScale.y,
+                                                               1.0f/pickup.transform.lossyScale.z);
+            pickup.transform.position += pickup.transform.rotation*translation;
         }
+
 
         private static void RemoveNode(DirectorCore directorCore, NodeGraph.NodeIndex node)
         {

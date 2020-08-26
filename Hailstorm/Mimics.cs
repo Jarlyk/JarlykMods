@@ -232,7 +232,7 @@ namespace JarlykMods.Hailstorm
             //replace with custom sfx if applicable
             SfxLocator sfxLocator = BodyPrefab.GetComponent<SfxLocator>();
             sfxLocator.deathSound = "";
-            sfxLocator.barkSound = "";
+            sfxLocator.barkSound = "Play_Mimic_Background";
             sfxLocator.openSound = "";
             sfxLocator.landingSound = "Play_char_land";
             sfxLocator.fallDamageSound = "";
@@ -309,6 +309,17 @@ namespace JarlykMods.Hailstorm
             {
                 list.Add(BodyPrefab);
             };
+
+            var bite = HailstormAssets.MimicBiteEffect;
+            bite.AddComponent<NetworkIdentity>();
+            bite.AddComponent<VFXAttributes>().vfxPriority = VFXAttributes.VFXPriority.Always;
+            var effect = bite.AddComponent<EffectComponent>();
+            effect.applyScale = false;
+            effect.effectIndex = EffectIndex.Invalid;
+            effect.parentToReferencedTransform = true;
+            effect.positionAtReferencedTransform = false;
+            effect.soundName = "";
+            EffectAPI.AddEffect(bite);
         }
 
         private void SetupSkills()

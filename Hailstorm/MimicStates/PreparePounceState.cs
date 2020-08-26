@@ -19,6 +19,7 @@ namespace JarlykMods.Hailstorm.MimicStates
             _modelAnimator = GetModelAnimator();
             _duration = baseDuration/attackSpeedStat;
             PlayAnimation("FullBody, Override", "LeapStart", "Leap.playbackRate", _duration);
+            AkSoundEngine.PostEvent("Play_Mimic_ChargePounce", gameObject);
         }
 
 
