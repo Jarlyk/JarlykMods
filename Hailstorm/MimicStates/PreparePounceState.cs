@@ -38,6 +38,6 @@ namespace JarlykMods.Hailstorm.MimicStates
             base.OnExit();
         }
 
-        public override InterruptPriority GetMinimumInterruptPriority() => InterruptPriority.PrioritySkill;
+        public override InterruptPriority GetMinimumInterruptPriority() => InterruptPriority.Frozen;
     }
 }

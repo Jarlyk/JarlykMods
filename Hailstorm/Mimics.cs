@@ -231,11 +231,11 @@ namespace JarlykMods.Hailstorm
 
             //replace with custom sfx if applicable
             SfxLocator sfxLocator = BodyPrefab.GetComponent<SfxLocator>();
-            sfxLocator.deathSound = "";
+            sfxLocator.deathSound = "Play_Mimic_Death";
             sfxLocator.barkSound = "Play_Mimic_Background";
             sfxLocator.openSound = "";
             sfxLocator.landingSound = "Play_char_land";
-            sfxLocator.fallDamageSound = "";
+            sfxLocator.fallDamageSound = "Play_char_land_fall_damage";
             sfxLocator.aliveLoopStart = "";
             sfxLocator.aliveLoopStop = "";
 

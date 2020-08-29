@@ -56,7 +56,6 @@ namespace JarlykMods.Hailstorm
                                            .GetComponentInChildren<MeshRenderer>().material;
 
                 DistortionQuad = bundle.LoadAsset<GameObject>("Assets/Prefabs/DistortionQuad.prefab");
-
             }
 
             using (var stream = OpenAssets(execAssembly, "JarlykMods.Hailstorm", "mimic.assets"))

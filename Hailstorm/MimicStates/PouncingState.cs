@@ -25,6 +25,7 @@ namespace JarlykMods.Hailstorm.MimicStates
 
             //Start the leaping animation
             PlayAnimation("FullBody, Override", "LeapLoop");
+            AkSoundEngine.PostEvent("Play_Mimic_Leap", gameObject);
 
             //aimRay = GetAimRay();
             float speed = pounceSpeed;
@@ -121,6 +122,8 @@ namespace JarlykMods.Hailstorm.MimicStates
                         procCoefficient = 1.0f
                     };
                     blastAttack.Fire();
+                    AkSoundEngine.PostEvent("play_acrid_m2_explode", gameObject);
+
                     outer.SetNextState(Instantiate(typeof(PounceRecoverState)));
                     return;
                 }
@@ -136,6 +139,7 @@ namespace JarlykMods.Hailstorm.MimicStates
         public override void OnExit()
         {
             Debug.Log("Exiting Mimic|PouncingState");
+            AkSoundEngine.PostEvent("Stop_Mimic_Leap", gameObject);
             base.OnExit();
         }
 
