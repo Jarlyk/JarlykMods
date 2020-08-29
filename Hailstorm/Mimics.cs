@@ -319,6 +319,10 @@ namespace JarlykMods.Hailstorm
             effect.parentToReferencedTransform = true;
             effect.positionAtReferencedTransform = false;
             effect.soundName = "";
+            effect.transform.localScale = new Vector3(0.05f, 0.05f, 0.05f);
+            effect.transform.Find("b1/p1").gameObject.SetActive(false);
+            effect.transform.Find("b1/p2").gameObject.SetActive(false);
+
             EffectAPI.AddEffect(bite);
         }
 

@@ -1,4 +1,6 @@
-﻿using EntityStates;
+﻿using System.Collections;
+using EntityStates;
+using MonoMod.Cil;
 using RoR2;
 using UnityEngine;
 
@@ -6,7 +8,7 @@ namespace JarlykMods.Hailstorm.MimicStates
 {
     public sealed class MeleeAttackState : BaseState
     {
-        public static float baseDuration = 1.0f;
+        public static float baseDuration = 1.5f;
         public static float forceMagnitude = 1000f;
 
         private OverlapAttack _attack;
@@ -21,14 +23,15 @@ namespace JarlykMods.Hailstorm.MimicStates
 
             _duration = baseDuration/attackSpeedStat;
             _modelAnimator = GetModelAnimator();
+
             _attack = new OverlapAttack();
             _attack.attacker = gameObject;
             _attack.inflictor = gameObject;
             _attack.teamIndex = TeamComponent.GetObjectTeam(gameObject);
             _attack.damage = damageStat;
             _attack.hitBoxGroup = GetModelTransform().GetComponent<HitBoxGroup>();
+            _attack.hitEffectPrefab = HailstormAssets.MimicBiteEffect;
             
-            //TODO: Play melee start animation
             AkSoundEngine.PostEvent(SoundEvents.PlayChomp1, gameObject);
             PlayAnimation("FullBody, Override", "Bite", "Bite.playbackRate", _duration);
         }
@@ -39,22 +42,19 @@ namespace JarlykMods.Hailstorm.MimicStates
 
             if (isAuthority)
             {
-                _attack.forceVector = Vector3.zero;
-                if (characterDirection)
-                {
-                    _attack.forceVector = characterDirection.forward;
-                    _attack.pushAwayForce = forceMagnitude;
-                }
+                //_attack.forceVector = Vector3.zero;
+                //if (characterDirection)
+                //{
+                //    _attack.forceVector = characterDirection.forward;
+                //    _attack.pushAwayForce = forceMagnitude;
+                //}
 
                 //TODO: tie to animation
                 //if (_modelAnimator && _modelAnimator.GetFloat("Melee1.hitBoxActive") > 0.5)
                 if (fixedAge > 0.5*_duration)
                 {
                     _attack.Fire();
-                    EffectManager.SimpleMuzzleFlash(HailstormAssets.MimicBiteEffect, gameObject, "BiteMuzzle", true);
                 }
-
-                //TODO: Play melee strike visual effect
             }
 
             if (fixedAge < _duration || !isAuthority)

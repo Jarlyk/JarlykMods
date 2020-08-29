@@ -207,31 +207,25 @@ namespace JarlykMods.Hailstorm
             pickup.transform.SetParent(heldItemRoot);
             pickup.transform.localPosition = Vector3.zero;
 
-            //Note all pickup item meshes are the same size
-            //As such, we scale based on the mesh size and some hand-tuned adjustments
+            //The default pickup scaling is based on volume of first renderer
+            //In order to fit inside the chest consistently, we want to scale based on height of total bounds
+            //To do this, we replace the PickupDisplay without own ScaledPickupDisplay
+            var displayObj = pickup.transform.Find("PickupDisplay").gameObject;
+            var display = displayObj.GetComponent<PickupDisplay>();
+            var newDisplay = displayObj.AddComponent<HeightScaledPickupDisplay>();
+            newDisplay.CopyFrom(display);
+            Destroy(display);
+            newDisplay.SetPickupIndex(pickupInfo.pickupIndex);
 
-            //First, we get the pickup model for the item
-            var pickupDef = PickupCatalog.GetPickupDef(chestDrop);
-            var scaleAdj = 0.75f;
-            var translation = Vector3.zero;
-            if (pickupDef != null)
-            {
-                var bounds = new Bounds(Vector3.zero, Vector3.zero);
-                foreach (var pickupRenderer in pickupDef.displayPrefab.GetComponentsInChildren<Renderer>())
-                {
-                    bounds.Encapsulate(pickupRenderer.bounds);
-                }
-
-                var scaleY = bounds.extents.y;
-                scaleAdj *= 1.0f/scaleY;
-                translation = -1*bounds.center;
-            }
-
-            //pickup.transform.localPosition -= new Vector3(0, 0, 0);
+            //Normalize world scale to desired size
+            var scaleAdj = 0.4f;
             pickup.transform.localScale = new Vector3(1f, 1f, 1f);
             pickup.transform.localScale = scaleAdj*new Vector3(1.0f/pickup.transform.lossyScale.x,
                                                                1.0f/pickup.transform.lossyScale.y,
                                                                1.0f/pickup.transform.lossyScale.z);
+
+            //Normalize to desired position
+            var translation = -0.4f*Vector3.up;
             pickup.transform.position += pickup.transform.rotation*translation;
         }
 
