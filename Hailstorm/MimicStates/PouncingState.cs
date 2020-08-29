@@ -118,7 +118,7 @@ namespace JarlykMods.Hailstorm.MimicStates
                         teamIndex = teamComponent.teamIndex,
                         inflictor = gameObject,
                         losType = BlastAttack.LoSType.None,
-                        procCoefficient = 0.1f
+                        procCoefficient = 1.0f
                     };
                     blastAttack.Fire();
                     outer.SetNextState(Instantiate(typeof(PounceRecoverState)));

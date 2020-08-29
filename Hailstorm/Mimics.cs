@@ -319,9 +319,11 @@ namespace JarlykMods.Hailstorm
             effect.parentToReferencedTransform = true;
             effect.positionAtReferencedTransform = false;
             effect.soundName = "";
-            effect.transform.localScale = new Vector3(0.05f, 0.05f, 0.05f);
+            effect.transform.Find("b1").transform.localScale = new Vector3(0.1f, 0.1f, 0.1f);
+            effect.transform.Find("b1/b2").transform.localScale = new Vector3(0.1f, 0.1f, 0.1f);
             effect.transform.Find("b1/p1").gameObject.SetActive(false);
             effect.transform.Find("b1/p2").gameObject.SetActive(false);
+            bite.AddComponent<BillboardEffectPresenter>();
 
             EffectAPI.AddEffect(bite);
         }
@@ -448,7 +450,7 @@ namespace JarlykMods.Hailstorm
 
             var meleeDriver = MasterPrefab.AddComponent<AISkillDriver>();
             meleeDriver.minDistance = 0;
-            meleeDriver.maxDistance = 5;
+            meleeDriver.maxDistance = 4;
             meleeDriver.customName = "Melee";
             meleeDriver.skillSlot = SkillSlot.Primary;
             meleeDriver.aimType = AISkillDriver.AimType.AtCurrentEnemy;
@@ -461,7 +463,7 @@ namespace JarlykMods.Hailstorm
             meleeDriver.movementType = AISkillDriver.MovementType.Stop;
 
             var pounceDriver = MasterPrefab.AddComponent<AISkillDriver>();
-            pounceDriver.minDistance = 10;
+            pounceDriver.minDistance = 14;
             pounceDriver.maxDistance = 60;
             pounceDriver.customName = "Pounce";
             pounceDriver.skillSlot = SkillSlot.Utility;
@@ -475,7 +477,7 @@ namespace JarlykMods.Hailstorm
 
             var walkDriver = MasterPrefab.AddComponent<AISkillDriver>();
             walkDriver.minDistance = 5;
-            walkDriver.maxDistance = 20;
+            walkDriver.maxDistance = 25;
             walkDriver.aimType = AISkillDriver.AimType.AtCurrentEnemy;
             walkDriver.ignoreNodeGraph = true;
             walkDriver.moveTargetType = AISkillDriver.TargetType.CurrentEnemy;
@@ -486,7 +488,7 @@ namespace JarlykMods.Hailstorm
             walkDriver.skillSlot = SkillSlot.None;
 
             var routeDriver = MasterPrefab.AddComponent<AISkillDriver>();
-            routeDriver.minDistance = 20;
+            routeDriver.minDistance = 25;
             routeDriver.maxDistance = 150;
             routeDriver.aimType = AISkillDriver.AimType.AtCurrentEnemy;
             routeDriver.ignoreNodeGraph = false;

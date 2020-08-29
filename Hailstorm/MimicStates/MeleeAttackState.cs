@@ -8,7 +8,7 @@ namespace JarlykMods.Hailstorm.MimicStates
 {
     public sealed class MeleeAttackState : BaseState
     {
-        public static float baseDuration = 1.5f;
+        public static float baseDuration = 1.2f;
         public static float forceMagnitude = 1000f;
 
         private OverlapAttack _attack;
@@ -33,7 +33,7 @@ namespace JarlykMods.Hailstorm.MimicStates
             _attack.hitEffectPrefab = HailstormAssets.MimicBiteEffect;
             
             AkSoundEngine.PostEvent(SoundEvents.PlayChomp1, gameObject);
-            PlayAnimation("FullBody, Override", "Bite", "Bite.playbackRate", _duration);
+            PlayAnimation("FullBody, Override", "Bite", "Leap.playbackRate", _duration);
         }
 
         public override void FixedUpdate()
