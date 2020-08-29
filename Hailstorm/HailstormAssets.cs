@@ -8,6 +8,7 @@ using UnityEngine;
 using UnityEngine.Networking;
 using R2API;
 using RoR2;
+using Path = System.IO.Path;
 
 namespace JarlykMods.Hailstorm
 {
@@ -19,6 +20,16 @@ namespace JarlykMods.Hailstorm
         public static string IconDarkElite = Prefix + "Assets/Icons/DarkEliteIcon.png";
         public static string IconStormElite = Prefix + "Assets/Icons/StormEliteIcon.png";
 
+        private static Stream OpenAssets(Assembly execAssembly, string prefix, string filename)
+        {
+            //First check if there's an override file in the same folder as the plugin
+            var path = Path.Combine(Path.GetDirectoryName(execAssembly.Location), filename);
+            if (File.Exists(path))
+                return File.Open(path, FileMode.Open, FileAccess.Read, FileShare.Read);
+
+            return execAssembly.GetManifestResourceStream(prefix + "." + filename);
+        }
+
         public static void Init()
         {
             if (Loaded)
@@ -26,7 +37,7 @@ namespace JarlykMods.Hailstorm
 
             Loaded = true;
             var execAssembly = Assembly.GetExecutingAssembly();
-            using (var stream = execAssembly.GetManifestResourceStream("JarlykMods.Hailstorm.hailstorm.assets"))
+            using (var stream = OpenAssets(execAssembly, "JarlykMods.Hailstorm", "hailstorm.assets"))
             {
                 var bundle = AssetBundle.LoadFromStream(stream);
                 var provider = new AssetBundleResourcesProvider(Prefix.TrimEnd(':'), bundle);
@@ -48,7 +59,7 @@ namespace JarlykMods.Hailstorm
 
             }
 
-            using (var stream = execAssembly.GetManifestResourceStream("JarlykMods.Hailstorm.mimic.assets"))
+            using (var stream = OpenAssets(execAssembly, "JarlykMods.Hailstorm", "mimic.assets"))
             {
                 var bundle = AssetBundle.LoadFromStream(stream);
                 MimicModel = bundle.LoadAsset<GameObject>("mdlMimic");
