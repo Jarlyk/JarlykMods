@@ -6,35 +6,40 @@ namespace JarlykMods.Hailstorm.MimicStates
     public sealed class PreparePounceState : BaseState
     {
         public float baseDuration = 1.2f;
-
-        private Animator _modelAnimator;
         private float _duration;
+        private EmPowerAnimator _emPowerAnimator;
 
         public override void OnEnter()
         {
             base.OnEnter();
             Debug.Log("Entering Mimic|PreparePounceState");
 
+            _emPowerAnimator = modelLocator.modelTransform.GetComponent<EmPowerAnimator>();
+            _emPowerAnimator.SetTarget(20);
+
             //Begin the windup animation
-            _modelAnimator = GetModelAnimator();
             _duration = baseDuration/attackSpeedStat;
             PlayAnimation("FullBody, Override", "LeapStart", "Leap.playbackRate", _duration);
             AkSoundEngine.PostEvent("Play_Mimic_ChargePounce", gameObject);
         }
 
 
-        public override void FixedUpdate()
+        public override void Update()
         {
-            base.FixedUpdate();
+            base.Update();
+
+            if (age >= 0.5f*_duration)
+                _emPowerAnimator.SetTarget(120);
 
             //When windup animation is done, go to PouncingState
-            if (fixedAge >= _duration)
+            if (age >= _duration)
                 outer.SetNextState(Instantiate(typeof(PouncingState)));
         }
 
         public override void OnExit()
         {
             Debug.Log("Exiting Mimic|PreparePounceState");
+            _emPowerAnimator.SetTarget(100);
             base.OnExit();
         }
 

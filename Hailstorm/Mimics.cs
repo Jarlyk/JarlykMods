@@ -198,11 +198,11 @@ namespace JarlykMods.Hailstorm
 
             //gotta replace the material with a new one using hotpoo shaders:tm: for maximum quality
             CharacterModel.RendererInfo[] rendererInfos = characterModel.baseRendererInfos;
-            CharacterModel.RendererInfo[] array = new CharacterModel.RendererInfo[rendererInfos.Length];
-            rendererInfos.CopyTo(array, 0);
+            CharacterModel.RendererInfo[] newRendererInfos = new CharacterModel.RendererInfo[rendererInfos.Length];
+            rendererInfos.CopyTo(newRendererInfos, 0);
 
             //clone commando material and replace with our own textures
-            Material material = array[0].defaultMaterial;
+            Material material = newRendererInfos[0].defaultMaterial;
 
             if (material)
             {
@@ -210,14 +210,14 @@ namespace JarlykMods.Hailstorm
                 // material.SetColor("_Color", Color.white);
                 material.SetTexture("_MainTex", HailstormAssets.MimicMaterial.GetTexture("_MainTex"));
                 material.SetColor("_EmColor", Color.white);
-                material.SetFloat("_EmPower", 1);
+                material.SetFloat("_EmPower", 100);
                 material.SetTexture("_EmTex", HailstormAssets.MimicMaterial.GetTexture("_EmissionMap"));
 
-                array[0].defaultMaterial = material;
+                newRendererInfos[0].defaultMaterial = material;
             }
 
             //now replace the material on our model
-            characterModel.baseRendererInfos = array;            
+            characterModel.baseRendererInfos = newRendererInfos;            
             characterModel.SetFieldValue("mainSkinnedMeshRenderer", characterModel.baseRendererInfos[0].renderer.gameObject.GetComponent<SkinnedMeshRenderer>());
 
             TeamComponent teamComponent = null;
@@ -300,9 +300,16 @@ namespace JarlykMods.Hailstorm
             aimAnimator.smoothTime = 0.1f;
             aimAnimator.inputBank = BodyPrefab.GetComponent<InputBankTest>();
 
+            var emPowerAnimator = model.AddComponent<EmPowerAnimator>();
+            emPowerAnimator.material = newRendererInfos[0].defaultMaterial;
+
             //Set up initial state
             var esm = BodyPrefab.GetComponent<EntityStateMachine>();
             esm.initialStateType = new SerializableEntityStateType(typeof(OrientToTargetState));
+
+            //Set up death state
+            var deathBehavior = BodyPrefab.GetComponent<CharacterDeathBehavior>();
+            deathBehavior.deathState = new SerializableEntityStateType(typeof(MimicDeathState));
 
             //Add body to catalog
             BodyCatalog.getAdditionalEntries += delegate (List<GameObject> list)
@@ -321,8 +328,8 @@ namespace JarlykMods.Hailstorm
             effect.soundName = "";
             effect.transform.Find("b1").transform.localScale = new Vector3(0.1f, 0.1f, 0.1f);
             effect.transform.Find("b1/b2").transform.localScale = new Vector3(0.1f, 0.1f, 0.1f);
-            effect.transform.Find("b1/p1").gameObject.SetActive(false);
-            effect.transform.Find("b1/p2").gameObject.SetActive(false);
+            effect.transform.Find("b1/p1")?.gameObject.SetActive(false);
+            effect.transform.Find("b1/p2")?.gameObject.SetActive(false);
             bite.AddComponent<BillboardEffectPresenter>();
 
             EffectAPI.AddEffect(bite);

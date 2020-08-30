@@ -7,16 +7,18 @@ namespace JarlykMods.Hailstorm.MimicStates
 {
     public sealed class PounceRecoverState : BaseState
     {
+        public static float recoverDuration = 1.2f;
+
         public override void OnEnter()
         {
-            PlayAnimation("FullBody, Override", "LeapExit", "Leap.playbackRate", 0.5f);
+            PlayAnimation("FullBody, Override", "LeapExit", "Leap.playbackRate", recoverDuration);
             base.OnEnter();
         }
 
-        public override void FixedUpdate()
+        public override void Update()
         {
-            base.FixedUpdate();
-            if (fixedAge >= 0.5f)
+            base.Update();
+            if (age >= recoverDuration)
             {
                 outer.SetNextStateToMain();
             }
