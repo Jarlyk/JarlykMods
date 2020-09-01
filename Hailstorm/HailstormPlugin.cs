@@ -29,6 +29,7 @@ namespace JarlykMods.Hailstorm
     [R2APISubmoduleDependency(nameof(PrefabAPI))]
     [R2APISubmoduleDependency(nameof(LoadoutAPI))]
     [R2APISubmoduleDependency(nameof(SurvivorAPI))]
+    [R2APISubmoduleDependency(nameof(NetworkingAPI))]
     [NetworkCompatibility(CompatibilityLevel.EveryoneMustHaveMod)]
     public sealed class HailstormPlugin : BaseUnityPlugin
     {
@@ -69,7 +70,7 @@ namespace JarlykMods.Hailstorm
             _mimics?.Awake();
         }
 
-        public void Start()
+        private void Start()
         {
             _barrierElites?.Start();
         }
@@ -78,35 +79,6 @@ namespace JarlykMods.Hailstorm
         {
             _darkElites?.Update();
             _barrierElites?.Update();
-        }
-
-        [ConCommand(commandName = "hs_testmimic", flags = ConVarFlags.ExecuteOnServer,
-                    helpText = "Test Mimic")]
-        private static void TestMimic(ConCommandArgs args)
-        {
-            var spawnCard = ScriptableObject.CreateInstance<CharacterSpawnCard>();
-            spawnCard.hullSize = HullClassification.Human;
-            spawnCard.name = "Mimic";
-            spawnCard.nodeGraphType = MapNodeGroup.GraphType.Ground;
-            spawnCard.prefab = Mimics.MasterPrefab;
-
-            var user = LocalUserManager.GetFirstLocalUser();
-            var body = user.cachedBody;
-            if (body?.master == null)
-            {
-                Debug.LogError("Cannot find local user body!");
-                return;
-            }
-
-            var placement = new DirectorPlacementRule
-            {
-                spawnOnTarget = body.transform,
-                maxDistance = 40,
-                placementMode = DirectorPlacementRule.PlacementMode.Approximate,
-                preventOverhead = false
-            };
-
-            EsoLib.TrySpawnElite(spawnCard, null, placement, _rng);
         }
     }
 }

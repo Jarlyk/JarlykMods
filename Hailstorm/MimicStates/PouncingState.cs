@@ -106,7 +106,7 @@ namespace JarlykMods.Hailstorm.MimicStates
                     {
                         attacker = gameObject,
                         attackerFiltering = AttackerFiltering.NeverHit,
-                        baseDamage = 2.3f*damageStat,
+                        baseDamage = 1.9f*damageStat,
                         baseForce = 2000,
                         bonusForce = new Vector3(0, 500, 0),
                         crit = false,
@@ -130,7 +130,7 @@ namespace JarlykMods.Hailstorm.MimicStates
             }
 
             //Once we collide with player or after duration, animate recovery from failed pounce
-            if (characterMotor.isGrounded && fixedAge >= duration)
+            if (isAuthority && characterMotor.isGrounded && fixedAge >= duration)
             {
                 outer.SetNextState(Instantiate(typeof(PounceRecoverState)));
             }

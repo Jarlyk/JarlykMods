@@ -1212,6 +1212,87 @@
             </summary>
             <param name="languageDictionary">dictionary of languages containing dictionaries of key-value (eg ["en"]["mytoken"]="mystring")</param>
         </member>
+        <member name="T:R2API.LanguageAPI.LanguageOverlay">
+            <summary>
+            Manages temporary language token changes.
+            </summary>
+        </member>
+        <member name="F:R2API.LanguageAPI.LanguageOverlay.readOnlyOverlays">
+            <summary>Contains information about the language token changes this LanguageOverlay makes.</summary>
+        </member>
+        <member name="M:R2API.LanguageAPI.LanguageOverlay.Remove">
+            <summary>Undoes this LanguageOverlay's language token changes; you may safely dispose it afterwards. Requires a language reload to take effect.</summary>
+        </member>
+        <member name="M:R2API.LanguageAPI.AddOverlay(System.String,System.String)">
+            <summary>
+            Adds a single temporary language token, and its associated value, to all languages. Please add multiple instead (dictionary- or file-based signatures) where possible. Language-specific tokens, as well as overlays added later in time, will take precedence. Call LanguageOverlay.Remove() on the result to undo your change to this language token.
+            </summary>
+            <param name="key">Token the game asks</param>
+            <param name="value">Value it gives back</param>
+            <returns>A LanguageOverlay representing your language addition/override; call .Remove() on it to undo the change. May be safely disposed after calling .Remove().</returns>
+        </member>
+        <member name="M:R2API.LanguageAPI.AddOverlay(System.String,System.String,System.String)">
+            <summary>
+            Adds a single temporary language token, and its associated value, to a specific language. Please add multiple instead (dictionary- or file-based signatures) where possible. Overlays added later in time will take precedence. Call LanguageOverlay.Remove() on the result to undo your change to this language token.
+            </summary>
+            <param name="key">Token the game asks</param>
+            <param name="value">Value it gives back</param>
+            <param name="lang">Language you want to add this to</param>
+            <returns>A LanguageOverlay representing your language addition/override; call .Remove() on it to undo the change. May be safely disposed after calling .Remove().</returns>
+        </member>
+        <member name="M:R2API.LanguageAPI.AddOverlayPath(System.String)">
+            <summary>
+            Add temporary language tokens from a file via path (.language is added automatically). Call LanguageOverlay.Remove() on the result to undo all contained changes. May return null.
+            </summary>
+            <param name="path">absolute path to file</param>
+            <returns>A LanguageOverlay representing your language addition/override; call .Remove() on it to undo the change. Returns null if the target file is missing or cannot be parsed, or if no changes would otherwise be made.</returns>
+        </member>
+        <member name="M:R2API.LanguageAPI.AddOverlay(System.String)">
+            <summary>
+            Add temporary language tokens from a file via string. Call LanguageOverlay.Remove() on the result to undo all contained changes. May return null.
+            </summary>
+            <param name="file">entire file as string</param>
+            <returns>A LanguageOverlay representing your language addition/override; call .Remove() on it to undo the change. Returns null if no changes would be made.</returns>
+        </member>
+        <member name="M:R2API.LanguageAPI.AddOverlay(System.Collections.Generic.Dictionary{System.String,System.String})">
+            <summary>
+            Adds multiple temporary language tokens, and corresponding values, to all languages. Language-specific tokens, as well as overlays added later in time, will take precedence. Call LanguageOverlay.Remove() on the result to remove your changes to these language tokens.
+            </summary>
+            <param name="tokenDictionary">dictionaries of key-value (eg ["mytoken"]="mystring")</param>
+            <returns>A LanguageOverlay representing your language addition/override; call .Remove() on it to undo the change.</returns>
+        </member>
+        <member name="M:R2API.LanguageAPI.AddOverlay(System.Collections.Generic.Dictionary{System.String,System.String},System.String)">
+            <summary>
+            Adds multiple temporary language tokens, and corresponding values, to a specific language. Overlays added later in time will take precedence. Call LanguageOverlay.Remove() on the result to remove your changes to these language tokens.
+            </summary>
+            <param name="tokenDictionary">dictionaries of key-value (eg ["mytoken"]="mystring")</param>
+            <param name="language">Language you want to add this to</param>
+            <returns>A LanguageOverlay representing your language addition/override; call .Remove() on it to undo the change.</returns>
+        </member>
+        <member name="M:R2API.LanguageAPI.AddOverlay(System.Collections.Generic.Dictionary{System.String,System.Collections.Generic.Dictionary{System.String,System.String}})">
+            <summary>
+            Adds multiple temporary language tokens, and corresponding values, to mixed languages. Overlays added later in time will take precedence. Call LanguageOverlay.Remove() on the result to remove your changes to these language tokens.
+            </summary>
+            <param name="languageDictionary">dictionary of languages containing dictionaries of key-value (eg ["en"]["mytoken"]="mystring")</param>
+            <returns>A LanguageOverlay representing your language addition/override; call .Remove() on it to undo the change.</returns>
+        </member>
+        <member name="T:R2API.LanguageAPI.OverlayTokenData">
+            <summary>
+            Contains information about a single temporary language token change.
+            </summary>
+        </member>
+        <member name="F:R2API.LanguageAPI.OverlayTokenData.key">
+            <summary>The token identifier to add/replace the value of.</summary>
+        </member>
+        <member name="F:R2API.LanguageAPI.OverlayTokenData.value">
+            <summary>The value to set the target token to.</summary>
+        </member>
+        <member name="F:R2API.LanguageAPI.OverlayTokenData.lang">
+            <summary>The language which the target token belongs to, if isGeneric = false.</summary>
+        </member>
+        <member name="F:R2API.LanguageAPI.OverlayTokenData.isGeneric">
+            <summary>Whether the target token is generic (applies to all languages which don't contain the token).</summary>
+        </member>
         <member name="P:R2API.LoadoutAPI.Loaded">
             <summary>
             Return true if the submodule is loaded.

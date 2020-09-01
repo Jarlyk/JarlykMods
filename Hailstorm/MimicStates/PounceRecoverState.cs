@@ -11,14 +11,14 @@ namespace JarlykMods.Hailstorm.MimicStates
 
         public override void OnEnter()
         {
-            PlayAnimation("FullBody, Override", "LeapExit", "Leap.playbackRate", recoverDuration);
             base.OnEnter();
+            PlayAnimation("FullBody, Override", "LeapExit", "Leap.playbackRate", recoverDuration);
         }
 
-        public override void Update()
+        public override void FixedUpdate()
         {
-            base.Update();
-            if (age >= recoverDuration)
+            base.FixedUpdate();
+            if (isAuthority && fixedAge >= recoverDuration)
             {
                 outer.SetNextStateToMain();
             }

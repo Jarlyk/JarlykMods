@@ -27,15 +27,15 @@ namespace JarlykMods.Hailstorm.MimicStates
         }
 
 
-        public override void Update()
+        public override void FixedUpdate()
         {
-            base.Update();
+            base.FixedUpdate();
 
-            if (age >= 0.5f*_duration)
+            if (fixedAge >= 0.5f*_duration)
                 _emPowerAnimator.SetTarget(120);
 
             //When windup animation is done, go to PouncingState
-            if (age >= _duration)
+            if (isAuthority && fixedAge >= _duration)
                 outer.SetNextState(Instantiate(typeof(PouncingState)));
         }
 

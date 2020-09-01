@@ -4,6 +4,8 @@ using System.Reflection;
 using EliteSpawningOverhaul;
 using JarlykMods.Hailstorm.MimicStates;
 using KinematicCharacterController;
+using R2API.Networking;
+using R2API.Networking.Interfaces;
 using R2API.Utils;
 using RoR2;
 using RoR2.CharacterAI;
@@ -26,7 +28,7 @@ namespace JarlykMods.Hailstorm
         public DeathRewards BoundReward { get; private set; }
 
         public ItemIndex BoundItem { get; private set; }
-
+        
         private void Start()
         {
             _rng = new Xoroshiro128Plus(Run.instance.treasureRng.nextUlong);
@@ -160,22 +162,42 @@ namespace JarlykMods.Hailstorm
             placement.placementMode = DirectorPlacementRule.PlacementMode.Direct;
 
             var mimicMaster = EsoLib.TrySpawnElite(spawnCard, null, placement, _rng);
+            var message = new ConfigureMimicMessage
+            {
+                mimicMasterObj = mimicMaster.gameObject,
+                initialRotation = placement.spawnOnTarget.rotation,
+                target = collider.gameObject,
+                splatBiasR = biasR,
+                splatBiasG = biasG,
+                splatBiasB = biasB,
+                item = chestDrop
+            };
+            message.Send(NetworkDestination.Clients);
+            
+            //NOTE: We don't need to call this explicitly on the server, as the server also gets the OnReceived callback for the message
+            //ConfigureMimic(message);
+        }
+
+        public static void ConfigureMimic(ConfigureMimicMessage message)
+        {
+            Debug.Log("Configuring mimic");
+            var mimicMaster = message.mimicMasterObj.GetComponent<CharacterMaster>();
             var mimic = mimicMaster.GetBody();
 
             var context = mimic.gameObject.AddComponent<MimicContext>();
-            context.initialRotation = placement.spawnOnTarget.rotation;
-            context.target = collider.gameObject;
+            context.initialRotation = message.initialRotation;
+            context.target = message.target;
 
             var mimicModel = mimic.GetComponent<ModelLocator>().modelTransform.gameObject;
             var mimicRenderer = mimicModel.GetComponentInChildren<SkinnedMeshRenderer>();
             if (!mimicRenderer)
                 Debug.Log("Couldn't find mimic renderer");
 
-            propBlock = new MaterialPropertyBlock();
+            var propBlock = new MaterialPropertyBlock();
             mimicRenderer.GetPropertyBlock(propBlock);
-            propBlock.SetFloat("_RedChannelBias", biasR);
-            propBlock.SetFloat("_GreenChannelBias", biasG);
-            propBlock.SetFloat("_BlueChannelBias", biasB);
+            propBlock.SetFloat("_RedChannelBias", message.splatBiasR);
+            propBlock.SetFloat("_GreenChannelBias", message.splatBiasG);
+            propBlock.SetFloat("_BlueChannelBias", message.splatBiasB);
             mimicRenderer.SetPropertyBlock(propBlock);
 
             //Initially the mimic can't set its direction; we need this to allow the surprise attack to adjust into orientation
@@ -190,7 +212,7 @@ namespace JarlykMods.Hailstorm
             kinMotor.enabled = false;
 
             var ai = mimicMaster.GetComponent<BaseAI>();
-            ai.customTarget.gameObject = collider.gameObject;
+            ai.customTarget.gameObject = message.target;
 
             //Find the location where the item will be located
             var heldItemRoot = mimicModel.transform.Find("Armature/chestArmature/Base/HeldItem");
@@ -199,7 +221,7 @@ namespace JarlykMods.Hailstorm
 
             //Anchor the item to the location
             var pickupInfo = new GenericPickupController.CreatePickupInfo();
-            pickupInfo.pickupIndex = chestDrop;
+            pickupInfo.pickupIndex = message.item;
             pickupInfo.position = Vector3.zero;
             var pickup = GenericPickupController.CreatePickup(pickupInfo);
             Destroy(pickup.GetComponent<Rigidbody>());

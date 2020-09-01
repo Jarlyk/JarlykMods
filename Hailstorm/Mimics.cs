@@ -7,6 +7,7 @@ using JarlykMods.Hailstorm.MimicStates;
 using Mono.Cecil.Cil;
 using MonoMod.Cil;
 using R2API;
+using R2API.Networking;
 using R2API.Utils;
 using RoR2;
 using RoR2.CharacterAI;
@@ -30,6 +31,7 @@ namespace JarlykMods.Hailstorm
         public void Awake()
         {
             SetupMonster();
+            NetworkingAPI.RegisterMessageType<ConfigureMimicMessage>();
         }
 
         public static GameObject BodyPrefab;
@@ -134,8 +136,8 @@ namespace JarlykMods.Hailstorm
             bodyComponent.subtitleNameToken = "NULL_SUBTITLE";
             bodyComponent.rootMotionInMainState = false;
             bodyComponent.mainRootSpeed = 0;
-            bodyComponent.baseMaxHealth = 450;
-            bodyComponent.levelMaxHealth = 120;
+            bodyComponent.baseMaxHealth = 420;
+            bodyComponent.levelMaxHealth = 130;
             bodyComponent.baseRegen = 0f;
             bodyComponent.levelRegen = 0f;
             bodyComponent.baseMaxShield = 0;
@@ -146,7 +148,7 @@ namespace JarlykMods.Hailstorm
             bodyComponent.baseJumpPower = 40;
             bodyComponent.levelJumpPower = 0;
             bodyComponent.baseDamage = 20;
-            bodyComponent.levelDamage = 3.5f;
+            bodyComponent.levelDamage = 4f;
             bodyComponent.baseAttackSpeed = 1;
             bodyComponent.levelAttackSpeed = 0;
             bodyComponent.baseCrit = 0;
@@ -267,7 +269,7 @@ namespace JarlykMods.Hailstorm
             
 
             GameObject chompHitbox = childLocator.FindChild("ChompHitbox").gameObject;
-            chompHitbox.transform.localScale = new Vector3(18f/180.0f, 18f/180.0f, 18f/180.0f);
+            chompHitbox.transform.localScale = new Vector3(16f/180.0f, 16f/180.0f, 16f/180.0f);
 
             HitBox hitBox = chompHitbox.AddComponent<HitBox>();
             chompHitbox.layer = LayerIndex.projectile.intVal;
@@ -457,7 +459,7 @@ namespace JarlykMods.Hailstorm
 
             var meleeDriver = MasterPrefab.AddComponent<AISkillDriver>();
             meleeDriver.minDistance = 0;
-            meleeDriver.maxDistance = 4;
+            meleeDriver.maxDistance = 3;
             meleeDriver.customName = "Melee";
             meleeDriver.skillSlot = SkillSlot.Primary;
             meleeDriver.aimType = AISkillDriver.AimType.AtCurrentEnemy;
@@ -483,7 +485,7 @@ namespace JarlykMods.Hailstorm
             pounceDriver.driverUpdateTimerOverride = -1;
 
             var walkDriver = MasterPrefab.AddComponent<AISkillDriver>();
-            walkDriver.minDistance = 5;
+            walkDriver.minDistance = 3;
             walkDriver.maxDistance = 25;
             walkDriver.aimType = AISkillDriver.AimType.AtCurrentEnemy;
             walkDriver.ignoreNodeGraph = true;
