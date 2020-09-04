@@ -17,7 +17,6 @@ namespace JarlykMods.Hailstorm.MimicStates
         public override void OnEnter()
         {
             base.OnEnter();
-            Debug.Log("Entering Mimic|PouncingState");
             duration = 1.0f;
             var leapState = ((EntityStates.Croco.BaseLeap) Instantiate(typeof(EntityStates.Croco.BaseLeap)));
             _blastImpactEffectPrefab = leapState.blastImpactEffectPrefab;
@@ -138,7 +137,6 @@ namespace JarlykMods.Hailstorm.MimicStates
 
         public override void OnExit()
         {
-            Debug.Log("Exiting Mimic|PouncingState");
             AkSoundEngine.PostEvent("Stop_Mimic_Leap", gameObject);
             base.OnExit();
         }

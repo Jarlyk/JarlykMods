@@ -66,7 +66,6 @@ namespace JarlykMods.Hailstorm
 
                 if (_rng.nextNormalizedFloat < HailstormConfig.MimicChance.Value)
                 {
-                    Debug.Log("Mimic added");
                     var mimic = ChestMimicSpawner.Build(gameObj);
                     _chestMimics.Add(mimic);
                 }
@@ -92,7 +91,7 @@ namespace JarlykMods.Hailstorm
             SetupBody();
             SetupSkills();
             SetupMaster();
-            RegisterAsSurvivor();
+            //RegisterAsSurvivor();
         }
 
         private void SetupBody()
@@ -136,8 +135,8 @@ namespace JarlykMods.Hailstorm
             bodyComponent.subtitleNameToken = "NULL_SUBTITLE";
             bodyComponent.rootMotionInMainState = false;
             bodyComponent.mainRootSpeed = 0;
-            bodyComponent.baseMaxHealth = 420;
-            bodyComponent.levelMaxHealth = 130;
+            bodyComponent.baseMaxHealth = 400;
+            bodyComponent.levelMaxHealth = 250;
             bodyComponent.baseRegen = 0f;
             bodyComponent.levelRegen = 0f;
             bodyComponent.baseMaxShield = 0;
@@ -148,7 +147,7 @@ namespace JarlykMods.Hailstorm
             bodyComponent.baseJumpPower = 40;
             bodyComponent.levelJumpPower = 0;
             bodyComponent.baseDamage = 20;
-            bodyComponent.levelDamage = 4f;
+            bodyComponent.levelDamage = 8f;
             bodyComponent.baseAttackSpeed = 1;
             bodyComponent.levelAttackSpeed = 0;
             bodyComponent.baseCrit = 0;
@@ -160,7 +159,7 @@ namespace JarlykMods.Hailstorm
             bodyComponent.hideCrosshair = false;
             bodyComponent.crosshairPrefab = Resources.Load<GameObject>("Prefabs/Crosshair/SimpleDotCrosshair");
             bodyComponent.hullClassification = HullClassification.Human;
-            //bodyComponent.portraitIcon = Assets.charPortrait;
+            bodyComponent.portraitIcon = HailstormAssets.MimicPortrait;
             bodyComponent.isChampion = false;
 
             //also ignore
@@ -459,7 +458,7 @@ namespace JarlykMods.Hailstorm
 
             var meleeDriver = MasterPrefab.AddComponent<AISkillDriver>();
             meleeDriver.minDistance = 0;
-            meleeDriver.maxDistance = 3;
+            meleeDriver.maxDistance = 4f;
             meleeDriver.customName = "Melee";
             meleeDriver.skillSlot = SkillSlot.Primary;
             meleeDriver.aimType = AISkillDriver.AimType.AtCurrentEnemy;
@@ -472,7 +471,7 @@ namespace JarlykMods.Hailstorm
             meleeDriver.movementType = AISkillDriver.MovementType.Stop;
 
             var pounceDriver = MasterPrefab.AddComponent<AISkillDriver>();
-            pounceDriver.minDistance = 14;
+            pounceDriver.minDistance = 25;
             pounceDriver.maxDistance = 60;
             pounceDriver.customName = "Pounce";
             pounceDriver.skillSlot = SkillSlot.Utility;

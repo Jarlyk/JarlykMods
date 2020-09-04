@@ -57,9 +57,15 @@ namespace JarlykMods.Hailstorm
                 var dropItem = PickupCatalog.GetPickupDef(chestDrop).itemIndex;
                 if (dropItem == ItemIndex.None)
                     return;
-                
-                SpawnNewMimic(collider, chestDrop);
-                //SpawnLegacyMimic(dropItem);
+
+                if (gameObject.name.StartsWith("Chest1"))
+                {
+                    SpawnNewMimic(collider, chestDrop);
+                }
+                else
+                {
+                    SpawnLegacyMimic(dropItem);
+                }
             }
         }
 

@@ -15,7 +15,6 @@ namespace JarlykMods.Hailstorm.MimicStates
         public override void OnEnter()
         {
             base.OnEnter();
-            Debug.Log("Entering Mimic|SurprisePounceState");
 
             _emPowerAnimator = modelLocator.modelTransform.GetComponent<EmPowerAnimator>();
             _emPowerAnimator.SetTarget(20);
@@ -41,7 +40,6 @@ namespace JarlykMods.Hailstorm.MimicStates
 
         public override void OnExit()
         { 
-            Debug.Log("Exiting Mimic|SurprisePounceState");
             _emPowerAnimator.SetTarget(100);
             base.OnExit();
         }

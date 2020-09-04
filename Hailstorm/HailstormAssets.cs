@@ -56,6 +56,8 @@ namespace JarlykMods.Hailstorm
                                            .GetComponentInChildren<MeshRenderer>().material;
 
                 DistortionQuad = bundle.LoadAsset<GameObject>("Assets/Prefabs/DistortionQuad.prefab");
+
+                MimicPortrait = bundle.LoadAsset<Texture>("Assets/Icons/MimicBody.png");
             }
 
             using (var stream = OpenAssets(execAssembly, "JarlykMods.Hailstorm", "mimic.assets"))
@@ -91,6 +93,8 @@ namespace JarlykMods.Hailstorm
         public static GameObject TwisterPrefab { get; private set; }
 
         public static GameObject DistortionQuad { get; private set; }
+
+        public static Texture MimicPortrait { get; private set; }
 
         public static GameObject MimicModel { get; private set; }
 

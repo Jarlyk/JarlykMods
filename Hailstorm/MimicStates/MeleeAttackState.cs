@@ -17,7 +17,6 @@ namespace JarlykMods.Hailstorm.MimicStates
         public override void OnEnter()
         {
             base.OnEnter();
-            Debug.Log("Entering Mimic|MeleeAttackState");
 
             _duration = baseDuration/attackSpeedStat;
 
@@ -49,7 +48,6 @@ namespace JarlykMods.Hailstorm.MimicStates
 
         public override void OnExit()
         {
-            Debug.Log("Exiting Mimic|MeleeAttackState");
             base.OnExit();
         }
 

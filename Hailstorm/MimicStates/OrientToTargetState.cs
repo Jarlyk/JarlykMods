@@ -34,13 +34,10 @@ namespace JarlykMods.Hailstorm.MimicStates
                 var targetPos = _target.transform.position;
                 var myPos = characterBody.transform.position;
                 _startPos = myPos;
-                Debug.Log($"Mimic pos: {myPos} | target pos: {targetPos}");
                 var lookDir = (targetPos - myPos).normalized;
                 _targetRot = Util.QuaternionSafeLookRotation(new Vector3(lookDir.x, 0, lookDir.z), Vector3.up);
                 if (_startRot == null)
                     return;
-
-                Debug.Log($"Mimic rotation {_startRot.eulerAngles} => {_targetRot.eulerAngles}");
 
                 //By default, do simple Slerp, which is likely mostly a y twist
                 _interRot = Quaternion.Slerp(_startRot, _targetRot, 0.5f);
@@ -49,9 +46,7 @@ namespace JarlykMods.Hailstorm.MimicStates
                 if (Mathf.DeltaAngle(_targetRot.eulerAngles.y, _startRot.eulerAngles.y) > 30)
                 {
                     _interRot = Quaternion.AngleAxis(90, lookDir)*_interRot;
-                    Debug.Log("Mimic backflip selected");
                 }
-                Debug.Log($"Mimic interRot: {_interRot.eulerAngles}");
 
                 _orientT = new AnimatedFloat();
                 _orientT.Accel = 10.0f;

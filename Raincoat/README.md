@@ -41,6 +41,9 @@ This mod is released under the standard MIT license, which is a permissive licen
 
 ### Changelog
 
+1.0.5 | 2020-09-01
+- Fixed compatibility issue with ShareSuite that could cause Artifact of Merch to drop too many shops, depending on the load order of mods
+
 1.0.4 | 2020-08-21
 - Fixed issue where boss shop dropping (Artifact of Merch) wouldn't drop shops with Artifact of Sacrifice
 
