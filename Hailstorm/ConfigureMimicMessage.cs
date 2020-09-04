@@ -10,7 +10,7 @@ namespace JarlykMods.Hailstorm
 {
     public sealed class ConfigureMimicMessage : INetMessage
     {
-        public GameObject mimicMasterObj;
+        public NetworkInstanceId mimicMasterId;
         public Quaternion initialRotation;
         public GameObject target;
         public float splatBiasR;
@@ -25,7 +25,7 @@ namespace JarlykMods.Hailstorm
 
         public void Serialize(NetworkWriter writer)
         {
-            writer.Write(mimicMasterObj);
+            writer.Write(mimicMasterId);
             writer.Write(initialRotation);
             writer.Write(target);
             writer.Write(splatBiasR);
@@ -36,7 +36,7 @@ namespace JarlykMods.Hailstorm
 
         public void Deserialize(NetworkReader reader)
         {
-            mimicMasterObj = reader.ReadGameObject();
+            mimicMasterId = reader.ReadNetworkId();
             initialRotation = reader.ReadQuaternion();
             target = reader.ReadGameObject();
             splatBiasR = reader.ReadSingle();

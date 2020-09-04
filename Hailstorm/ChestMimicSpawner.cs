@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Linq;
 using System.Reflection;
 using EliteSpawningOverhaul;
@@ -170,7 +171,7 @@ namespace JarlykMods.Hailstorm
             var mimicMaster = EsoLib.TrySpawnElite(spawnCard, null, placement, _rng);
             var message = new ConfigureMimicMessage
             {
-                mimicMasterObj = mimicMaster.gameObject,
+                mimicMasterId = mimicMaster.netId,
                 initialRotation = placement.spawnOnTarget.rotation,
                 target = collider.gameObject,
                 splatBiasR = biasR,
@@ -187,9 +188,37 @@ namespace JarlykMods.Hailstorm
         public static void ConfigureMimic(ConfigureMimicMessage message)
         {
             Debug.Log("Configuring mimic");
-            var mimicMaster = message.mimicMasterObj.GetComponent<CharacterMaster>();
-            var mimic = mimicMaster.GetBody();
 
+            if (!NetworkServer.active)
+            {
+                HailstormPlugin.Instance.StartCoroutine(ConfigureMimicAsync(message));
+            }
+            else
+            {
+                var mimicMaster = NetworkServer.FindLocalObject(message.mimicMasterId).GetComponent<CharacterMaster>();
+                var mimic = mimicMaster.GetBody();
+
+                ConfigureMimic(message, mimic, mimicMaster);
+            }
+        }
+
+        private static IEnumerator ConfigureMimicAsync(ConfigureMimicMessage message)
+        {
+            CharacterMaster mimicMaster = null;
+            CharacterBody mimic = null;
+
+            yield return new WaitUntil(() =>
+            {
+                mimicMaster = ClientScene.FindLocalObject(message.mimicMasterId)?.GetComponent<CharacterMaster>();
+                mimic = mimicMaster?.GetBody();
+                return mimicMaster && mimic;
+            });
+
+            ConfigureMimic(message, mimic, mimicMaster);
+        }
+
+        private static void ConfigureMimic(ConfigureMimicMessage message, CharacterBody mimic, CharacterMaster mimicMaster)
+        {
             var context = mimic.gameObject.AddComponent<MimicContext>();
             context.initialRotation = message.initialRotation;
             context.target = message.target;

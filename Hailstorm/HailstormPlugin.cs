@@ -41,8 +41,11 @@ namespace JarlykMods.Hailstorm
         private static Mimics _mimics;
         private static Xoroshiro128Plus _rng;
 
+        public static HailstormPlugin Instance { get; private set; }
+
         public HailstormPlugin()
         {
+            Instance = this;
             HailstormConfig.Init(Config);
             HailstormAssets.Init();
 
