@@ -76,7 +76,7 @@ namespace JarlykMods.Hailstorm
                 spawnWeight = 0.5f,
                 costMultiplier = 10f,
                 damageBoostCoeff = 1.0f,
-                healthBoostCoeff = 7.0f,
+                healthBoostCoeff = 8.0f,
                 eliteOnlyScaling = 0.5f,
                 eliteType = _eliteIndex,
                 onSpawned = OnSpawned
@@ -137,7 +137,7 @@ namespace JarlykMods.Hailstorm
 
         public void Update()
         {
-            if (Time.time - _lastBarrierTime > 5.0f)
+            if (Time.time - _lastBarrierTime > 2.0f)
             {
                 UpdateBarrier();
                 _lastBarrierTime = Time.time;
@@ -189,7 +189,7 @@ namespace JarlykMods.Hailstorm
                     {
                         var healthComponent = obj.GetComponent<HealthComponent>();
                         if (healthComponent != null)
-                            healthComponent.AddBarrier(0.1f*shieldBearer.maxHealth);
+                            healthComponent.AddBarrier(0.2f*shieldBearer.maxHealth);
                     }
                 }
             }
