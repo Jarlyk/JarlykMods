@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace JarlykMods.Hailstorm.MimicStates
 {
-    public sealed class PreparePounceState : BaseState
+    public sealed class PreparePounceState : BaseSkillState
     {
         public float baseDuration = 1.2f;
         private float _duration;

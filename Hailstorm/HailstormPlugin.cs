@@ -64,6 +64,8 @@ namespace JarlykMods.Hailstorm
             _rng = new Xoroshiro128Plus((ulong) DateTime.Now.Ticks);
 
             CommandHelper.AddToConsoleWhenReady();
+
+            //On.RoR2.Networking.GameNetworkManager.OnClientConnect += (self, user, t) => { };
         }
 
         private void Awake()

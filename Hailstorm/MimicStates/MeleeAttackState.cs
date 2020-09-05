@@ -6,7 +6,7 @@ using UnityEngine;
 
 namespace JarlykMods.Hailstorm.MimicStates
 {
-    public sealed class MeleeAttackState : BaseState
+    public sealed class MeleeAttackState : BaseSkillState
     {
         public static float baseDuration = 1.2f;
         public static float forceMagnitude = 1000f;

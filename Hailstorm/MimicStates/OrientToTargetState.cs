@@ -6,6 +6,7 @@ using KinematicCharacterController;
 using RoR2;
 using RoR2.CharacterAI;
 using UnityEngine;
+using UnityEngine.Networking;
 
 namespace JarlykMods.Hailstorm.MimicStates
 {
@@ -22,48 +23,45 @@ namespace JarlykMods.Hailstorm.MimicStates
         {
             base.OnEnter();
 
-            if (isAuthority)
+            var context = characterBody.GetComponent<MimicContext>();
+            if (!context)
+                return;
+        
+            _target = context.target;
+            _startRot = context.initialRotation;
+
+            var targetPos = _target.transform.position;
+            var myPos = characterBody.transform.position;
+            _startPos = myPos;
+            var lookDir = (targetPos - myPos).normalized;
+            _targetRot = Util.QuaternionSafeLookRotation(new Vector3(lookDir.x, 0, lookDir.z), Vector3.up);
+            if (_startRot == null)
+                return;
+
+            //By default, do simple Slerp, which is likely mostly a y twist
+            _interRot = Quaternion.Slerp(_startRot, _targetRot, 0.5f);
+
+            //If twist angle is too large, though, adjust it to be a backflip by rotating around the direction of motion
+            if (Mathf.DeltaAngle(_targetRot.eulerAngles.y, _startRot.eulerAngles.y) > 30)
             {
-                var context = characterBody.GetComponent<MimicContext>();
-                if (!context)
-                    return;
-            
-                _target = context.target;
-                _startRot = context.initialRotation;
-
-                var targetPos = _target.transform.position;
-                var myPos = characterBody.transform.position;
-                _startPos = myPos;
-                var lookDir = (targetPos - myPos).normalized;
-                _targetRot = Util.QuaternionSafeLookRotation(new Vector3(lookDir.x, 0, lookDir.z), Vector3.up);
-                if (_startRot == null)
-                    return;
-
-                //By default, do simple Slerp, which is likely mostly a y twist
-                _interRot = Quaternion.Slerp(_startRot, _targetRot, 0.5f);
-
-                //If twist angle is too large, though, adjust it to be a backflip by rotating around the direction of motion
-                if (Mathf.DeltaAngle(_targetRot.eulerAngles.y, _startRot.eulerAngles.y) > 30)
-                {
-                    _interRot = Quaternion.AngleAxis(90, lookDir)*_interRot;
-                }
-
-                _orientT = new AnimatedFloat();
-                _orientT.Accel = 10.0f;
-                _orientT.MaxSpeed = 3.0f;
-                _orientT.Setpoint = 1.0f;
+                _interRot = Quaternion.AngleAxis(90, lookDir)*_interRot;
             }
+
+            _orientT = new AnimatedFloat();
+            _orientT.Accel = 10.0f;
+            _orientT.MaxSpeed = 3.0f;
+            _orientT.Setpoint = 1.0f;
         }
 
         public override void FixedUpdate()
         {
             base.FixedUpdate();
-            if (!isAuthority)
-                return;
 
             if (_orientT == null || !_target)
             {
-                outer.SetNextStateToMain();
+                if (isAuthority)
+                    outer.SetNextStateToMain();
+
                 return;
             }
 
@@ -84,7 +82,8 @@ namespace JarlykMods.Hailstorm.MimicStates
 
                 characterBody.transform.rotation = Quaternion.Slerp(_interRot, _targetRot, 2*(t - 0.5f));
                 characterBody.transform.position = _startPos + new Vector3(0, 4.0f*Mathf.Sqrt(2*Mathf.Abs(1.0f-t)), 0);
-                characterBody.GetComponent<Rigidbody>().detectCollisions = true;
+                if (isAuthority)
+                    characterBody.GetComponent<Rigidbody>().detectCollisions = true;
             }
 
             //Once we're done flipping, reactivate character direction controller and proceed to surprise pounce
@@ -104,7 +103,8 @@ namespace JarlykMods.Hailstorm.MimicStates
                 kinMotor.SetRotation(_targetRot);
                 kinMotor.enabled = true;
 
-                outer.SetNextState(Instantiate(typeof(SurprisePounceState)));
+                if (isAuthority)
+                    outer.SetNextState(Instantiate(typeof(SurprisePounceState)));
             }
         }
     }

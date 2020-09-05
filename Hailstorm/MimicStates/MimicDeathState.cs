@@ -23,13 +23,19 @@ namespace JarlykMods.Hailstorm.MimicStates
 
         public override void OnExit()
         {
-            if (isAuthority)
+            //Split the item pickup from the mimic model
+            var pickup = _modelTransform.GetComponentInChildren<GenericPickupController>();
+            if (pickup)
             {
-                //Split the item pickup from the mimic model
-                var pickup = _modelTransform.GetComponentInChildren<GenericPickupController>();
-                if (pickup)
-                    pickup.gameObject.transform.SetParent(null, true);
+                if (isAuthority)
+                {
+                    PickupDropletController.CreatePickupDroplet(pickup.pickupIndex, pickup.transform.position,
+                                                                Vector3.zero);
+                }
+
+                pickup.gameObject.SetActive(false);
             }
+
             base.OnExit();
         }
     }

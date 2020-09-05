@@ -249,43 +249,13 @@ namespace JarlykMods.Hailstorm
             var ai = mimicMaster.GetComponent<BaseAI>();
             ai.customTarget.gameObject = message.target;
 
-            //Find the location where the item will be located
-            var heldItemRoot = mimicModel.transform.Find("Armature/chestArmature/Base/HeldItem");
-            if (!heldItemRoot)
-                Debug.Log("Failed to locate held item root for Mimic");
+            var pickup = mimicModel.GetComponentInChildren<GenericPickupController>();
+            pickup.enabled = false;
+            pickup.NetworkpickupIndex = message.item;
 
-            //Anchor the item to the location
-            var pickupInfo = new GenericPickupController.CreatePickupInfo();
-            pickupInfo.pickupIndex = message.item;
-            pickupInfo.position = Vector3.zero;
-            var pickup = GenericPickupController.CreatePickup(pickupInfo);
-            Destroy(pickup.GetComponent<Rigidbody>());
-            Destroy(pickup.GetComponent<SphereCollider>());
-            pickup.transform.SetParent(heldItemRoot);
-            pickup.transform.localPosition = Vector3.zero;
-
-            //The default pickup scaling is based on volume of first renderer
-            //In order to fit inside the chest consistently, we want to scale based on height of total bounds
-            //To do this, we replace the PickupDisplay without own ScaledPickupDisplay
-            var displayObj = pickup.transform.Find("PickupDisplay").gameObject;
-            var display = displayObj.GetComponent<PickupDisplay>();
-            var newDisplay = displayObj.AddComponent<HeightScaledPickupDisplay>();
-            newDisplay.CopyFrom(display);
-            Destroy(display);
-            newDisplay.SetPickupIndex(pickupInfo.pickupIndex);
-
-            //Normalize world scale to desired size
-            var scaleAdj = 0.4f;
-            pickup.transform.localScale = new Vector3(1f, 1f, 1f);
-            pickup.transform.localScale = scaleAdj*new Vector3(1.0f/pickup.transform.lossyScale.x,
-                                                               1.0f/pickup.transform.lossyScale.y,
-                                                               1.0f/pickup.transform.lossyScale.z);
-
-            //Normalize to desired position
-            var translation = -0.4f*Vector3.up;
-            pickup.transform.position += pickup.transform.rotation*translation;
+            var pickupDisplay = mimicModel.GetComponentInChildren<HeightScaledPickupDisplay>();
+            pickupDisplay.SetPickupIndex(message.item);
         }
-
 
         private static void RemoveNode(DirectorCore directorCore, NodeGraph.NodeIndex node)
         {

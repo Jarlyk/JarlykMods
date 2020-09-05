@@ -68,25 +68,30 @@ namespace JarlykMods.Hailstorm
                 return;
             DestroyModel();
             modelPrefab = gameObject;
-            modelScale = transform.lossyScale.x;
             if (!dontInstantiatePickupModel && modelPrefab != null)
             {
-                modelObject = Instantiate<GameObject>(modelPrefab);
-                var renderers = modelObject.GetComponentsInChildren<Renderer>();
-                var bounds = new Bounds(Vector3.zero, Vector3.zero);
-                foreach (var renderer in renderers)
-                {
-                    modelObject.transform.rotation = Quaternion.identity;
-                    bounds.Encapsulate(renderer.bounds);
-                    if (highlight && !highlight.targetRenderer)
-                        highlight.targetRenderer = renderer;
-                }
-
-                modelScale *= 1.0f/bounds.size.y;
+                modelObject = Instantiate(modelPrefab);
                 modelObject.transform.parent = transform;
-                modelObject.transform.localPosition = localModelPivotPosition;
-                modelObject.transform.localRotation = Quaternion.identity;
-                modelObject.transform.localScale = new Vector3(modelScale, modelScale, modelScale);
+                modelObject.transform.rotation = Quaternion.identity;
+
+                var renderers = modelObject.GetComponentsInChildren<Renderer>();
+                if (renderers.Length > 0)
+                {
+                    var bounds = renderers[0].bounds;
+                    if (highlight && !highlight.targetRenderer)
+                        highlight.targetRenderer = renderers[0];
+
+                    for (var i = 1; i < renderers.Length; i++)
+                    {
+                        bounds.Encapsulate(renderers[i].bounds);
+                    }
+
+                    var ls = modelObject.transform.lossyScale;
+                    modelScale = 0.9f*ls.y/Mathf.Max(bounds.size.x, bounds.size.y, bounds.size.z);
+                    modelObject.transform.position = -1*bounds.center;
+                    modelObject.transform.localRotation = Quaternion.identity;
+                    modelObject.transform.localScale = new Vector3(modelScale/ls.x, modelScale/ls.y, modelScale/ls.z);
+                }
             }
             if ((bool)tier1ParticleEffect)
                 tier1ParticleEffect.SetActive(false);

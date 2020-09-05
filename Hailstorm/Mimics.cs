@@ -26,6 +26,14 @@ namespace JarlykMods.Hailstorm
         {
             IL.RoR2.SceneDirector.PopulateScene += SceneDirectorOnPopulateScene;
             On.RoR2.DeathRewards.OnKilledServer += DeathRewardsOnOnKilledServer;
+
+            //Register mimic state machine state types
+            LoadoutAPI.AddSkill(typeof(MeleeAttackState));
+            LoadoutAPI.AddSkill(typeof(MimicDeathState));
+            LoadoutAPI.AddSkill(typeof(OrientToTargetState));
+            LoadoutAPI.AddSkill(typeof(PounceRecoverState));
+            LoadoutAPI.AddSkill(typeof(PreparePounceState));
+            LoadoutAPI.AddSkill(typeof(SurprisePounceState));
         }
 
         public void Awake()
@@ -97,12 +105,13 @@ namespace JarlykMods.Hailstorm
         private void SetupBody()
         {
             //cloning the mushroom
-            BodyPrefab = PrefabAPI.InstantiateClone(Resources.Load<GameObject>("Prefabs/CharacterBodies/MiniMushroomBody"), "MimicBody");
+            BodyPrefab = Resources.Load<GameObject>("Prefabs/CharacterBodies/MiniMushroomBody").InstantiateClone("MimicBody");
 
             BodyPrefab.GetComponent<NetworkIdentity>().localPlayerAuthority = true;
 
             //instantiate the mimic's model
-            GameObject model = HailstormAssets.MimicModel;
+            //We clone the prefab into a virtual prefab because we need to add an object to it dynamically later in this setup
+            GameObject model = HailstormAssets.MimicModel.InstantiateClone("MimicModel", false);
 
             GameObject modelBase = BodyPrefab.transform.Find("ModelBase").gameObject;
 
@@ -265,7 +274,6 @@ namespace JarlykMods.Hailstorm
 
             //make a hitbox for the chomp
             HitBoxGroup hitBoxGroup = model.AddComponent<HitBoxGroup>();
-            
 
             GameObject chompHitbox = childLocator.FindChild("ChompHitbox").gameObject;
             chompHitbox.transform.localScale = new Vector3(16f/180.0f, 16f/180.0f, 16f/180.0f);
@@ -279,6 +287,43 @@ namespace JarlykMods.Hailstorm
             };
 
             hitBoxGroup.groupName = "Chomp";
+
+            //Find the location where the item will be located
+            var heldItemRoot = model.transform.Find("Armature/chestArmature/Base/HeldItem");
+            if (!heldItemRoot)
+                Debug.Log("Failed to locate held item root for Mimic");
+
+            //Create pickup container to hold the object it will contain
+            var pickupObj = Resources.Load<GameObject>("Prefabs/NetworkedObjects/GenericPickup").InstantiateClone("MimicPickup", false);
+            pickupObj.transform.parent = heldItemRoot;
+            pickupObj.transform.localPosition = Vector3.zero;
+            pickupObj.transform.localScale = Vector3.one;
+            pickupObj.SetActive(true);
+
+            //We don't need to follow gravity, as we're attached to the mimic
+            Object.Destroy(pickupObj.GetComponent<Rigidbody>());
+            Object.Destroy(pickupObj.GetComponent<SphereCollider>());
+            Object.Destroy(pickupObj.transform.Find("PickupTrigger").gameObject);
+
+            //The default pickup scaling is based on volume of first renderer
+            //In order to fit inside the chest consistently, we want to scale based on height of total bounds
+            //To do this, we replace the PickupDisplay with our own ScaledPickupDisplay
+            var displayObj = pickupObj.transform.Find("PickupDisplay").gameObject;
+            var display = displayObj.GetComponent<PickupDisplay>();
+            var newDisplay = displayObj.AddComponent<HeightScaledPickupDisplay>();
+            newDisplay.CopyFrom(display);
+            Object.Destroy(display);
+
+            //Normalize world scale to desired size
+            var scaleAdj = 1.0f;
+            pickupObj.transform.localScale = new Vector3(1f, 1f, 1f);
+            pickupObj.transform.localScale = scaleAdj*new Vector3(1.0f/pickupObj.transform.lossyScale.x,
+                                                                  1.0f/pickupObj.transform.lossyScale.y,
+                                                                  1.0f/pickupObj.transform.lossyScale.z);
+
+            //Normalize to desired position
+            var translation = -1.3f*Vector3.up;
+            pickupObj.transform.position += pickupObj.transform.rotation*translation;
 
             //footstep sounds because mimics have feet
             FootstepHandler footstepHandler = model.AddComponent<FootstepHandler>();
@@ -403,8 +448,6 @@ namespace JarlykMods.Hailstorm
 
         private void UtilitySetup()
         {
-            //LoadoutAPI.AddSkill(typeof());
-
             SkillDef mySkillDef = ScriptableObject.CreateInstance<SkillDef>();
             mySkillDef.skillNameToken = "MIMIC_POUNCE";
             mySkillDef.activationState = new SerializableEntityStateType(typeof(PreparePounceState));
