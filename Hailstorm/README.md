@@ -2,7 +2,7 @@
 [//]: # ( Hailstorm )
 
 # Hailstorm
-Will you stare into the Darkness?  Will you conquer it?  This mod adds new challenges, including some new elites.  This is a work in progress, but it's stable enough at this point to enjoy.  If you run into issues or have constructive suggestions for how to improve the mod, feel free to let me know.
+Will you stare into the Darkness?  Will you conquer it?  This mod adds new challenges, including some new elites.  If you run into issues or have constructive suggestions for how to improve the mod, feel free to let me know.
 
 ## Features
 
@@ -16,7 +16,7 @@ These elites provide Barrier to their nearby allies while they are alive, so the
 These elites show up relatively late (around the time that Malachites start spawning) and they're just about as tough.  They bring storms in their wake that dislocate friend and foe alike.
 
 ### Mimics
-Not all chests are what they appear to be.  Occasionally a chest will reveal itself to be a monster in disguise; beware, for it wields the item that was within the chest and will not yield it until it is dead.
+Not all chests are what they appear to be.  Occasionally a chest will reveal itself to be a monster in disguise; beware, for it wields the item that was within the chest and will not yield it until it is dead.  As of 1.3.0, a new type of mimic has arrived which likes to pose as small chests; this is still in early beta, so reports of issues or constructive suggestions for balance are welcome.
 
 ## Technical Notes
 
@@ -26,6 +26,9 @@ Place JarlykMods.Hailstorm.dll in your BepInEx\plugins folder.  If you're using 
 ### Configuration
 After you run the mod once, a configuration file will be created under BepInEx\config.  It is a simple text file with configuration options that are commented as to what they do.  Here you can disable particular features and configure the spawn rate for mimics.
 
+### Credits
+Special thanks for the mimic model and animations, provided by rob
+
 ### Contact
 You can reach me via Github or can find me on the modding Discord at https://discord.gg/5MbXZvd.  As with most mods, this is a hobby project, so please understand that response times to questions and time to update for new RoR2 releases may vary.
 
@@ -33,6 +36,12 @@ You can reach me via Github or can find me on the modding Discord at https://dis
 This mod is released under the standard MIT license, which is a permissive license that allows for free use, while disclaiming liability.  The text of this is included in the release archive in License.txt.
 
 ### Changelog
+
+1.3.0 | 2020-09-05
+- Added new monster for small chest mimics
+- Fixed issue where the purple texture on Dark elites wasn't showing up properly in the darkness
+- Fixed issues with darkness shader impacting emissive textures oddly
+- Barrier elites now apply substantially more barrier to their allies, but also have slightly less total hp than before
 
 1.2.2 | 2020-08-23
 - Darkness background breathing sound now attenuates significantly with distance from the nearest Dark elite
