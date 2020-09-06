@@ -22,6 +22,7 @@
     <None Remove="manifest.json" />
     <None Remove="mimic.assets" />
     <None Remove="README.md" />
+    <None Remove="Text\Mimic.txt" />
   </ItemGroup>
 
   <ItemGroup>
@@ -43,6 +44,7 @@
     <EmbeddedResource Include="hailstorm.assets" />
     <EmbeddedResource Include="Hailstorm.bnk" />
     <EmbeddedResource Include="mimic.assets" />
+    <EmbeddedResource Include="Text\Mimic.txt" />
   </ItemGroup>
 
   <ItemGroup>

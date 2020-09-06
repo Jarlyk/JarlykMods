@@ -135,6 +135,7 @@ namespace JarlykMods.Hailstorm
             characterDirection.turnSpeed = 720f;
 
             LanguageAPI.Add("MIMIC_NAME", "Mimic");
+            LanguageAPI.Add("MIMIC_LORE", HailstormAssets.MimicLore);
 
             //self explanatory
             CharacterBody bodyComponent = BodyPrefab.GetComponent<CharacterBody>();

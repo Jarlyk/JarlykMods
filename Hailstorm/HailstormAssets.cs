@@ -68,6 +68,12 @@ namespace JarlykMods.Hailstorm
                 MimicBiteEffect = bundle.LoadAsset<GameObject>("MimicBiteEffect");
             }
 
+            using (var stream = execAssembly.GetManifestResourceStream("JarlykMods.Hailstorm.Text.Mimic.txt"))
+            using (var reader = new StreamReader(stream))
+            {
+                MimicLore = reader.ReadToEnd();
+            }
+
             using (var bankStream = execAssembly.GetManifestResourceStream("JarlykMods.Hailstorm.Hailstorm.bnk"))
             {
                 var bytes = new byte[bankStream.Length];
@@ -101,6 +107,8 @@ namespace JarlykMods.Hailstorm
         public static Material MimicMaterial { get; private set; }
 
         public static GameObject MimicBiteEffect { get; private set; }
+
+        public static string MimicLore { get; private set; }
 
         private static void GameNetworkManager_OnStartClient(On.RoR2.Networking.GameNetworkManager.orig_OnStartClient orig, GameNetworkManager self, NetworkClient newClient)
         {

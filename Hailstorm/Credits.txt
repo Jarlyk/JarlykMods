@@ -3,6 +3,7 @@
 Much thanks to the members of the Risk of Rain 2 Modding Discord; this would not have been possible without their help.
 Special thanks to rob, who provided the models and animations for the mimics.
 Special thanks to Rein, who helped solve the problems related to texture modification for the dark elites.
+Thanks to tera, who provided monster log entry for mimic
 
 Images
 -------

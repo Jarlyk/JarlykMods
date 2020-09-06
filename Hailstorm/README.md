@@ -28,6 +28,7 @@ After you run the mod once, a configuration file will be created under BepInEx\c
 
 ### Credits
 Special thanks for the mimic model and animations, provided by rob
+Monster log for mimic written by tera
 
 ### Contact
 You can reach me via Github or can find me on the modding Discord at https://discord.gg/5MbXZvd.  As with most mods, this is a hobby project, so please understand that response times to questions and time to update for new RoR2 releases may vary.
