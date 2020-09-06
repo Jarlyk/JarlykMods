@@ -16,6 +16,7 @@ namespace CombatDirectorTweaks
         public CombatDirectorTweaksPlugin()
         {
             TweaksConfig.Init(Config);
+            FastNodesLib.InitHooks();
 
             IL.RoR2.CombatDirector.Simulate += CombatDirector_Simulate;
         }
