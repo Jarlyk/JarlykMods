@@ -38,6 +38,9 @@ This mod is released under the standard MIT license, which is a permissive licen
 
 ### Changelog
 
+1.3.1 | 2020-09-08
+- Fixed missing R2API submodule dependency
+
 1.3.0 | 2020-09-05
 - Added new monster for small chest mimics
 - Fixed issue where the purple texture on Dark elites wasn't showing up properly in the darkness
