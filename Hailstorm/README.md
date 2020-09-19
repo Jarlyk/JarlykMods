@@ -38,6 +38,10 @@ This mod is released under the standard MIT license, which is a permissive licen
 
 ### Changelog
 
+1.3.2 | 2020-09-18
+- Improved mimics in multiplayer (should no longer lose the item or have it freeze during pounce)
+- Made sound effect for barrier elites significantly less frequent and a bit quieter
+
 1.3.1 | 2020-09-08
 - Fixed missing R2API submodule dependency
 
