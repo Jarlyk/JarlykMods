@@ -91,6 +91,8 @@ namespace JarlykMods.Hailstorm
                     modelObject.transform.position = -1*bounds.center;
                     modelObject.transform.localRotation = Quaternion.identity;
                     modelObject.transform.localScale = new Vector3(modelScale/ls.x, modelScale/ls.y, modelScale/ls.z);
+
+                    Debug.Log($"HeightScaledPickupDisplay: Model created for index {pickupIndex}");
                 }
             }
             if ((bool)tier1ParticleEffect)

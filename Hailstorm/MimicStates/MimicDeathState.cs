@@ -4,6 +4,7 @@ using System.Text;
 using EntityStates;
 using RoR2;
 using UnityEngine;
+using UnityEngine.Networking;
 
 namespace JarlykMods.Hailstorm.MimicStates
 {
@@ -19,6 +20,13 @@ namespace JarlykMods.Hailstorm.MimicStates
             _modelTransform = modelLocator.modelTransform;
             var emPowerAnimator = _modelTransform.GetComponent<EmPowerAnimator>();
             emPowerAnimator.SetTarget(0.1f);
+
+            //Enable pickup again (on both client and server)
+            var pickup = _modelTransform.GetComponentInChildren<GenericPickupController>();
+            if (pickup)
+            {
+                pickup.enabled = true;
+            }
         }
 
         public override void OnExit()
@@ -27,13 +35,7 @@ namespace JarlykMods.Hailstorm.MimicStates
             var pickup = _modelTransform.GetComponentInChildren<GenericPickupController>();
             if (pickup)
             {
-                if (isAuthority)
-                {
-                    PickupDropletController.CreatePickupDroplet(pickup.pickupIndex, pickup.transform.position,
-                                                                Vector3.zero);
-                }
-
-                pickup.gameObject.SetActive(false);
+                pickup.transform.SetParent(null);
             }
 
             base.OnExit();

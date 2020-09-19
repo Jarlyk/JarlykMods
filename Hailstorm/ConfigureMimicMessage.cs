@@ -20,7 +20,8 @@ namespace JarlykMods.Hailstorm
 
         public void OnReceived()
         {
-            ChestMimicSpawner.ConfigureMimic(this);
+            if (!NetworkServer.active)
+                ChestMimicSpawner.ConfigureMimic(this);
         }
 
         public void Serialize(NetworkWriter writer)

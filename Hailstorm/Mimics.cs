@@ -26,6 +26,14 @@ namespace JarlykMods.Hailstorm
         {
             IL.RoR2.SceneDirector.PopulateScene += SceneDirectorOnPopulateScene;
             On.RoR2.DeathRewards.OnKilledServer += DeathRewardsOnOnKilledServer;
+            On.RoR2.GenericPickupController.UpdatePickupDisplay += GenericPickupControllerUpdatePickupDisplay;
+
+            //For debug purposes, to track why pickup index is not being set
+            On.RoR2.GenericPickupController.SyncPickupIndex += (orig, self, index) =>
+            {
+                orig(self, index);
+                Debug.Log($"After SyncPickupIndex, pickupIndex = {self.pickupIndex}");
+            };
 
             //Register mimic state machine state types
             LoadoutAPI.AddSkill(typeof(MeleeAttackState));
@@ -40,11 +48,14 @@ namespace JarlykMods.Hailstorm
         {
             SetupMonster();
             NetworkingAPI.RegisterMessageType<ConfigureMimicMessage>();
+            NetworkingAPI.RegisterMessageType<NormalizeTransformMessage>();
         }
 
         public static GameObject BodyPrefab;
 
         public static GameObject MasterPrefab;
+
+        public static GameObject MimicPickupPrefab;
 
         public SkillLocator SkillLocator;
         
@@ -79,6 +90,21 @@ namespace JarlykMods.Hailstorm
                 }
             }
         }
+
+        private void GenericPickupControllerUpdatePickupDisplay(On.RoR2.GenericPickupController.orig_UpdatePickupDisplay orig, GenericPickupController self)
+        {
+            var display = self.GetComponentInChildren<HeightScaledPickupDisplay>();
+            if (display)
+            {
+                Debug.Log($"Configuring HeightScaledPickupDisplay pickupIndex={self.pickupIndex}");
+                display.SetPickupIndex(self.pickupIndex);
+            }
+            else
+            {
+                orig(self);
+            }
+        }
+
 
         private void DeathRewardsOnOnKilledServer(On.RoR2.DeathRewards.orig_OnKilledServer orig, DeathRewards self, DamageReport damagereport)
         {
@@ -289,43 +315,43 @@ namespace JarlykMods.Hailstorm
 
             hitBoxGroup.groupName = "Chomp";
 
-            //Find the location where the item will be located
-            var heldItemRoot = model.transform.Find("Armature/chestArmature/Base/HeldItem");
-            if (!heldItemRoot)
-                Debug.Log("Failed to locate held item root for Mimic");
+            ////Find the location where the item will be located
+            //var heldItemRoot = model.transform.Find("Armature/chestArmature/Base/HeldItem");
+            //if (!heldItemRoot)
+            //    Debug.Log("Failed to locate held item root for Mimic");
 
-            //Create pickup container to hold the object it will contain
-            var pickupObj = Resources.Load<GameObject>("Prefabs/NetworkedObjects/GenericPickup").InstantiateClone("MimicPickup", false);
-            pickupObj.transform.parent = heldItemRoot;
-            pickupObj.transform.localPosition = Vector3.zero;
-            pickupObj.transform.localScale = Vector3.one;
-            pickupObj.SetActive(true);
+            ////Create pickup container to hold the object it will contain
+            //var pickupObj = Resources.Load<GameObject>("Prefabs/NetworkedObjects/GenericPickup").InstantiateClone("MimicPickup", false);
+            //pickupObj.transform.parent = heldItemRoot;
+            //pickupObj.transform.localPosition = Vector3.zero;
+            //pickupObj.transform.localScale = Vector3.one;
+            //pickupObj.SetActive(true);
 
-            //We don't need to follow gravity, as we're attached to the mimic
-            Object.Destroy(pickupObj.GetComponent<Rigidbody>());
-            Object.Destroy(pickupObj.GetComponent<SphereCollider>());
-            Object.Destroy(pickupObj.transform.Find("PickupTrigger").gameObject);
+            ////We don't need to follow gravity, as we're attached to the mimic
+            //Object.Destroy(pickupObj.GetComponent<Rigidbody>());
+            //Object.Destroy(pickupObj.GetComponent<SphereCollider>());
+            //Object.Destroy(pickupObj.transform.Find("PickupTrigger").gameObject);
 
-            //The default pickup scaling is based on volume of first renderer
-            //In order to fit inside the chest consistently, we want to scale based on height of total bounds
-            //To do this, we replace the PickupDisplay with our own ScaledPickupDisplay
-            var displayObj = pickupObj.transform.Find("PickupDisplay").gameObject;
-            var display = displayObj.GetComponent<PickupDisplay>();
-            var newDisplay = displayObj.AddComponent<HeightScaledPickupDisplay>();
-            newDisplay.CopyFrom(display);
-            Object.Destroy(display);
+            ////The default pickup scaling is based on volume of first renderer
+            ////In order to fit inside the chest consistently, we want to scale based on height of total bounds
+            ////To do this, we replace the PickupDisplay with our own ScaledPickupDisplay
+            //var displayObj = pickupObj.transform.Find("PickupDisplay").gameObject;
+            //var display = displayObj.GetComponent<PickupDisplay>();
+            //var newDisplay = displayObj.AddComponent<HeightScaledPickupDisplay>();
+            //newDisplay.CopyFrom(display);
+            //Object.Destroy(display);
 
-            //Normalize world scale to desired size
-            var scaleAdj = 1.0f;
-            pickupObj.transform.localScale = new Vector3(1f, 1f, 1f);
-            pickupObj.transform.localScale = scaleAdj*new Vector3(1.0f/pickupObj.transform.lossyScale.x,
-                                                                  1.0f/pickupObj.transform.lossyScale.y,
-                                                                  1.0f/pickupObj.transform.lossyScale.z);
+            ////Normalize world scale to desired size
+            //var scaleAdj = 1.0f;
+            //pickupObj.transform.localScale = new Vector3(1f, 1f, 1f);
+            //pickupObj.transform.localScale = scaleAdj*new Vector3(1.0f/pickupObj.transform.lossyScale.x,
+            //                                                      1.0f/pickupObj.transform.lossyScale.y,
+            //                                                      1.0f/pickupObj.transform.lossyScale.z);
 
-            //Normalize to desired position
-            var translation = -1.3f*Vector3.up;
-            pickupObj.transform.position += pickupObj.transform.rotation*translation;
-
+            ////Normalize to desired position
+            //var translation = -1.3f*Vector3.up;
+            //pickupObj.transform.position += pickupObj.transform.rotation*translation;
+            
             //footstep sounds because mimics have feet
             FootstepHandler footstepHandler = model.AddComponent<FootstepHandler>();
             footstepHandler.baseFootstepString = "Play_player_footstep";
@@ -380,6 +406,37 @@ namespace JarlykMods.Hailstorm
             bite.AddComponent<BillboardEffectPresenter>();
 
             EffectAPI.AddEffect(bite);
+
+            //Create pickup container to hold the object it will contain
+            var pickupObj =
+                PrefabAPI.InstantiateClone(Resources.Load<GameObject>("Prefabs/NetworkedObjects/GenericPickup"),
+                                           "MimicPickup", true);
+
+            //We don't need to follow gravity, as we're attached to the mimic
+            Object.Destroy(pickupObj.GetComponent<Rigidbody>());
+            Object.Destroy(pickupObj.GetComponent<SphereCollider>());
+            //Object.Destroy(pickupObj.transform.Find("PickupTrigger").gameObject);
+
+            //Set up a constraint so that the pickupObj follows the 
+            
+            //The default pickup scaling is based on volume of first renderer
+            //In order to fit inside the chest consistently, we want to scale based on height of total bounds
+            //To do this, we replace the PickupDisplay with our own ScaledPickupDisplay
+            var displayObj = pickupObj.transform.Find("PickupDisplay").gameObject;
+            var display = displayObj.GetComponent<PickupDisplay>();
+            var newDisplay = displayObj.AddComponent<HeightScaledPickupDisplay>();
+            newDisplay.CopyFrom(display);
+            Object.Destroy(display);
+
+            var netParent = pickupObj.AddComponent<NetworkParent>();
+
+            //var netTransform = pickupObj.AddComponent<NetworkTransform>();
+            //netTransform.transformSyncMode = NetworkTransform.TransformSyncMode.SyncTransform;
+
+            var pickup = pickupObj.GetComponent<GenericPickupController>();
+            pickup.enabled = false;
+
+            MimicPickupPrefab = pickupObj;
         }
 
         private void SetupSkills()

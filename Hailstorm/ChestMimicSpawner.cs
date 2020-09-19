@@ -5,6 +5,7 @@ using System.Reflection;
 using EliteSpawningOverhaul;
 using JarlykMods.Hailstorm.MimicStates;
 using KinematicCharacterController;
+using R2API;
 using R2API.Networking;
 using R2API.Networking.Interfaces;
 using R2API.Utils;
@@ -180,26 +181,15 @@ namespace JarlykMods.Hailstorm
                 item = chestDrop
             };
             message.Send(NetworkDestination.Clients);
-            
+            ConfigureMimic(message, mimicMaster.GetBody(), mimicMaster);
+
             //NOTE: We don't need to call this explicitly on the server, as the server also gets the OnReceived callback for the message
             //ConfigureMimic(message);
         }
 
         public static void ConfigureMimic(ConfigureMimicMessage message)
         {
-            Debug.Log("Configuring mimic");
-
-            if (!NetworkServer.active)
-            {
-                HailstormPlugin.Instance.StartCoroutine(ConfigureMimicAsync(message));
-            }
-            else
-            {
-                var mimicMaster = NetworkServer.FindLocalObject(message.mimicMasterId).GetComponent<CharacterMaster>();
-                var mimic = mimicMaster.GetBody();
-
-                ConfigureMimic(message, mimic, mimicMaster);
-            }
+            HailstormPlugin.Instance.StartCoroutine(ConfigureMimicAsync(message));
         }
 
         private static IEnumerator ConfigureMimicAsync(ConfigureMimicMessage message)
@@ -219,6 +209,8 @@ namespace JarlykMods.Hailstorm
 
         private static void ConfigureMimic(ConfigureMimicMessage message, CharacterBody mimic, CharacterMaster mimicMaster)
         {
+            Debug.Log("Configuring mimic");
+
             var context = mimic.gameObject.AddComponent<MimicContext>();
             context.initialRotation = message.initialRotation;
             context.target = message.target;
@@ -249,12 +241,41 @@ namespace JarlykMods.Hailstorm
             var ai = mimicMaster.GetComponent<BaseAI>();
             ai.customTarget.gameObject = message.target;
 
-            var pickup = mimicModel.GetComponentInChildren<GenericPickupController>();
-            pickup.enabled = false;
-            pickup.NetworkpickupIndex = message.item;
+            if (NetworkServer.active)
+            {
+                //Find the location where the item will be located
+                var heldItemRoot = mimicModel.transform.Find("Armature/chestArmature/Base/HeldItem");
+                if (!heldItemRoot)
+                    Debug.Log("Failed to locate held item root for Mimic");
+                
+                //Create pickup container to hold the object it will contain
+                var pickupObj = Instantiate(Mimics.MimicPickupPrefab, heldItemRoot.transform.position, heldItemRoot.transform.rotation);
 
-            var pickupDisplay = mimicModel.GetComponentInChildren<HeightScaledPickupDisplay>();
-            pickupDisplay.SetPickupIndex(message.item);
+                //var pickup = mimicModel.GetComponentInChildren<GenericPickupController>();
+                var pickup = pickupObj.GetComponent<GenericPickupController>();
+                pickup.NetworkpickupIndex = message.item;
+                
+                pickupObj.transform.SetParent(heldItemRoot);
+
+                NetworkServer.Spawn(pickupObj);
+                
+                var normMessage = new NormalizeTransformMessage
+                {
+                    offset = new Vector3(0, -1.3f, 0),
+                    normalizedScale = 1.0f,
+                    netId = pickupObj.GetComponent<NetworkIdentity>().netId
+                };
+                normMessage.Send(NetworkDestination.Clients);
+
+                HailstormPlugin.Instance.StartCoroutine(ConfigurePickupAsync(normMessage, pickupObj));
+            }
+        }
+
+        private static IEnumerator ConfigurePickupAsync(NormalizeTransformMessage message, GameObject pickupObj)
+        {
+            //Delay is necessary because trying to set the scale on the same frame doesn't work for some reason, probably related to NetworkSpawn sync
+            yield return new WaitForFixedUpdate();
+            message.Configure(pickupObj);
         }
 
         private static void RemoveNode(DirectorCore directorCore, NodeGraph.NodeIndex node)

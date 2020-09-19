@@ -46,7 +46,7 @@ namespace JarlykMods.Hailstorm.MimicStates
 
             if (isAuthority)
             {
-                var target = characterBody.GetComponent<MimicContext>().target;
+                var target = characterBody.GetComponent<MimicContext>()?.target;
                 if (target != null)
                 {
                     characterMotor.velocity = speed*(target.transform.position - characterBody.transform.position).normalized + new Vector3(0, 20f, 0);
@@ -69,7 +69,7 @@ namespace JarlykMods.Hailstorm.MimicStates
 
             if (isAuthority)
             {
-                var target = characterBody.GetComponent<MimicContext>().target;
+                var target = characterBody.GetComponent<MimicContext>()?.target;
                 if (target != null)
                 {
                     //Check how close we are to the target
