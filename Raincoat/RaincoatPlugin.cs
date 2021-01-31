@@ -18,7 +18,7 @@ using UnityEngine.SceneManagement;
 
 namespace JarlykMods.Raincoat
 {
-    [BepInPlugin(PluginGuid, "Raincoat", "1.0.5")]
+    [BepInPlugin(PluginGuid, "Raincoat", "1.1.0")]
     [BepInDependency(R2API.R2API.PluginGUID)]
     [BepInDependency("dev.wildbook.libminirpc")]
     [BepInDependency("com.funkfrog_sipondo.sharesuite", BepInDependency.DependencyFlags.SoftDependency)]

@@ -14,9 +14,9 @@ namespace JarlykMods.Raincoat
             foreach (var playerController in PlayerCharacterMasterController.instances)
             {
                 var master = playerController.master;
-                if (master.inventory.GetTotalItemCountOfTier(ItemTier.Tier1) <= 1)
+                if (master && master.inventory.GetTotalItemCountOfTier(ItemTier.Tier1) <= 1)
                 {
-                    StarterPack.GrantStarterItems(master);
+                    GrantStarterItems(master);
                 }
             }
         }

@@ -66,7 +66,7 @@ namespace JarlykMods.Hailstorm
                 }
                 else
                 {
-                    SpawnLegacyMimic(dropItem);
+                    //SpawnLegacyMimic(dropItem);
                 }
             }
         }
@@ -94,6 +94,18 @@ namespace JarlykMods.Hailstorm
             var weightedSelection = Util.CreateReasonableDirectorCardSpawnList(monsterCredit, 6, 1);
             if (weightedSelection.Count != 0)
             {
+                var choices = weightedSelection.choices;
+                for (int i = 0; i < choices.Length; i++)
+                {
+                    //Worms are banned from being mimics
+                    var c = choices[i];
+                    if (c.value.spawnCard.name == "cscMagmaWorm" ||
+                        c.value.spawnCard.name == "cscElectricWorm")
+                    {
+                        weightedSelection.ModifyChoiceWeight(i, 0);
+                    }
+                }
+
                 var chosenDirectorCard = weightedSelection.Evaluate(_rng.nextNormalizedFloat);
 
                 var eliteAffix = EsoLib.ChooseEliteAffix(chosenDirectorCard, monsterCredit, _rng);

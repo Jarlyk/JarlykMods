@@ -41,6 +41,9 @@ This mod is released under the standard MIT license, which is a permissive licen
 
 ### Changelog
 
+1.1.0 | 2020-12-19
+- Rebuilt for latest game patch
+
 1.0.5 | 2020-09-01
 - Fixed compatibility issue with ShareSuite that could cause Artifact of Merch to drop too many shops, depending on the load order of mods
 

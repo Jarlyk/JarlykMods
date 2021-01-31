@@ -61,6 +61,10 @@
       <HintPath>..\Dependencies\BepInEx.dll</HintPath>
       <Private>false</Private>
     </Reference>
+    <Reference Include="HGCSharpUtils">
+      <HintPath>..\Dependencies\HGCSharpUtils.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
     <Reference Include="MiniRpcLib">
       <HintPath>..\Dependencies\MiniRpcLib.dll</HintPath>
       <Private>false</Private>

@@ -98,6 +98,9 @@ namespace EliteSpawningOverhaul
             if (eliteIndex < EliteIndex.Count)
                 return;
 
+            EliteOptions options = null;
+            Options.TryGetValue(eliteIndex, out options);
+
             var eliteDef = EliteCatalog.GetEliteDef(eliteIndex);
             var rendererInfos = self.baseRendererInfos;
             var propertyStorage = self.GetFieldValue<MaterialPropertyBlock>("propertyStorage");
@@ -106,7 +109,8 @@ namespace EliteSpawningOverhaul
                 var baseRendererInfo = rendererInfos[i];
                 Renderer renderer = baseRendererInfo.renderer;
                 renderer.GetPropertyBlock(propertyStorage);
-                propertyStorage.SetColor("_Color", eliteDef.color);
+                if (options == null || !options.DisableAutomaticColoration)
+                    propertyStorage.SetColor("_Color", eliteDef.color);
                 propertyStorage.SetFloat("_EliteIndex", 0);
                 renderer.SetPropertyBlock(propertyStorage);
             }
@@ -117,6 +121,8 @@ namespace EliteSpawningOverhaul
         /// which can be useful for creating different 'tiers' of the same elite type, with stat boosts or other customization using the onSpawned delegate.
         /// </summary>
         public static List<EliteAffixCard> Cards { get; } = new List<EliteAffixCard>();
+
+        public static Dictionary<EliteIndex, EliteOptions> Options = new Dictionary<EliteIndex, EliteOptions>();
 
         private static bool EliteOnlyArtifactEnabled => RunArtifactManager.instance.IsArtifactEnabled(RoR2Content.Artifacts.eliteOnlyArtifactDef);
 
@@ -275,6 +281,19 @@ namespace EliteSpawningOverhaul
         private static void CombatDirectorHelperOnCardSpawned(ILContext il)
         {
             var c = new ILCursor(il);
+
+            //There's a vanilla issue where we can sometimes be passed a null result.spawnedInstance
+            //This causes an NRE, so we're going to check for this first and leave if it's null
+            var proceed = c.DefineLabel();
+            c.Emit(OpCodes.Ldarg_1);
+            c.Emit(OpCodes.Ldfld,
+                   typeof(SpawnCard.SpawnResult).GetField("spawnedInstance",
+                                                          BindingFlags.Instance | BindingFlags.Public));
+            c.Emit(OpCodes.Ldnull);
+            c.Emit(OpCodes.Ceq);
+            c.Emit(OpCodes.Brfalse, proceed);
+            c.Emit(OpCodes.Ret);
+            c.MarkLabel(proceed);
 
             //The original code starts with setting up squad assignment
             //We're going to modify once it reaches the part where it starts applying the Elite-related changes

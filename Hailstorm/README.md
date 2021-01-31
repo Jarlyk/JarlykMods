@@ -38,6 +38,15 @@ This mod is released under the standard MIT license, which is a permissive licen
 
 ### Changelog
 
+1.4.1 | 2020-01-30
+- Disabled legacy mimics, as the last game patch broke them; regular mimics should still function normally
+
+1.4.0 | 2020-12-19
+- Rebuilt for latest game patch
+- Updated sound attenuation for some sounds so that you can't hear them from quite so far away
+- Legacy mimics should no longer be able to spawn as worms
+- A few small improvements to mimic animations
+
 1.3.2 | 2020-09-18
 - Improved mimics in multiplayer (should no longer lose the item or have it freeze during pounce)
 - Made sound effect for barrier elites significantly less frequent and a bit quieter

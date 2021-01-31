@@ -17,6 +17,16 @@ This mod is released under the standard MIT license, which is a permissive licen
 
 ### Changelog
 
+1.2.2 | 2021-01-30
+- Added null check in CombatDirector OnSpawned callback; root cause is likely vanilla, but NRE spam is particularly bad when running modded due to the logging overhead
+
+1.2.1 | 2020-12-19
+- Fixed exception when trying to update materials on custom elites
+
+1.2.0 | 2020-12-19
+- Rebuilt for latest game patch
+- Added EliteOptions to optionally disable automatic material coloration
+
 1.1.0 | 2020-08-22
 - Custom elites are now given a material coloration matching their eliteDef by default
 
